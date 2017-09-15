@@ -1,6 +1,8 @@
 open AllocatedAst
 open Mips
 
+let bool_to_int b = if b then 1 else 0
+
 let generate_main p =
 
   (* Affecte des emplacements mémoire aux variables locales. *)
@@ -18,10 +20,12 @@ let generate_main p =
   (* Un appel [load_value r v] génère du code qui place la valeur [v]
      dans le registre [r]. *)
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
-    | Identifier(id) -> (match find_alloc id with
+    | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | _       -> failwith "A completer")
-    | _              -> failwith "A completer"
+        | Reg reg -> move r reg)
+    | Literal id ->   (match id with
+        | Int i  -> li r i
+        | Bool b -> li r (bool_to_int b))
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
