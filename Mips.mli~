@@ -1,0 +1,88 @@
+type register = string
+val v0 : register
+val v1 : register
+val a0 : register
+val a1 : register
+val a2 : register
+val a3 : register
+val t0 : register
+val t1 : register
+val t2 : register
+val t3 : register
+val t4 : register
+val t5 : register
+val t6 : register
+val t7 : register
+val t8 : register
+val t9 : register
+val s0 : register
+val s1 : register
+val s2 : register
+val s3 : register
+val s4 : register
+val s5 : register
+val s6 : register
+val s7 : register
+val ra : register
+val sp : register
+val fp : register
+val gp : register
+val zero : register
+val ( ~$ ) : 'a -> 'a
+type label = string
+type 'a asm = Nop | S of string | C of 'a asm * 'a asm
+type text = [ `text ] asm
+type data = [ `data ] asm
+val buf : Buffer.t
+val fmt : Format.formatter
+val ins : ('a, Format.formatter, unit, 'b asm) format4 -> 'a
+val pr_list :
+  Format.formatter -> (Format.formatter -> 'a -> unit) -> 'a list -> unit
+val pr_ilist : Format.formatter -> int list -> unit
+val add : string -> string -> string -> 'a asm
+val addi : string -> string -> int -> 'a asm
+val sub : string -> string -> string -> 'a asm
+val mul : string -> string -> string -> 'a asm
+val div : string -> string -> string -> 'a asm
+val rem : string -> string -> string -> 'a asm
+val and_ : string -> string -> string -> 'a asm
+val or_ : string -> string -> string -> 'a asm
+val not_ : string -> string -> 'a asm
+val neg : string -> string -> 'a asm
+val seq : string -> string -> string -> 'a asm
+val sne : string -> string -> string -> 'a asm
+val slt : string -> string -> string -> 'a asm
+val sle : string -> string -> string -> 'a asm
+val sgt : string -> string -> string -> 'a asm
+val sge : string -> string -> string -> 'a asm
+val b : label -> 'a asm
+val beq : string -> string -> label -> 'a asm
+val bne : string -> string -> label -> 'a asm
+val bge : string -> string -> label -> 'a asm
+val bgt : string -> string -> label -> 'a asm
+val ble : string -> string -> label -> 'a asm
+val blt : string -> string -> label -> 'a asm
+val beqz : string -> label -> 'a asm
+val bnez : string -> label -> 'a asm
+val bgez : string -> label -> 'a asm
+val bgtz : string -> label -> 'a asm
+val blez : string -> label -> 'a asm
+val bltz : string -> label -> 'a asm
+val jr : string -> 'a asm
+val jal : label -> 'a asm
+val li : string -> int -> 'a asm
+val la : string -> label -> 'a asm
+val lbu : string -> int -> string -> 'a asm
+val lw : string -> int -> string -> 'a asm
+val sw : string -> int -> string -> 'a asm
+val move : string -> string -> 'a asm
+val nop : 'a asm
+val label : label -> 'a asm
+val syscall : 'a asm
+val comment : string -> 'a asm
+val asciiz : string -> 'a asm
+val dword : int list -> 'a asm
+val ( @@ ) : 'a asm -> 'a asm -> 'a asm
+type program = { text : [ `text ] asm; data : [ `data ] asm; }
+val pr_asm : Format.formatter -> 'a asm -> unit
+val print_program : Format.formatter -> program -> unit
