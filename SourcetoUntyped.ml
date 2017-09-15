@@ -11,7 +11,7 @@ let erase_main p =
   let locals =
     S.Symb_Tbl.fold
       (fun id info tbl ->
-	T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+		T.Symb_Tbl.add id (erase_identifier_info info) tbl)
       p.S.locals
       T.Symb_Tbl.empty
   in
