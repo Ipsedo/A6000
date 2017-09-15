@@ -8,7 +8,7 @@ type block       = IrAst.block
 type instruction = IrAst.instruction
 type literal     = IrAst.literal
 type value       = IrAst.value
-    
+
 type alloc_info =
   | Reg   of string
   | Stack of int

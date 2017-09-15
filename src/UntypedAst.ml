@@ -11,7 +11,7 @@ type block       = SourceAst.block
 type instruction = SourceAst.instruction
 type literal     = SourceAst.literal
 type binop       = SourceAst.binop
-    
+
 (* Programme principal : une table de symboles et un bloc de code *)
 type main = {
   locals: identifier_info Symb_Tbl.t;

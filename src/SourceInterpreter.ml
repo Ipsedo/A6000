@@ -2,7 +2,7 @@ open SourceAst
 
 module State = Map.Make(String)
 type state = int State.t
-  
+
 let rec eval_main p x =
   eval_block (State.singleton "x" x) p.code
 
@@ -10,7 +10,7 @@ let rec eval_main p x =
 and eval_block env = function
   | []   -> env
   | i::b -> let env1 = eval_instruction env i in
-	    eval_block env1 b
+    eval_block env1 b
 
 (* [eval_instruction: state -> instruction -> state] *)
 and eval_instruction env = function
@@ -18,7 +18,7 @@ and eval_instruction env = function
   | While(c, b) as iw ->
     if eval_expression env c <> 0
     then let env = eval_block env b in
-	 eval_instruction env iw
+      eval_instruction env iw
     else env
   | If(c, b1, b2) ->
     if eval_expression env c <> 0
@@ -31,23 +31,23 @@ and eval_expression env = function
   | Literal(lit)  -> eval_literal env lit
   | Location(loc) -> eval_location env loc
   | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
-			 let v2 = eval_expression env e2 in
-			 let op = match op with
-			   | Add  -> (+)
-			   | Mult -> ( * )
-			   | Sub  -> (-)
-			   | Eq   -> eval_bool_op (=)
-			   | Neq  -> eval_bool_op (<>)
-			   | Lt   -> eval_bool_op (<)
-			   | Le   -> eval_bool_op (<=)
-			   | And  -> min
-			   | Or   -> max
-			 in
-			 op v1 v2
+    let v2 = eval_expression env e2 in
+    let op = match op with
+      | Add  -> (+)
+      | Mult -> ( * )
+      | Sub  -> (-)
+      | Eq   -> eval_bool_op (=)
+      | Neq  -> eval_bool_op (<>)
+      | Lt   -> eval_bool_op (<)
+      | Le   -> eval_bool_op (<=)
+      | And  -> min
+      | Or   -> max
+    in
+    op v1 v2
 
 and eval_bool b = if b then 1 else 0
 and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
-  
+
 and eval_literal env = function
   | Int(i)  -> i
   | Bool(b) -> eval_bool b

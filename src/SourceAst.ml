@@ -39,7 +39,7 @@ and literal =
 
 and location =
   | Identifier of string (* Variable en mémoire *)
-      
+
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *)
   | Eq  (* == *) | Neq  (* != *)
@@ -51,7 +51,7 @@ and binop =
    [print_main m] produit une chaîne de caractère représentant le programme
 *)
 open Printf
-      
+
 let print_typ = function
   | TypInteger -> "integer"
   | TypBoolean -> "boolean"
@@ -59,8 +59,8 @@ let print_identifier_info i = print_typ i.typ
 
 let print_symb_tbl tbl =
   Symb_Tbl.fold (fun v i s ->
-    (sprintf "  var %s %s;\n" (print_identifier_info i) v) ^ s
-  ) tbl ""
+      (sprintf "  var %s %s;\n" (print_identifier_info i) v) ^ s
+    ) tbl ""
 
 let print_literal = function
   | Int i -> sprintf "%d" i

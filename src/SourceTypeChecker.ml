@@ -25,16 +25,16 @@ let typecheck_main p =
   and typecheck_instruction = function
     | Set(l, e) ->
       comparetype (type_location l) (type_expression e)
-	
+
     | While(e, b) ->
       comparetype TypBoolean (type_expression e);
       typecheck_block b
-	
+
     | If(e, b1, b2) ->
       comparetype TypBoolean (type_expression e);
       typecheck_block b1;
       typecheck_block b2;
-      
+
     | Print(e) ->
       comparetype TypInteger (type_expression e)
 
@@ -43,9 +43,9 @@ let typecheck_main p =
   (* type_expression: expression -> typ *)
   and type_expression = function
     | Literal(lit)  -> type_literal lit
-      
+
     | Location(loc) -> type_location loc
-      
+
     | Binop(op, e1, e2) ->
       let ty_op, ty_r = type_binop op in
       comparetype ty_op (type_expression e1);
@@ -68,7 +68,7 @@ let typecheck_main p =
     | Add | Sub | Mult     -> TypInteger, TypInteger
     | Eq  | Neq | Lt  | Le -> TypInteger, TypBoolean
     | And | Or             -> TypBoolean, TypBoolean
-      
+
   in
-    
+
   typecheck_block p.code

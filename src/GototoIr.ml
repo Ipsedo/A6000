@@ -14,7 +14,7 @@ let flatten_main p =
   let add_symb s =
     symb_tbl := T.Symb_Tbl.add s (Local: T.identifier_info) !symb_tbl;
   in
-  
+
   (* new_tmp: unit -> string *)
   (* Un appel [new_tmp()] crée un nouvel identifiant de registre virtuel
      et l'ajoute à la table des symboles. *)
@@ -31,7 +31,7 @@ let flatten_main p =
   let rec flatten_block = function
     | []   -> []
     | i::b -> flatten_instruction i @ (flatten_block b)
-      
+
   (* flatten_instruction: S.instruction -> T.instruction list *)
   and flatten_instruction = function
     | S.Print(e) ->
@@ -42,10 +42,10 @@ let flatten_main p =
       ce @ [ T.CondGoto(ve, l) ]
     | S.Label(l) -> [ T.Label(l) ]
     | S.Set(loc, e) -> (match loc with 
-                        Identifier(id) -> let ce, ve = flatten_expression e in
-                          ce @ [ T.Value(id, ve) ])
+          Identifier(id) -> let ce, ve = flatten_expression e in
+          ce @ [ T.Value(id, ve) ])
     | S.Comment(str) -> [ T.Comment(str) ]
-	
+
   (* flatten_expression: S.expression -> T.instruction list -> T.value *)
   (* Appliquée à une expression, [flatten_expression] renvoie une liste
      d'instructions calculant le résultat de cette expression, ainsi qu'une
@@ -58,12 +58,12 @@ let flatten_main p =
   *)
   and flatten_expression : S.expression -> T.instruction list * T.value =
     function
-      | Location(Identifier id) -> [], T.Identifier(id)
-      | Literal (l) -> [], T.Literal(l)
-      | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression e1 in
-                            let ce2, ve2 = flatten_expression e2 in
-                            let id_tmp = new_tmp () in
-                            ce1 @ ce2 @ [ T.Binop(id_tmp, b, ve1, ve2) ], T.Identifier(id_tmp)
+    | Location(Identifier id) -> [], T.Identifier(id)
+    | Literal (l) -> [], T.Literal(l)
+    | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression e1 in
+      let ce2, ve2 = flatten_expression e2 in
+      let id_tmp = new_tmp () in
+      ce1 @ ce2 @ [ T.Binop(id_tmp, b, ve1, ve2) ], T.Identifier(id_tmp)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)
@@ -73,14 +73,14 @@ let flatten_main p =
   let label_instruction =
     let cpt = ref 0 in
     fun i -> let lab = Printf.sprintf "_main_%d" !cpt in
-	     incr cpt;
-	     match i with
-	       (* On force une correspondance entre étiquette de saut
-		  et étiquette d'analyse. *)
-	       | T.Label l -> l, i
-	       | _         -> lab, i
+      incr cpt;
+      match i with
+      (* On force une correspondance entre étiquette de saut
+         		  et étiquette d'analyse. *)
+      | T.Label l -> l, i
+      | _         -> lab, i
   in
 
   let flattened_code = flatten_block p.S.code in
   { T.locals = !symb_tbl; T.code = List.map label_instruction flattened_code }
-  
+

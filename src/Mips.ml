@@ -60,11 +60,11 @@ let pr_list fmt pr l =
     [] -> ()
   | [ i ] -> pr fmt i
   | i :: ll -> pr fmt i;
-      List.iter (fun i -> fprintf fmt ", %a" pr i) ll
+    List.iter (fun i -> fprintf fmt ", %a" pr i) ll
 
 let pr_ilist fmt l =
   pr_list fmt (fun fmt i -> fprintf fmt "%i" i) l
-    
+
 let add  r1 r2 r3 = ins "add %s, %s, %s"  r1 r2 r3
 let addi r1 r2 i  = ins "addi %s, %s, %d" r1 r2 i
 let sub  r1 r2 r3 = ins "sub %s, %s, %s"  r1 r2 r3
@@ -83,7 +83,7 @@ let slt  r1 r2 r3 = ins "slt %s, %s, %s"  r1 r2 r3
 let sle  r1 r2 r3 = ins "sle %s, %s, %s"  r1 r2 r3
 let sgt  r1 r2 r3 = ins "sgt %s, %s, %s"  r1 r2 r3
 let sge  r1 r2 r3 = ins "sge %s, %s, %s"  r1 r2 r3
-  
+
 let b (z: label)  = ins "b %s" z
 let beq x y (z : label) = ins "beq %s, %s, %s" x y z
 let bne x y (z : label) = ins "bne %s, %s, %s" x y z
@@ -106,18 +106,18 @@ let la x (a : label) = ins "la %s, %s" x a
 let lbu  x i r = ins "lbu %s, %i(%s)"  x i r
 let lw   x i r = ins "lw %s, %i(%s)"   x i r
 let sw   x i r = ins "sw %s, %i(%s)"   x i r
-  
+
 let move r1 r2 = ins "move %s, %s"     r1 r2
-  
+
 let nop = Nop
 let label (s: label) = S ( s ^ ":\n" )
 let syscall = S "\tsyscall\n"
 let comment s = S ("#" ^ s ^ "\n")
 let asciiz s = ins ".asciiz %S" s
 let dword l = ins ".word %a" pr_ilist l
-  
+
 let (@@) x y = C (x, y)
-  
+
 type program = { text : [ `text ] asm;
                  data : [ `data ] asm; }
 
@@ -126,8 +126,8 @@ let rec pr_asm fmt a =
   | Nop -> ()
   | S s -> fprintf fmt "%s" s
   | C (a1, a2) ->
-      let () = pr_asm fmt a1 in
-      pr_asm fmt a2
+    let () = pr_asm fmt a1 in
+    pr_asm fmt a2
 
 let print_program fmt p =
   fprintf fmt ".text\n";

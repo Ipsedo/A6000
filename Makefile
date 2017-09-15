@@ -10,20 +10,20 @@ clean:
 	$(OCB) -clean
 
 native: sanity
-	$(OCB) Main.native
+	$(OCB) src/Main.native
 
 byte: sanity
-	$(OCB) Main.byte
+	$(OCB) src/Main.byte
 
 profile: sanity
-	$(OCB) -tag profile Main.native
+	$(OCB) -tag profile src/Main.native
 
 debug: sanity
-	$(OCB) -tag debug Main.byte
+	$(OCB) -tag debug src/Main.byte
 
 # check that menhir is installed, use "opam install menhir"
 sanity:
 	which menhir
 
 test: native
-	./main.native "2 + 3 * 3"
+	./src/main.native "2 + 3 * 3"

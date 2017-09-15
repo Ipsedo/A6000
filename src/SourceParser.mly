@@ -20,7 +20,7 @@
 main:
 | MAIN; BEGIN; INT; x=IDENT; END;
   BEGIN; vds=var_decls; is=instructions; END; EOF  {
-    let infox = { typ=TypInteger; kind=FormalX } in
+	let infox = { typ=TypInteger; kind=FormalX } in
     let init  = Symb_Tbl.singleton x infox in
     let union_vars = fun _ _ v -> Some v in
     let locals = Symb_Tbl.union union_vars init vds in

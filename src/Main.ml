@@ -8,14 +8,14 @@ let reg_allocation = ref false
 let dead_code_elim = ref false
 let prebuilt_frontend = ref false
 let input = ref 0
-  
+
 let spec =
   [ "-r", Arg.Set reg_allocation, "  with register allocation";
     "-dce", Arg.Set dead_code_elim, "  with dead code elimination";
     "-O", Arg.Tuple [Arg.Set reg_allocation; Arg.Set dead_code_elim],
-          "  full optimisation";
+    "  full optimisation";
     "-i", Arg.Tuple [Arg.Set_int input; Arg.Set interpret],
-          "  interpreter only";
+    "  interpreter only";
     "-frontend", Arg.Set prebuilt_frontend, "  use prebuilt frontend"
   ]
 
