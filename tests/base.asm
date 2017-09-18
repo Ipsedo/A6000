@@ -4,9 +4,15 @@
 	lw $a0, 0($a1)
 	jal atoi
 	sw $v0, 0($fp)
-	addi $sp, $sp, 0
+	addi $sp, $sp, -4
 #_main_0
-	lw $a0, 0($fp)
+	li $t0, 50
+#_main_1
+	lw $a0, -4($fp)
+	li $v0, 11
+	syscall
+#_main_2
+	lw $a0, -4($fp)
 	li $v0, 11
 	syscall
 	li $v0, 10

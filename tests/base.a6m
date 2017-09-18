@@ -5,6 +5,6 @@ main(integer x) (
   (*avant print(x)*)
   print(x);
   (*apres print x*)
-  print(i)
+  print(i);
   (*apres print(i)*)
 )

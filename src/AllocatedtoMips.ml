@@ -22,14 +22,14 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r (Obj.magic reg))
+        | Reg reg -> move r ~$t0)
     | Literal id ->   (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> load_value (Obj.magic id) v
+    | Value(id, v) -> load_value ~$t0 v
     | Binop(id, b, v1, v2) -> failwith("label unsuported")(*match b with
                                                             | Add -> add  | Mult (* *  *) | Sub (* - *)
                                                             | Eq  (* == *) | Neq  (* != *)
