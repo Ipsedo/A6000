@@ -13,6 +13,10 @@ let generate_main p =
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
   in
 
+  let find_index_var v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
+        (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
+  in
+  let get_register v = let (_,index) = find_index_var v in "$t"^(string_of_int index) in
   let rec generate_block = function
     | []       -> nop
     | (l,i)::b -> comment l @@ generate_instr i @@ generate_block b
@@ -22,19 +26,19 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r ~$t0)
+        | Reg reg -> move r (Obj.magic (get_register reg)))
     | Literal id ->   (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> load_value ~$t0 v
-    | Binop(id, b, v1, v2) -> failwith("label unsuported")(*match b with
-                                                            | Add -> add  | Mult (* *  *) | Sub (* - *)
-                                                            | Eq  (* == *) | Neq  (* != *)
-                                                            | Lt  (* <  *) | Le   (* <= *)
-                                                            | And (* && *) | Or   (* || *)*)
+    | Value(id, v) -> load_value (Obj.magic (get_register id)) v
+    | Binop(id, b, v1, v2) -> failwith("Unimplemented");(*match b with
+        | Add -> add  | Mult (* *  *) | Sub (* - *)
+        | Eq  (* == *) | Neq  (* != *)
+        | Lt  (* <  *) | Le   (* <= *)
+        | And (* && *) | Or   (* || *)*)
 
     | Label(label) -> failwith("label unsuported")                             (* Point de saut           *)
     | Goto(label) -> failwith("label unsuported")                              (* Saut                    *)

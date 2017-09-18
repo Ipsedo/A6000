@@ -6,7 +6,7 @@
 	sw $v0, 0($fp)
 	addi $sp, $sp, -4
 #_main_0
-	li $t0, 50
+	li t1, 50
 #_main_1
 	lw $a0, -4($fp)
 	li $v0, 11
