@@ -1,3 +1,10 @@
 main(integer x) (
+  var integer i;
+  (*i <- 5*)
+  i := 50;
+  (*avant print(x)*)
   print(x);
+  (*apres print x*)
+  print(i)
+  (*apres print(i)*)
 )
