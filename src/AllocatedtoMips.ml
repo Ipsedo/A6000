@@ -29,8 +29,8 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r (Obj.magic reg)) (* /!\ on utilise tt le temps les regitres [0-2] *)
-    | Literal id ->   (match id with
+        | Reg reg -> move r (Obj.magic reg)) (* /!\ on utilise tt le temps les regitres [0-3] *)
+    | Literal id -> (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
@@ -47,19 +47,19 @@ let generate_main p =
         @@ load_value r2 v2
         @@ (
           match b with
-          | Add -> add  res  r1  r2
-          | Mult -> mul  res  r1  r2
-          | Sub -> sub  res  r1  r2
-          | Eq -> and_  res  r1  r2 (* pas bon !!!*)
-          | Neq -> and_  res  r1  r2 @@ not_  res  res (*  pas bon !!!*)
-          | Lt -> slt  res  r1  r2
+          | Add -> add res r1 r2
+          | Mult -> mul res r1 r2
+          | Sub -> sub res r1 r2
+          | Eq -> and_ res r1 r2 (* pas bon !!!*)
+          | Neq -> and_ res r1 r2 @@ not_ res res (*  pas bon !!!*)
+          | Lt -> slt res r1 r2
           | Le -> failwith("unsuported <= !")
-          | And -> and_  res  r1  r2
-          | Or -> or_  res  r1  r2
+          | And -> and_ res r1 r2
+          | Or -> or_ res r1 r2
         ))
       @@ sw res (get_stack_addr id) ~$fp
-    | Label(l) -> label l                           (* Point de saut           *)
-    | Goto(l) -> jal l                              (* Saut                    *)
+    | Label(l) -> label l
+    | Goto(l) -> jal l
     | CondGoto(value, l) -> (let tmp1 = make_register 0 in
                              let tmp2 = make_register 1 in
                              li tmp1 1
