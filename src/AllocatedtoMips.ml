@@ -8,7 +8,6 @@ let generate_main p =
   (* Affecte des emplacements mémoire aux variables locales. *)
   let sp_off   = p.offset in
   let symb_tbl = p.locals in
-  let nb_var = AllocatedAst.Symb_Tbl.cardinal symb_tbl in
   let find_alloc id =
     try  AllocatedAst.Symb_Tbl.find id symb_tbl
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
@@ -20,7 +19,6 @@ let generate_main p =
       (_, index) -> index
   in
   let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in
-  let get_register v = make_register (find_index_var v) in
   let get_stack_addr id : int = let i = find_index_var id in -i * 4 in
   let rec generate_block = function
     | []       -> nop
@@ -31,38 +29,39 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r (get_register reg))
+        | Reg reg -> move r (Obj.magic reg)) (* /!\ on utilise tt le temps les regitres [0-2] *)
     | Literal id ->   (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = get_register id in
+    | Value(id, v) -> (let reg = make_register 3 in
                        load_value reg v 
                        @@ sw reg (get_stack_addr id) ~$fp)
-    | Binop(id, b, v1, v2) -> (
-        let r1 = make_register nb_var in
-        let r2 = make_register (nb_var + 1) in
+    | Binop(id, b, v1, v2) -> 
+      let r1 = make_register 1 in
+      let r2 = make_register 2 in
+      let res = make_register 0 in (
         load_value r1 v1
         @@ load_value r2 v2
         @@ (
           match b with
-          | Add -> add  (get_register id)  r1  r2
-          | Mult -> mul  (get_register id)  r1  r2
-          | Sub -> sub  (get_register id)  r1  r2
-          | Eq -> and_  (get_register id)  r1  r2 (* pas bon !!!*)
-          | Neq -> and_  (get_register id)  r1  r2 @@ not_  (get_register id)  (get_register id) (*  pas bon !!!*)
-          | Lt -> slt  (get_register id)  r1  r2
+          | Add -> add  res  r1  r2
+          | Mult -> mul  res  r1  r2
+          | Sub -> sub  res  r1  r2
+          | Eq -> and_  res  r1  r2 (* pas bon !!!*)
+          | Neq -> and_  res  r1  r2 @@ not_  res  res (*  pas bon !!!*)
+          | Lt -> slt  res  r1  r2
           | Le -> failwith("unsuported <= !")
-          | And -> and_  (get_register id)  r1  r2
-          | Or -> or_  (get_register id)  r1  r2
+          | And -> and_  res  r1  r2
+          | Or -> or_  res  r1  r2
         ))
-      @@ sw (get_register id) (get_stack_addr id) ~$fp
+      @@ sw res (get_stack_addr id) ~$fp
     | Label(l) -> label l                           (* Point de saut           *)
     | Goto(l) -> jal l                              (* Saut                    *)
-    | CondGoto(value, l) -> (let tmp1 = make_register nb_var in
-                             let tmp2 = make_register (nb_var + 1) in
+    | CondGoto(value, l) -> (let tmp1 = make_register 0 in
+                             let tmp2 = make_register 1 in
                              li tmp1 1
                              @@ load_value tmp2 value 
                              @@ beq tmp2 tmp1 l)
