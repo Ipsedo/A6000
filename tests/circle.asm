@@ -1,10 +1,6 @@
 .text
 	move $fp, $sp
 	addi $fp, $fp, -4
-	lw $a0, 0($a1)
-	jal atoi
-	sw $v0, 0($fp)
-	addi $sp, $sp, -48
 #_main_0
 	li $t10, 1
 	sw $t10, -40($fp)
