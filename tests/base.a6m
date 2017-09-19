@@ -3,4 +3,5 @@ main(integer x) (
   (*i <- 5*)
   i := 50 + 2;
   i := i + 1;
+  print(i);
 )
