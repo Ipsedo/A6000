@@ -8,18 +8,19 @@
 #_main_0
 	li $t4, 50
 	li $t5, 2
-	add $t1, $t4, $t5
+	add $t2, $t4, $t5
+	sw $t2, -8($fp)
 #_main_1
-	lw $t4, -4($fp)
-	li $t5, 10
-	mul $t2, $t4, $t5
+	lw $t3, -8($fp)
+	sw $t3, -12($fp)
 #_main_2
-	lw $t4, -8($fp)
-	sw $t3, 3($fp)
+	lw $t4, -12($fp)
+	li $t5, 1
+	add $t1, $t4, $t5
+	sw $t1, -4($fp)
 #_main_3
-	lw $a0, -12($fp)
-	li $v0, 11
-	syscall
+	lw $t3, -4($fp)
+	sw $t3, -12($fp)
 	li $v0, 10
 	syscall
 atoi:

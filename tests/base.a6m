@@ -1,8 +1,6 @@
 main(integer x) (
   var integer i;
   (*i <- 5*)
-  i := (50 + 2) * 10;
-  (*apres print x*)
-  print(i);
-  (*apres print(i)*)
+  i := 50 + 2;
+  i := i + 1;
 )
