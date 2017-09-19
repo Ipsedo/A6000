@@ -1,10 +1,6 @@
 .text
 	move $fp, $sp
 	addi $fp, $fp, -4
-	lw $a0, 0($a1)
-	jal atoi
-	sw $v0, 0($fp)
-	addi $sp, $sp, -12
 #_main_0
 	li $t3, 0
 	sw $t3, -12($fp)
@@ -24,7 +20,7 @@ _label_main_2:
 _label_main_1:
 #_main_6
 	lw $t4, -12($fp)
-	li $t5, 13
+	li $t5, 51
 	slt $t1, $t4, $t5
 	sw $t1, -4($fp)
 #_main_7
