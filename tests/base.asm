@@ -6,21 +6,35 @@
 	sw $v0, 0($fp)
 	addi $sp, $sp, -12
 #_main_0
-	li $t4, 50
-	li $t5, 2
-	add $t2, $t4, $t5
-	sw $t2, -8($fp)
-#_main_1
-	lw $t3, -8($fp)
+	li $t3, 0
 	sw $t3, -12($fp)
-#_main_2
+#_main_1
+	jal _label_main_1
+#_label_main_2
+_label_main_2:
+#_main_3
 	lw $t4, -12($fp)
 	li $t5, 1
-	add $t1, $t4, $t5
-	sw $t1, -4($fp)
-#_main_3
-	lw $t3, -4($fp)
+	add $t2, $t4, $t5
+	sw $t2, -8($fp)
+#_main_4
+	lw $t3, -8($fp)
 	sw $t3, -12($fp)
+#_label_main_1
+_label_main_1:
+#_main_6
+	lw $t4, -12($fp)
+	li $t5, 13
+	slt $t1, $t4, $t5
+	sw $t1, -4($fp)
+#_main_7
+	li $t4, 1
+	lw $t5, -4($fp)
+	beq $t5, $t4, _label_main_2
+#_main_8
+	lw $a0, -12($fp)
+	li $v0, 11
+	syscall
 	li $v0, 10
 	syscall
 atoi:

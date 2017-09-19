@@ -38,9 +38,11 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = get_register id in load_value reg v @@ sw reg (get_stack_addr id) ~$fp)
+    | Value(id, v) -> (let reg = get_register id in
+                       load_value reg v 
+                       @@ sw reg (get_stack_addr id) ~$fp)
     | Binop(id, b, v1, v2) -> (
-        let r1 = make_register (nb_var) in
+        let r1 = make_register nb_var in
         let r2 = make_register (nb_var + 1) in
         load_value r1 v1
         @@ load_value r2 v2
@@ -56,10 +58,14 @@ let generate_main p =
           | And -> and_  (get_register id)  r1  r2
           | Or -> or_  (get_register id)  r1  r2
         ))
-    @@ sw (get_register id) (get_stack_addr id) ~$fp
-    | Label(label) -> failwith("label unsuported")                             (* Point de saut           *)
-    | Goto(label) -> failwith("label unsuported")                              (* Saut                    *)
-    | CondGoto(value, label) -> failwith("label unsuported") (*beq value (bool_to_int true) label*)
+      @@ sw (get_register id) (get_stack_addr id) ~$fp
+    | Label(l) -> label l                           (* Point de saut           *)
+    | Goto(l) -> jal l                              (* Saut                    *)
+    | CondGoto(value, l) -> (let tmp1 = make_register nb_var in
+                             let tmp2 = make_register (nb_var + 1) in
+                             li tmp1 1
+                             @@ load_value tmp2 value 
+                             @@ beq tmp2 tmp1 l)
     | Comment(str) -> comment str   
   in
 
