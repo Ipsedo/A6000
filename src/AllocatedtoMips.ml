@@ -37,9 +37,9 @@ let generate_main p =
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
     | Value(id, v) -> (let reg = make_register 3 in
-                       load_value reg v 
+                       load_value reg v
                        @@ sw reg (get_stack_addr id) ~$fp)
-    | Binop(id, b, v1, v2) -> 
+    | Binop(id, b, v1, v2) ->
       let r1 = make_register 1 in
       let r2 = make_register 2 in
       let res = make_register 0 in (
@@ -63,9 +63,9 @@ let generate_main p =
     | CondGoto(value, l) -> (let tmp1 = make_register 0 in
                              let tmp2 = make_register 1 in
                              li tmp1 1
-                             @@ load_value tmp2 value 
+                             @@ load_value tmp2 value
                              @@ beq tmp2 tmp1 l)
-    | Comment(str) -> comment str   
+    | Comment(str) -> comment str
   in
 
   let init =
