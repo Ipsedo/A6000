@@ -1,18 +1,20 @@
 main(integer x) (
   var integer i;
   var integer j;
+  var integer k;
   var boolean continue;
 
   continue := true;
   i := 0;
+  k := 50;
 
   while continue (
     continue := false;
     j := 0;
-    while j < x+1 (
-      if i*i + j*j < x*x then (
+    while j < k+1 (
+      if i*i + j*j < k*k then (
         print(46);
-	continue := true;
+  continue := true;
       ) else (
         print(35);
       );

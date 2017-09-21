@@ -1,30 +1,112 @@
 .text
 	move $fp, $sp
 	addi $fp, $fp, -4
-	lw $a0, 0($a1)
-	jal atoi
-	sw $v0, 0($fp)
-	addi $sp, $sp, -12
 #_main_0
-	li $t4, 50
-	li $t5, 2
-	add $t2, $t4, $t5
-	sw $t2, -8($fp)
+	li $t4, 0
+	sw $t4, -40($fp)
 #_main_1
-	lw $t3, -8($fp)
-	sw $t3, -12($fp)
+	li $t1, 3
+	li $t2, 2
+	slt $t0, $t1, $t2
+	slt $t3, $t2, $t1
+	or $t0, $t0, $t3
+	sw $t0, -32($fp)
 #_main_2
-	lw $t4, -12($fp)
-	li $t5, 1
-	add $t1, $t4, $t5
-	sw $t1, -4($fp)
+	li $t0, 1
+	lw $t1, -32($fp)
+	beq $t1, $t0, _label_main_1
 #_main_3
-	lw $t3, -4($fp)
-	sw $t3, -12($fp)
-#_main_4
-	lw $a0, -12($fp)
+	jal _label_main_2
+#_label_main_1
+_label_main_1:
+#_main_5
+	jal _label_main_3
+#_label_main_4
+_label_main_4:
+#_main_7
+	li $t4, 0
+	sw $t4, -36($fp)
+#_main_8
+	jal _label_main_7
+#_label_main_8
+_label_main_8:
+#_main_10
+	lw $t1, -36($fp)
+	li $t2, 48
+	add $t0, $t1, $t2
+	sw $t0, -28($fp)
+#_main_11
+	lw $a0, -28($fp)
 	li $v0, 11
 	syscall
+#_main_12
+	lw $t1, -36($fp)
+	li $t2, 1
+	add $t0, $t1, $t2
+	sw $t0, -24($fp)
+#_main_13
+	lw $t4, -24($fp)
+	sw $t4, -36($fp)
+#_label_main_7
+_label_main_7:
+#_main_15
+	lw $t1, -36($fp)
+	li $t2, 10
+	slt $t0, $t1, $t2
+	sw $t0, -20($fp)
+#_main_16
+	li $t0, 1
+	lw $t1, -20($fp)
+	beq $t1, $t0, _label_main_8
+#_main_17
+	lw $t1, -36($fp)
+	lw $t2, -36($fp)
+	mul $t0, $t1, $t2
+	sw $t0, -12($fp)
+#_main_18
+	li $t1, 50
+	lw $t2, -12($fp)
+	slt $t0, $t1, $t2
+	sw $t0, -16($fp)
+#_main_19
+	li $t0, 1
+	lw $t1, -16($fp)
+	beq $t1, $t0, _label_main_5
+#_main_20
+	jal _label_main_6
+#_label_main_5
+_label_main_5:
+#_main_22
+	li $a0, 58
+	li $v0, 11
+	syscall
+#_label_main_6
+_label_main_6:
+#_main_24
+	li $a0, 10
+	li $v0, 11
+	syscall
+#_main_25
+	lw $t1, -40($fp)
+	li $t2, 1
+	add $t0, $t1, $t2
+	sw $t0, -8($fp)
+#_main_26
+	lw $t4, -8($fp)
+	sw $t4, -40($fp)
+#_label_main_3
+_label_main_3:
+#_main_28
+	lw $t1, -40($fp)
+	li $t2, 10
+	slt $t0, $t1, $t2
+	sw $t0, -4($fp)
+#_main_29
+	li $t0, 1
+	lw $t1, -4($fp)
+	beq $t1, $t0, _label_main_4
+#_label_main_2
+_label_main_2:
 	li $v0, 10
 	syscall
 atoi:

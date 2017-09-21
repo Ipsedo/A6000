@@ -1,7 +1,23 @@
 main(integer x) (
   var integer i;
-  (*i <- 5*)
-  i := 50 + 2;
-  i := i + 1;
-  print(i);
+  var integer j;
+  j := 0;
+  if 3 != 2 then (
+  while j < 10 (
+  	i := 0;
+  	while i < 10 (
+  		print(i + 48);
+  		i := i + 1;
+  	);
+  	if 50 < i * i then (
+  		print(58);
+  	) else (
+
+  	);
+  	print(10);
+  	j := j + 1;
+  );
+  ) else (
+
+  );
 )

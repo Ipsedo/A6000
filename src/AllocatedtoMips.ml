@@ -8,19 +8,18 @@ let generate_main p =
   (* Affecte des emplacements mémoire aux variables locales. *)
   let sp_off   = p.offset in
   let symb_tbl = p.locals in
-  let nb_var = AllocatedAst.Symb_Tbl.cardinal symb_tbl in
   let find_alloc id =
     try  AllocatedAst.Symb_Tbl.find id symb_tbl
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
   in
 
-  let find_index_var v = let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
-        (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
+  let find_index_var v =
+    let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
+          (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
     in match aux v with
       (_, index) -> index
   in
-  let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in
-  let get_register v = make_register (find_index_var v) in
+  (*let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in*)
   let get_stack_addr id : int = let i = find_index_var id in -i * 4 in
   let rec generate_block = function
     | []       -> nop
@@ -31,36 +30,58 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r (get_register reg))
-    | Literal id ->   (match id with
+        | Reg reg -> move r (Obj.magic reg)) (* /!\ on utilise tt le temps les regitres [0-3] *)
+    | Literal id -> (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
+  and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
+    let r1 = ~$t1 in
+    let r2 = ~$t2 in
+    let res = ~$t0 in
+    let op = (match b with
+        | Add -> add res r1 r2
+        | Mult -> mul res r1 r2
+        | Sub -> sub res r1 r2
+        | Eq -> let un = ~$t4 in
+          let tmp = ~$t3 in
+          slt res r1 r2
+          @@ slt tmp r2 r1
+          @@ li un 1
+          @@ sub res un res
+          @@ sub tmp un tmp
+          @@ and_ res res tmp
+        | Neq -> let tmp = ~$t3 in
+         slt res r1 r2
+         @@ slt tmp r2 r1
+         @@ or_ res res tmp
+        | Lt -> slt res r1 r2 (* < *)
+        | Le -> let un = ~$t3 in
+        slt res r2 r1
+        @@ li un 1
+        @@ sub res un res
+        | And -> and_ res r1 r2
+        | Or -> or_ res r1 r2)
+    in
+    load_value r1 v1
+    @@ load_value r2 v2
+    @@ op
+    @@ sw res (get_stack_addr id) ~$fp
+
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = get_register id in load_value reg v @@ sw reg (get_stack_addr id) ~$fp)
-    | Binop(id, b, v1, v2) -> (
-        let r1 = make_register (nb_var) in
-        let r2 = make_register (nb_var + 1) in
-        load_value r1 v1
-        @@ load_value r2 v2
-        @@ (
-          match b with
-          | Add -> add  (get_register id)  r1  r2
-          | Mult -> mul  (get_register id)  r1  r2
-          | Sub -> sub  (get_register id)  r1  r2
-          | Eq -> and_  (get_register id)  r1  r2 (* pas bon !!!*)
-          | Neq -> and_  (get_register id)  r1  r2 @@ not_  (get_register id)  (get_register id) (*  pas bon !!!*)
-          | Lt -> slt  (get_register id)  r1  r2
-          | Le -> failwith("unsuported <= !")
-          | And -> and_  (get_register id)  r1  r2
-          | Or -> or_  (get_register id)  r1  r2
-        ))
-    @@ sw (get_register id) (get_stack_addr id) ~$fp
-    | Label(label) -> failwith("label unsuported")                             (* Point de saut           *)
-    | Goto(label) -> failwith("label unsuported")                              (* Saut                    *)
-    | CondGoto(value, label) -> failwith("label unsuported") (*beq value (bool_to_int true) label*)
-    | Comment(str) -> comment str   
+    | Value(id, v) -> (let reg = ~$t4 in
+                       load_value reg v
+                       @@ sw reg (get_stack_addr id) ~$fp)
+    | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
+    | Label(l) -> label l
+    | Goto(l) -> jal l
+    | CondGoto(value, l) -> (let tmp1 = ~$t0 in
+                             let tmp2 = ~$t1 in
+                             li tmp1 1
+                             @@ load_value tmp2 value
+                             @@ beq tmp2 tmp1 l)
+    | Comment(str) -> comment str
   in
 
   let init =
