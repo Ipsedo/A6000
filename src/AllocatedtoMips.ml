@@ -13,7 +13,8 @@ let generate_main p =
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
   in
 
-  let find_index_var v = let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
+  let find_index_var v =
+    let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
         (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
     in match aux v with
       (_, index) -> index
@@ -36,7 +37,7 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = ~$t3 in
+    | Value(id, v) -> (let reg = ~$t4 in
                        load_value reg v
                        @@ sw reg (get_stack_addr id) ~$fp)
     | Binop(id, b, v1, v2) ->
@@ -50,10 +51,11 @@ let generate_main p =
           | Add -> add res r1 r2
           | Mult -> mul res r1 r2
           | Sub -> sub res r1 r2
-          | Eq -> and_ res r1 r2 (* pas bon !!!*)
-          | Neq -> and_ res r1 r2 @@ not_ res res (*  pas bon !!!*)
-          | Lt -> slt res r1 r2
-          | Le -> failwith("unsuported <= !")
+          | Eq -> (* res <- r1 < r2, tmp <- r2 < r1, res <- !res, tmp <- !tmp, res <- res & tmp*)
+            (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ not_ res res @@ not_ tmp tmp @@ and_ res res tmp)
+          | Neq -> (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ or_ res res tmp)
+          | Lt -> slt res r1 r2 (* < *)
+          | Le -> slt res r2 r1 @@ not_ res res(* <= *)
           | And -> and_ res r1 r2
           | Or -> or_ res r1 r2
         ))

@@ -2,6 +2,7 @@ main(integer x) (
   var integer i;
   var integer j;
   j := 0;
+  if 1 <= 2 then (
   while j < 10 (
   	i := 0;
   	while i < 10 (
@@ -15,5 +16,8 @@ main(integer x) (
   	);
   	print(10);
   	j := j + 1;
+  );
+  ) else (
+
   );
 )
