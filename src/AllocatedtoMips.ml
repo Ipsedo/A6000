@@ -70,7 +70,7 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = ~$t4 in
+    | Value(id, v) -> (let reg = ~$t5 in
                        load_value reg v
                        @@ sw reg (get_stack_addr id) ~$fp)
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
