@@ -15,7 +15,7 @@ let generate_main p =
 
   let find_index_var v =
     let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
-        (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
+          (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
     in match aux v with
       (_, index) -> index
   in
@@ -35,31 +35,45 @@ let generate_main p =
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
+  and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
+    let r1 = ~$t1 in
+    let r2 = ~$t2 in
+    let res = ~$t0 in
+    let op = (match b with
+        | Add -> add res r1 r2
+        | Mult -> mul res r1 r2
+        | Sub -> sub res r1 r2
+        | Eq -> let un = ~$t4 in
+          let tmp = ~$t3 in
+          slt res r1 r2
+          @@ slt tmp r2 r1
+          @@ li un 1
+          @@ sub res un res
+          @@ sub tmp un tmp
+          @@ and_ res res tmp
+        | Neq -> let tmp = ~$t3 in
+         slt res r1 r2
+         @@ slt tmp r2 r1
+         @@ or_ res res tmp
+        | Lt -> slt res r1 r2 (* < *)
+        | Le -> let un = ~$t3 in
+        slt res r2 r1
+        @@ li un 1
+        @@ sub res un res
+        | And -> and_ res r1 r2
+        | Or -> or_ res r1 r2)
+    in
+    load_value r1 v1
+    @@ load_value r2 v2
+    @@ op
+    @@ sw res (get_stack_addr id) ~$fp
+
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
     | Value(id, v) -> (let reg = ~$t4 in
                        load_value reg v
                        @@ sw reg (get_stack_addr id) ~$fp)
-    | Binop(id, b, v1, v2) ->
-      let r1 = ~$t1 in
-      let r2 = ~$t2 in
-      let res = ~$t0 in (
-        load_value r1 v1
-        @@ load_value r2 v2
-        @@ (
-          match b with
-          | Add -> add res r1 r2
-          | Mult -> mul res r1 r2
-          | Sub -> sub res r1 r2
-          | Eq -> (* res <- r1 < r2, tmp <- r2 < r1, res <- !res, tmp <- !tmp, res <- res & tmp*)
-            (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ not_ res res @@ not_ tmp tmp @@ and_ res res tmp)
-          | Neq -> (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ or_ res res tmp)
-          | Lt -> slt res r1 r2 (* < *)
-          | Le -> slt res r2 r1 @@ not_ res res(* <= pas bon...*)
-          | And -> and_ res r1 r2
-          | Or -> or_ res r1 r2
-        ))
-      @@ sw res (get_stack_addr id) ~$fp
+    | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
     | Goto(l) -> jal l
     | CondGoto(value, l) -> (let tmp1 = ~$t0 in

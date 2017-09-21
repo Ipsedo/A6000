@@ -5,10 +5,11 @@
 	li $t4, 0
 	sw $t4, -40($fp)
 #_main_1
-	li $t1, 1
+	li $t1, 3
 	li $t2, 2
-	slt $t0, $t2, $t1
-	not $t0, $t0
+	slt $t0, $t1, $t2
+	slt $t3, $t2, $t1
+	or $t0, $t0, $t3
 	sw $t0, -32($fp)
 #_main_2
 	li $t0, 1

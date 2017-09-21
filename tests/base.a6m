@@ -2,7 +2,7 @@ main(integer x) (
   var integer i;
   var integer j;
   j := 0;
-  if 1 <= 2 then (
+  if 3 != 2 then (
   while j < 10 (
   	i := 0;
   	while i < 10 (
