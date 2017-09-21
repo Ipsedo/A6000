@@ -21,6 +21,10 @@
 #_main_3
 	lw $t3, -4($fp)
 	sw $t3, -12($fp)
+#_main_4
+	lw $a0, -12($fp)
+	li $v0, 11
+	syscall
 	li $v0, 10
 	syscall
 atoi:
