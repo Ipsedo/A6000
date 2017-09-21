@@ -55,7 +55,7 @@ let generate_main p =
             (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ not_ res res @@ not_ tmp tmp @@ and_ res res tmp)
           | Neq -> (let tmp = ~$t3 in slt res r1 r2 @@ slt tmp r2 r1 @@ or_ res res tmp)
           | Lt -> slt res r1 r2 (* < *)
-          | Le -> slt res r2 r1 @@ not_ res res(* <= *)
+          | Le -> slt res r2 r1 @@ not_ res res(* <= pas bon...*)
           | And -> and_ res r1 r2
           | Or -> or_ res r1 r2
         ))
