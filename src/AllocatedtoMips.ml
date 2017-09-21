@@ -18,7 +18,7 @@ let generate_main p =
     in match aux v with
       (_, index) -> index
   in
-  let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in
+  (*let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in*)
   let get_stack_addr id : int = let i = find_index_var id in -i * 4 in
   let rec generate_block = function
     | []       -> nop
@@ -36,13 +36,13 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = make_register 3 in
+    | Value(id, v) -> (let reg = ~$t3 in
                        load_value reg v
                        @@ sw reg (get_stack_addr id) ~$fp)
     | Binop(id, b, v1, v2) ->
-      let r1 = make_register 1 in
-      let r2 = make_register 2 in
-      let res = make_register 0 in (
+      let r1 = ~$t1 in
+      let r2 = ~$t2 in
+      let res = ~$t0 in (
         load_value r1 v1
         @@ load_value r2 v2
         @@ (
@@ -60,8 +60,8 @@ let generate_main p =
       @@ sw res (get_stack_addr id) ~$fp
     | Label(l) -> label l
     | Goto(l) -> jal l
-    | CondGoto(value, l) -> (let tmp1 = make_register 0 in
-                             let tmp2 = make_register 1 in
+    | CondGoto(value, l) -> (let tmp1 = ~$t0 in
+                             let tmp2 = ~$t1 in
                              li tmp1 1
                              @@ load_value tmp2 value
                              @@ beq tmp2 tmp1 l)
