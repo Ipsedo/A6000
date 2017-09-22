@@ -10,7 +10,13 @@ let id_or_keyword =
       "print",    PRINT;
       "main",     MAIN;
       "var",      VAR;
-      "boolean", BOOL
+      "boolean",  BOOL;
+      "true",     TRUE;
+      "false",    FALSE;
+      "while",    WHILE;
+      "if",       IF;
+      "then",     THEN;
+      "else",     ELSE
     ] ;
   fun s ->
     try  Hashtbl.find h s
@@ -22,11 +28,15 @@ let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
 let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
 
-            rule token = parse
+let number = digit+
+
+rule token = parse
           | ['\n' ' ' '\t' '\r']+
             { token lexbuf }
           | ident
               { id_or_keyword (lexeme lexbuf) }
+          | number
+              { LITINT (int_of_string (lexeme lexbuf))}
           | "("
               { BEGIN }
           | ")"
@@ -37,6 +47,20 @@ let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
               { PLUS }
           | "*"
               { MULT }
+          | "-"
+              { SUB }
+          | "=="
+              { EQ }
+          | "!="
+              { NEQ }
+          | "<"
+              { LT }
+          | "<="
+              { LE }
+          | "&&"
+              { AND }
+          | "||"
+              { OR }
           | ":="
               { SET }
           | _

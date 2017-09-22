@@ -1,3 +1,7 @@
 main(integer x) (
+var integer a;
+a := 1 + 2 * 3;
+if a == 1 then () else ();
+while a <= 1 ();
   print(x);
 )
