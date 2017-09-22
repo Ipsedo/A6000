@@ -9,6 +9,8 @@ let id_or_keyword =
     [	"integer",  INT;
       "print",    PRINT;
       "main",     MAIN;
+      "var",      VAR;
+      "boolean", BOOL
     ] ;
   fun s ->
     try  Hashtbl.find h s
@@ -31,6 +33,12 @@ let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
               { END }
           | ";"
               { SEMI }
+          | "+"
+              { PLUS }
+          | "*"
+              { MULT }
+          | ":="
+              { SET }
           | _
               { failwith ("Unknown character : " ^ (lexeme lexbuf)) }
           | eof

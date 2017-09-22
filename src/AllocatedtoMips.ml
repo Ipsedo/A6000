@@ -35,28 +35,10 @@ let generate_main p =
         | Add -> add res r1 r2
         | Mult -> mul res r1 r2
         | Sub -> sub res r1 r2
-        | Eq -> (*let un = ~$t4 in
-          let tmp = ~$t3 in
-          slt res r1 r2 (* res <- r1 < r2 *)
-          @@ slt tmp r2 r1 (* tmp < - r2 < r1 *)
-          @@ li un 1
-          @@ sub res un res (* *)
-          @@ sub tmp un tmp
-          @@ and_ res res tmp*)
-          seq res r1 r2
-        | Neq -> (*let tmp = ~$t3 in
-         slt res r1 r2
-         @@ slt tmp r2 r1
-         @@ or_ res res tmp*)
-         let un = ~$t3 in
-         li un 1
-         @@ seq res r1 r2
-         @@ sub res un res
+        | Eq -> seq res r1 r2
+        | Neq -> sne res r1 r2
         | Lt -> slt res r1 r2 (* < *)
-        | Le -> let un = ~$t3 in
-        slt res r2 r1
-        @@ li un 1
-        @@ sub res un res
+        | Le -> sle res r1 r2
         | And -> and_ res r1 r2
         | Or -> or_ res r1 r2)
     in
