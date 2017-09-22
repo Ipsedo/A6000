@@ -46,16 +46,16 @@ let generate_main p =
     @@ load_value r2 v2
     @@ op
     @@ (match find_alloc id with
-      |Stack o -> sw res o ~$fp
-      |Reg r -> move r res )
+        |Stack o -> sw res o ~$fp
+        |Reg r -> move r res )
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
     | Value(id, v) -> (let reg = ~$t5 in
                        load_value reg v
                        @@ (match find_alloc id with
-                         |Stack o -> sw reg o ~$fp
-                         |Reg r -> move r reg ))
+                           |Stack o -> sw reg o ~$fp
+                           |Reg r -> move r reg ))
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
     | Goto(l) -> jal l

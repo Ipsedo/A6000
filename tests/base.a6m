@@ -1,21 +1,17 @@
 main(integer x) (
   var integer i;
   var integer j;
-  j := 0;
-  if 3 != 2 then (
-  while j < 10 (
-  	i := 0;
-  	while i < 10 (
+  if 3 != 2 && 3*4 == 15 - 3 && 1 < 2 then (
+  for j := 0 till j < 10 incr j := j + 1 (
+  	for i := 0 till i < 10 incr i := i + 1 (
   		print(i + 48);
-  		i := i + 1;
   	);
   	if 50 < i * i then (
-  		print(58);
+  		print(95);
   	) else (
 
   	);
   	print(10);
-  	j := j + 1;
   );
   ) else (
 

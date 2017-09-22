@@ -12,18 +12,19 @@
 %token INT
 
 %token WHILE
+
+%token FOR
+%token TILL
+%token INCR
+
 %token IF
 %token THEN
 %token ELSE
+
 %token PRINT
 %token EOF
 %token MAIN
 
-%token PLUS MULT SUB EQ NEQ LT LE AND OR
-%right PLUS SUB
-%left MULT
-%right EQ NEQ LT LE
-%right AND OR
 %token SET
 
 %token VAR
@@ -31,6 +32,13 @@
 %token <int> LITINT
 
 %token TRUE FALSE
+
+%token PLUS MULT SUB EQ NEQ LT LE AND OR
+
+%left AND OR
+%left EQ NEQ LT LE
+%left PLUS SUB
+%left MULT
 
 %start main
 %type <SourceAst.main> main
@@ -60,6 +68,15 @@ typ:
 instructions:
 | (* empty *)                             { []                }
 | i=instruction; SEMI; is=instructions    { i :: is           }
+| FOR; id1=location; SET; e1=expression;
+  TILL; e2=expression;
+  INCR; id2=location; SET; e3=expression
+  BEGIN; bl=instructions; END;
+  SEMI; is=instructions
+  {
+    let block = bl @ [Set(id2, e3)] in
+    Set(id1, e1)::While(e2, block)::is
+  }
 ;
 
 instruction:
@@ -73,6 +90,7 @@ instruction:
   { If(e, is1, is2) }
 | WHILE; e=expression; BEGIN; is=instructions; END
   { While(e, is) }
+
 ;
 
 expression:

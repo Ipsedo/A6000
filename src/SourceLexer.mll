@@ -16,7 +16,10 @@ let id_or_keyword =
       "while",    WHILE;
       "if",       IF;
       "then",     THEN;
-      "else",     ELSE
+      "else",     ELSE;
+      "for",      FOR;
+      "till",     TILL;
+      "incr",     INCR
     ] ;
   fun s ->
     try  Hashtbl.find h s
