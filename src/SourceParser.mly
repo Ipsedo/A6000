@@ -60,6 +60,10 @@ expression:
 (* À compléter *)
 ;
 
+%inline binop:
+| PLUS { Add }
+| MULT { Mult }
+
 location:
 | id=IDENT  { Identifier id }
 ;
