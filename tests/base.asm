@@ -1,15 +1,19 @@
 .text
 	move $fp, $sp
 	addi $fp, $fp, -4
+	lw $a0, 0($a1)
+	jal atoi
+	sw $v0, 0($fp)
+	addi $sp, $sp, -40
 #_main_0
-	li $t4, 0
-	sw $t4, -40($fp)
+	li $t5, 0
+	sw $t5, -40($fp)
 #_main_1
 	li $t1, 3
 	li $t2, 2
-	slt $t0, $t1, $t2
-	slt $t3, $t2, $t1
-	or $t0, $t0, $t3
+	li $t3, 1
+	seq $t0, $t1, $t2
+	sub $t0, $t3, $t0
 	sw $t0, -32($fp)
 #_main_2
 	li $t0, 1
@@ -24,8 +28,8 @@ _label_main_1:
 #_label_main_4
 _label_main_4:
 #_main_7
-	li $t4, 0
-	sw $t4, -36($fp)
+	li $t5, 0
+	sw $t5, -36($fp)
 #_main_8
 	jal _label_main_7
 #_label_main_8
@@ -45,8 +49,8 @@ _label_main_8:
 	add $t0, $t1, $t2
 	sw $t0, -24($fp)
 #_main_13
-	lw $t4, -24($fp)
-	sw $t4, -36($fp)
+	lw $t5, -24($fp)
+	sw $t5, -36($fp)
 #_label_main_7
 _label_main_7:
 #_main_15
@@ -92,8 +96,8 @@ _label_main_6:
 	add $t0, $t1, $t2
 	sw $t0, -8($fp)
 #_main_26
-	lw $t4, -8($fp)
-	sw $t4, -40($fp)
+	lw $t5, -8($fp)
+	sw $t5, -40($fp)
 #_label_main_3
 _label_main_3:
 #_main_28

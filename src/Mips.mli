@@ -1,5 +1,5 @@
 (* Registres *)
-type register
+type register = string
 val v0 : register
 val v1 : register
 val a0 : register

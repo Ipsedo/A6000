@@ -13,14 +13,6 @@ let generate_main p =
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
   in
 
-  let find_index_var v =
-    let aux v = AllocatedAst.Symb_Tbl.fold (fun k _ accu -> match accu with
-          (cpt, res) -> let new_cpt = cpt + 1 in if k = v then (new_cpt, new_cpt) else (new_cpt, res)) symb_tbl (0, -1)
-    in match aux v with
-      (_, index) -> index
-  in
-  (*let make_register i : Mips.register = Obj.magic ("$t"^(string_of_int i)) in*)
-  let get_stack_addr id : int = let i = find_index_var id in -i * 4 in
   let rec generate_block = function
     | []       -> nop
     | (l,i)::b -> comment l @@ generate_instr i @@ generate_block b
@@ -30,7 +22,7 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r (Obj.magic reg)) (* /!\ on utilise tt le temps les regitres [0-3] *)
+        | Reg reg -> move r reg) (* /!\ on utilise tt le temps les regitres [0-3] *)
     | Literal id -> (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
@@ -71,13 +63,17 @@ let generate_main p =
     load_value r1 v1
     @@ load_value r2 v2
     @@ op
-    @@ sw res (get_stack_addr id) ~$fp
+    @@ (match find_alloc id with
+      |Stack o -> sw res o ~$fp
+      |Reg r -> move r res )
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
     | Value(id, v) -> (let reg = ~$t5 in
                        load_value reg v
-                       @@ sw reg (get_stack_addr id) ~$fp)
+                       @@ (match find_alloc id with
+                         |Stack o -> sw reg o ~$fp
+                         |Reg r -> move r reg ))
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
     | Goto(l) -> jal l
