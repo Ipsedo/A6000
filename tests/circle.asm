@@ -41,8 +41,8 @@ _label_main_4:
 	add $t0, $t1, $t2
 	sw $t0, -28($fp)
 #_main_11
-	lw $t1, -48($fp)
-	lw $t2, -48($fp)
+	lw $t1, 0($fp)
+	lw $t2, 0($fp)
 	mul $t0, $t1, $t2
 	sw $t0, -32($fp)
 #_main_12
@@ -86,7 +86,7 @@ _label_main_6:
 #_label_main_3
 _label_main_3:
 #_main_24
-	lw $t1, -48($fp)
+	lw $t1, 0($fp)
 	li $t2, 1
 	add $t0, $t1, $t2
 	sw $t0, -8($fp)
