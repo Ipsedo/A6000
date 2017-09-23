@@ -3,6 +3,9 @@
 open Lexing
 open SourceParser
 
+exception UnknowChar of string
+exception UnknowToken of string
+
 let id_or_keyword =
   let h = Hashtbl.create 17 in
   List.iter (fun (s, k) -> Hashtbl.add h s k)
@@ -29,47 +32,58 @@ let id_or_keyword =
 
 let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
-let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
+let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
 
 let number = digit+
 
-rule token = parse
-          | ['\n' ' ' '\t' '\r']+
-            { token lexbuf }
-          | ident
-              { id_or_keyword (lexeme lexbuf) }
-          | number
-              { LITINT (int_of_string (lexeme lexbuf))}
-          | "("
-              { BEGIN }
-          | ")"
-              { END }
-          | ";"
-              { SEMI }
-          | "+"
-              { PLUS }
-          | "*"
-              { MULT }
-          | "-"
-              { SUB }
-          | "=="
-              { EQ }
-          | "!="
-              { NEQ }
-          | "<"
-              { LT }
-          | "<="
-              { LE }
-          | "&&"
-              { AND }
-          | "||"
-              { OR }
-          | ":="
-              { SET }
-          | _
-              { failwith ("Unknown character : " ^ (lexeme lexbuf)) }
-          | eof
-              { EOF }
+             rule token = parse
+           | [' ' '\t' '\r']+
+             { token lexbuf }
+           | '\n'
+               { new_line lexbuf; token lexbuf }
+           | ident
+               { id_or_keyword (lexeme lexbuf) }
+           | number
+               { LITINT (int_of_string (lexeme lexbuf))}
+           | "("
+               { BEGIN }
+           | ")"
+               { END }
+           | ";"
+               { SEMI }
+           | "+"
+               { PLUS }
+           | "*"
+               { MULT }
+           | "-"
+               { SUB }
+           | "=="
+               { EQ }
+           | "!="
+               { NEQ }
+           | "<"
+               { LT }
+           | "<="
+               { LE }
+           | "&&"
+               { AND }
+           | "||"
+               { OR }
+           | ":="
+               { SET }
+           | eof
+               { EOF }
+           | _
+               {
+                 let start_p = lexeme_start_p lexbuf in
+                 raise (UnknowChar ("Unknow char(s) \""
+                                    ^ (lexeme lexbuf)
+                                    ^ "\" in "
+                                    ^ start_p.pos_fname (* /!\ j'arrive pas à recup nom fichier *)
+                                    ^ " at line "
+                                    ^ (string_of_int start_p.pos_lnum)
+                                    ^ ", col "
+                                    ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))}
 
 and comment = parse
             | "(*"
