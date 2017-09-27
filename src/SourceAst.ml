@@ -29,8 +29,8 @@ and instruction =
   | Print of expression                 (* Affichage   *)
 
 and expression =
-  | Literal   of literal                         (* Valeur immédiate   *)
-  | Location  of location                        (* Valeur en mémoire  *)
+  | Literal   of literal       (* Valeur immédiate   *)
+  | Location  of location      (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
 
 and literal =

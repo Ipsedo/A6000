@@ -20,9 +20,7 @@ let id_or_keyword =
       "if",       IF;
       "then",     THEN;
       "else",     ELSE;
-      "for",      FOR;
-      "till",     TILL;
-      "incr",     INCR
+      "for",      FOR
     ] ;
   fun s ->
     try  Hashtbl.find h s

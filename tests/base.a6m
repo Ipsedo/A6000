@@ -2,8 +2,8 @@ main(integer x) (
   var integer i;
   var integer j;
   if 3 != 2 && 3*4 == 15 - 3 && 1 < 2 then (
-  for j := 0 till j < 10 incr j := j + 1 (
-  	for i := 0 till i < 10 incr i := i + 1 (
+  for j := 0; j < 10; j := j + 1 (
+  	for i := 0; i < 10; i := i + 1 (
   		print(i + 48);
   	);
   	if 50 < i * i then (
@@ -16,5 +16,4 @@ main(integer x) (
   ) else (
 
   );
-  bite;
 )

@@ -14,8 +14,6 @@
 %token WHILE
 
 %token FOR
-%token TILL
-%token INCR
 
 %token IF
 %token THEN
@@ -56,8 +54,8 @@ main:
 ;
 
 var_decls:
-| (* empty *)                             { Symb_Tbl.empty    }
-| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls        {let info = {typ=t; kind=Local} in Symb_Tbl.add id info tbl}
+| (* empty *)                                { Symb_Tbl.empty    }
+| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in Symb_Tbl.add id info tbl}
 (* À compléter *)
 ;
 
@@ -67,34 +65,34 @@ typ:
 
 instructions:
 | (* empty *)                             { []                }
-| i=instruction; SEMI; is=instructions    { i :: is           }
-| FOR; id1=location; SET; e1=expression;
-  TILL; e2=expression;
-  INCR; id2=location; SET; e3=expression
-  BEGIN; bl=instructions; END;
-  SEMI; is=instructions
-  {
-    let block = bl @ [Set(id2, e3)] in
-    Set(id1, e1)::While(e2, block)::is
-  }
+| i=instruction; SEMI; is=instructions    { i @ is           }
 ;
 
 instruction:
-| PRINT; BEGIN; e=expression; END         { Print(e)          }
-(* À compléter *)
-| id=location; SET; e=expression        { Set(id, e) }
+| PRINT; BEGIN; e=expression; END
+  { [Print(e)] }
+| id=location; SET; e=expression
+  { [Set(id, e)] }
 | IF; e=expression; THEN;
  BEGIN; is1=instructions; END;
  ELSE;
- BEGIN; is2=instructions; END;
-  { If(e, is1, is2) }
+ BEGIN; is2=instructions; END
+  { [If(e, is1, is2)] }
 | WHILE; e=expression; BEGIN; is=instructions; END
-  { While(e, is) }
-
+  { [While(e, is)] }
+| FOR;
+  id1=location; SET; e1=expression; SEMI;
+  e2=expression; SEMI;
+  id2=location; SET; e3=expression;
+  BEGIN; bl=instructions; END
+  {
+    let block = bl @ [Set(id2, e3)] in
+    [Set(id1, e1); While(e2, block)]
+  }
 ;
 
 expression:
-| loc=location                            { Location(loc)     }
+| loc=location                            { Location(loc) }
 (* À compléter *)
 | lit=literal                             { Literal(lit) }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
