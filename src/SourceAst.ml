@@ -29,16 +29,16 @@ and instruction =
   | Print of expression                 (* Affichage   *)
 
 and expression =
-  | Literal   of literal * Lexing.position      (* Valeur immédiate   *)
-  | Location  of location * Lexing.position     (* Valeur en mémoire  *)
+  | Literal   of literal      (* Valeur immédiate   *)
+  | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
 
 and literal =
-  | Int  of int  (* Constante entière   *)
-  | Bool of bool (* Constante booléenne *)
+  | Int  of int * Lexing.position  (* Constante entière   *)
+  | Bool of bool * Lexing.position (* Constante booléenne *)
 
 and location =
-  | Identifier of string (* Variable en mémoire *)
+  | Identifier of string * Lexing.position (* Variable en mémoire *)
 
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *)
@@ -63,10 +63,10 @@ let print_symb_tbl tbl =
     ) tbl ""
 
 let print_literal = function
-  | Int i -> sprintf "%d" i
-  | Bool b -> if b then "true" else "false"
+  | Int (i,_) -> sprintf "%d" i
+  | Bool (b,_) -> if b then "true" else "false"
 let print_location = function
-  | Identifier x -> x
+  | Identifier (x,_) -> x
 let print_binop = function
   | Add  -> "+"
   | Mult -> "*"
@@ -78,8 +78,8 @@ let print_binop = function
   | And  -> "&&"
   | Or   -> "||"
 let rec print_expression = function
-  | Literal (lit, _) -> print_literal lit
-  | Location (id, _) -> print_location id
+  | Literal lit -> print_literal lit
+  | Location id -> print_location id
   | Binop(op, e1, e2) -> sprintf "( %s %s %s )" (print_expression e1) (print_binop op) (print_expression e2)
 
 let offset o = String.make (2*o) ' '

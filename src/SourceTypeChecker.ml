@@ -57,9 +57,9 @@ let typecheck_main p =
      expressions et renvoient leur type. *)
   (* type_expression: expression -> typ *)
   and type_expression = function
-    | Literal(lit, pos)  -> current_pos := pos; type_literal lit
+    | Literal lit  ->  type_literal lit
 
-    | Location(loc, pos) -> current_pos := pos; type_location loc
+    | Location loc -> type_location loc
 
     | Binop(op, e1, e2) ->
       let ty_op, ty_r = type_binop op in
@@ -69,12 +69,12 @@ let typecheck_main p =
 
   (* type_literal: literal -> typ *)
   and type_literal = function
-    | Int _  -> TypInteger
-    | Bool _ -> TypBoolean
+    | Int (_, pos)  -> current_pos := pos; TypInteger
+    | Bool (_, pos) -> current_pos := pos; TypBoolean
 
   (* type_location: location -> typ *)
   and type_location = function
-    | Identifier(id) -> (Symb_Tbl.find id symb_tbl).typ
+    | Identifier(id, pos) -> current_pos := pos; (Symb_Tbl.find id symb_tbl).typ
 
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)

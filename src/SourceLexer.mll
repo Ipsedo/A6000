@@ -67,6 +67,8 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { OR }
           | ":="
               { SET }
+          | "++"
+              { INCR }
           | eof
               { EOF }
           | _

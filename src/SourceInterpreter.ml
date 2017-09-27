@@ -14,7 +14,7 @@ and eval_block env = function
 
 (* [eval_instruction: state -> instruction -> state] *)
 and eval_instruction env = function
-  | Set(Identifier id, e) -> State.add id (eval_expression env e) env
+  | Set(Identifier(id, _), e) -> State.add id (eval_expression env e) env
   | While(c, b) as iw ->
     if eval_expression env c <> 0
     then let env = eval_block env b in
@@ -28,8 +28,8 @@ and eval_instruction env = function
 
 (* [eval_expression: state -> expression -> int] *)
 and eval_expression env = function
-  | Literal(lit, _)  -> eval_literal env lit
-  | Location(loc, _) -> eval_location env loc
+  | Literal lit  -> eval_literal env lit
+  | Location loc -> eval_location env loc
   | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
     let v2 = eval_expression env e2 in
     let op = match op with
@@ -49,8 +49,8 @@ and eval_bool b = if b then 1 else 0
 and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
 
 and eval_literal env = function
-  | Int(i)  -> i
-  | Bool(b) -> eval_bool b
+  | Int(i, _)  -> i
+  | Bool(b, _) -> eval_bool b
 
 and eval_location env = function
-  | Identifier(id) -> State.find id env
+  | Identifier(id, _) -> State.find id env

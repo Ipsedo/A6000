@@ -38,6 +38,8 @@
 %left PLUS SUB
 %left MULT
 
+%token INCR
+
 %start main
 %type <SourceAst.main> main
 
@@ -72,8 +74,7 @@ instructions:
 instruction:
 | PRINT; BEGIN; e=expression; END
   { [Print(e)] }
-| id=location; SET; e=expression
-  { [Set(id, e)] }
+| s=set { s }
 | IF; e=expression; THEN;
  BEGIN; is1=instructions; END;
  ELSE;
@@ -95,10 +96,18 @@ instruction:
   }
 ;
 
+set:
+|id=location; SET; e=expression
+  { [Set(id, e)] }
+|id=location; INCR
+  {
+    [Set(id, Binop(Add, Location(id), Literal(Int(1, Parsing.symbol_end_pos ()))))]
+  }
+
 expression:
-| loc=location                            { Location(loc,  Parsing.symbol_end_pos ()) }
+| loc=location                            { Location(loc) }
 (* À compléter *)
-| lit=literal                             { Literal(lit,  Parsing.symbol_end_pos ()) }
+| lit=literal                             { Literal(lit) }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
 ;
 
@@ -114,11 +123,11 @@ expression:
 | OR   { Or }
 
 literal:
-| i=LITINT { Int i }
-| TRUE { Bool true }
-| FALSE { Bool false }
+| i=LITINT { Int (i, Parsing.symbol_end_pos ()) }
+| TRUE { Bool (true, Parsing.symbol_end_pos ()) }
+| FALSE { Bool (false, Parsing.symbol_end_pos ()) }
 
 
 location:
-| id=IDENT  { Identifier id }
+| id=IDENT  { Identifier (id, Parsing.symbol_end_pos ()) }
 ;

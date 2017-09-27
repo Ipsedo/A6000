@@ -4,20 +4,23 @@ module Symb_Tbl = SourceAst.Symb_Tbl
 
 type identifier_kind = SourceAst.identifier_kind
 type identifier_info = identifier_kind
-
-type location    = SourceAst.location
-type literal     = SourceAst.literal
-type binop       = SourceAst.binop
-type block       = instruction list
+type binop = SourceAst.binop
+type block = instruction list
 and instruction =
   | Set   of location   * expression    (* Affectation *)
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
-  | Print of expression
+  | Print of expression                 (* Affichage   *)
+
 and expression =
   | Literal   of literal      (* Valeur immédiate   *)
-  | Location  of location     (* Valeur en mémoire  *)
+  | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
+and location =
+  | Identifier of string
+and literal =
+  | Int  of int  (* Constante entière   *)
+  | Bool of bool
 
 (* Programme principal : une table de symboles et un bloc de code *)
 type main = {
