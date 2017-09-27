@@ -78,6 +78,9 @@ instruction:
  ELSE;
  BEGIN; is2=instructions; END
   { [If(e, is1, is2)] }
+| IF; e=expression; THEN;
+  BEGIN; is=instructions; END
+  { [If(e, is, [])] }
 | WHILE; e=expression; BEGIN; is=instructions; END
   { [While(e, is)] }
 | FOR;

@@ -32,16 +32,14 @@ let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
 let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
 
-let number = digit+
-
-             rule token = parse
+rule token = parse
            | [' ' '\t' '\r']+
              { token lexbuf }
            | '\n'
                { new_line lexbuf; token lexbuf }
            | ident
                { id_or_keyword (lexeme lexbuf) }
-           | number
+           | digit+
                { LITINT (int_of_string (lexeme lexbuf))}
            | "("
                { BEGIN }

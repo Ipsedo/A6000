@@ -38,7 +38,7 @@ let () =
     then PrebuiltParser.main PrebuiltLexer.token lb
     else begin
       try SourceParser.main SourceLexer.token lb
-      with exn -> (let start_p = Lexing.lexeme_start_p lb in
+      with SourceParser.Error -> (let start_p = Lexing.lexeme_start_p lb in
                    raise (UnexpectedToken ("Unexpected token \""
                                            ^ (Lexing.lexeme lb)
                                            ^ "\" in "

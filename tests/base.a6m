@@ -13,7 +13,5 @@ main(integer x) (
   	);
   	print(10);
   );
-  ) else (
-
   );
 )
