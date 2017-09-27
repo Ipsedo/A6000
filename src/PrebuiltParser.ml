@@ -3,7 +3,7 @@ module Basics = struct
 
   exception Error
 
-  type token = 
+  type token =
     | WHILE
     | VAR
     | THEN
@@ -45,7 +45,7 @@ type _menhir_env = {
   mutable _menhir_error: bool
 }
 
-and _menhir_state = 
+and _menhir_state =
   | MenhirState66
   | MenhirState59
   | MenhirState55
@@ -1347,5 +1347,3 @@ and main : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (SourceAst.main) =
                  _menhir_env._menhir_error <- true;
                  let _menhir_stack = Obj.magic _menhir_stack in
                  raise _eRR)
-
-

@@ -29,8 +29,8 @@ and instruction =
   | Print of expression                 (* Affichage   *)
 
 and expression =
-  | Literal   of literal       (* Valeur immédiate   *)
-  | Location  of location      (* Valeur en mémoire  *)
+  | Literal   of literal * Lexing.position      (* Valeur immédiate   *)
+  | Location  of location * Lexing.position     (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
 
 and literal =
@@ -78,8 +78,8 @@ let print_binop = function
   | And  -> "&&"
   | Or   -> "||"
 let rec print_expression = function
-  | Literal lit -> print_literal lit
-  | Location id -> print_location id
+  | Literal (lit, _) -> print_literal lit
+  | Location (id, _) -> print_location id
   | Binop(op, e1, e2) -> sprintf "( %s %s %s )" (print_expression e1) (print_binop op) (print_expression e2)
 
 let offset o = String.make (2*o) ' '

@@ -31,22 +31,25 @@ let file =
   Arg.parse spec set_file usage;
   match !file with Some f -> f | None -> Arg.usage spec usage; exit 1
 
+
+let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
+ raise (UnexpectedToken ("Unexpected token \""
+                         ^ (Lexing.lexeme lb)
+                         ^ "\" in "
+                         ^ start_p.pos_fname (* /!\ j'arrive pas à recup nom fichier *)
+                         ^ " at line "
+                         ^ (string_of_int start_p.pos_lnum)
+                         ^ ", col "
+                         ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
+
 let () =
   let c  = open_in file in
   let lb = Lexing.from_channel c in
   let p  = if !prebuilt_frontend
-    then PrebuiltParser.main PrebuiltLexer.token lb
+    then (*PrebuiltParser.main PrebuiltLexer.token lb*)failwith "c + possible..."
     else begin
       try SourceParser.main SourceLexer.token lb
-      with SourceParser.Error -> (let start_p = Lexing.lexeme_start_p lb in
-                   raise (UnexpectedToken ("Unexpected token \""
-                                           ^ (Lexing.lexeme lb)
-                                           ^ "\" in "
-                                           ^ start_p.pos_fname (* /!\ j'arrive pas à recup nom fichier *)
-                                           ^ " at line "
-                                           ^ (string_of_int start_p.pos_lnum)
-                                           ^ ", col "
-                                           ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol)))))
+      with SourceParser.Error -> raise_token_excpetion lb
     end
   in
   close_in c;

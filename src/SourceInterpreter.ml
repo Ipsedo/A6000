@@ -28,8 +28,8 @@ and eval_instruction env = function
 
 (* [eval_expression: state -> expression -> int] *)
 and eval_expression env = function
-  | Literal(lit)  -> eval_literal env lit
-  | Location(loc) -> eval_location env loc
+  | Literal(lit, _)  -> eval_literal env lit
+  | Location(loc, _) -> eval_location env loc
   | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
     let v2 = eval_expression env e2 in
     let op = match op with

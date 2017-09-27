@@ -1,13 +1,28 @@
 open SourceAst
 
 (* Rapports d'erreurs *)
-exception Type_error of typ * typ
+exception Type_error of string
+
+let current_pos = ref Lexing.dummy_pos
+
+let string_of_typ t = match t with
+  | SourceAst.TypInteger -> "integer"
+  | SourceAst.TypBoolean -> "boolean"
+
+let raise_type_exception t1 t2 = let needed = string_of_typ t1 in
+  let actual = string_of_typ t2 in
+  let start_p = !current_pos in
+  raise (Type_error ("Wrong type, actual : "^actual^", needed : "^needed
+                         ^ " at line "
+                         ^ (string_of_int start_p.pos_lnum)
+                         ^ ", col "
+                         ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
 
 (* comparetype: typ -> typ -> unit
    Lève une exception si les types diffèrent. *)
 let comparetype t1 t2 =
   if t1 <> t2
-  then raise (Type_error(t1, t2))
+  then raise_type_exception t1 t2
 
 (* Vérification des types d'un programme *)
 let typecheck_main p =
@@ -42,9 +57,9 @@ let typecheck_main p =
      expressions et renvoient leur type. *)
   (* type_expression: expression -> typ *)
   and type_expression = function
-    | Literal(lit)  -> type_literal lit
+    | Literal(lit, pos)  -> current_pos := pos; type_literal lit
 
-    | Location(loc) -> type_location loc
+    | Location(loc, pos) -> current_pos := pos; type_location loc
 
     | Binop(op, e1, e2) ->
       let ty_op, ty_r = type_binop op in

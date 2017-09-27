@@ -55,7 +55,8 @@ main:
 
 var_decls:
 | (* empty *)                                { Symb_Tbl.empty    }
-| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in Symb_Tbl.add id info tbl}
+| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in
+                                              Symb_Tbl.add id info tbl}
 (* À compléter *)
 ;
 
@@ -95,9 +96,9 @@ instruction:
 ;
 
 expression:
-| loc=location                            { Location(loc) }
+| loc=location                            { Location(loc,  Parsing.symbol_end_pos ()) }
 (* À compléter *)
-| lit=literal                             { Literal(lit) }
+| lit=literal                             { Literal(lit,  Parsing.symbol_end_pos ()) }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
 ;
 

@@ -7,6 +7,26 @@ module T = UntypedAst (* Cible de la transformation  *)
 (* erase_identifier_info: S.identifier_info -> T.identifier_info *)
 let erase_identifier_info i = i.S.kind
 
+
+
+let rec erase_expression e = match e with
+  | S.Location(id, _) -> T.Location(id)
+  | S.Literal(v, _) -> T.Literal(v)
+  | S.Binop(b, e1, e2) -> let ne1 = erase_expression e1 in
+    let ne2 = erase_expression e2 in
+    T.Binop(b, ne1, ne2)
+
+let rec erase_instruction i = match i with
+  | S.Set(loc, e) -> T.Set(loc, erase_expression e)
+  | S.While(e, b) -> T.While(erase_expression e, erase_code b)
+  | S.If(e, b1, b2) -> T.If(erase_expression e, erase_code b1, erase_code b2)
+  | S.Print(e) -> T.Print(erase_expression e)
+
+and erase_code c = let rec aux c accu = match c with
+    | [] -> accu
+    | i::t -> aux t ((erase_instruction i)::accu)
+  in List.rev (aux c [])
+
 let erase_main p =
   let locals =
     S.Symb_Tbl.fold
@@ -15,4 +35,4 @@ let erase_main p =
       p.S.locals
       T.Symb_Tbl.empty
   in
-  { T.locals = locals; T.code = p.S.code }    
+  { T.locals = locals; T.code = erase_code p.S.code }
