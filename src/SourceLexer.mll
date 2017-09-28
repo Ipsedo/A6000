@@ -14,8 +14,8 @@ let id_or_keyword =
       "main",     MAIN;
       "var",      VAR;
       "boolean",  BOOL;
-      "true",     TRUE;
-      "false",    FALSE;
+      "true",     LITBOOL(true);
+      "false",    LITBOOL(false);
       "while",    WHILE;
       "if",       IF;
       "then",     THEN;

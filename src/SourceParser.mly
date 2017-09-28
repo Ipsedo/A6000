@@ -28,8 +28,7 @@
 %token VAR
 
 %token <int> LITINT
-
-%token TRUE FALSE
+%token <bool> LITBOOL
 
 %token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
@@ -103,7 +102,7 @@ set:
   { Set(id, e) }
 | id=location; op=macro_set_op
   {
-    let to_c = Int(1, $symbolstartpos) in
+    let to_c = Int(1, $startpos(id)) in
     let expr = Literal(to_c) in
     let from = Location(id) in
     let op = Binop(op, from, expr) in
@@ -146,11 +145,10 @@ expression:
 | OR   { Or }
 
 literal:
-  i=LITINT { Int (i, $symbolstartpos) }
-| TRUE { Bool (true, $symbolstartpos) }
-| FALSE { Bool (false, $symbolstartpos) }
+  i=LITINT { Int (i, $startpos(i)) }
+| b=LITBOOL { Bool (b, $startpos(b)) }
 
 
 location:
-  id=IDENT  { Identifier (id, $symbolstartpos) }
+  id=IDENT  { Identifier (id, $startpos(id)) }
 ;
