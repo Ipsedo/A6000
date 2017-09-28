@@ -100,7 +100,7 @@ instruction:
 set:
   id=location; SET; e=expression
   { Set(id, e) }
-| id=location; op=macro_set_op
+| id=location; op=instant_set_op
   {
     let to_c = Int(1, $startpos(id)) in
     let expr = Literal(to_c) in
@@ -113,7 +113,7 @@ set:
       Set(id, Binop(op, Location(id), e))
   }
 
-%inline macro_set_op:
+%inline instant_set_op:
   INCR { Add }
 | DECR { Sub }
 

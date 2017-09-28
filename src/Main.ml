@@ -9,6 +9,7 @@ let interpret      = ref false
 let reg_allocation = ref false
 let dead_code_elim = ref false
 let prebuilt_frontend = ref false
+let preprocessor = ref false
 let input = ref 0
 
 let spec =
@@ -18,7 +19,8 @@ let spec =
     "  full optimisation";
     "-i", Arg.Tuple [Arg.Set_int input; Arg.Set interpret],
     "  interpreter only";
-    "-frontend", Arg.Set prebuilt_frontend, "  use prebuilt frontend"
+    "-frontend", Arg.Set prebuilt_frontend, "  use prebuilt frontend";
+    "-pp", Arg.Set preprocessor, " use macros preprocessing"
   ]
 
 let file =
@@ -29,7 +31,8 @@ let file =
     file := Some s
   in
   Arg.parse spec set_file usage;
-  match !file with Some f -> f | None -> Arg.usage spec usage; exit 1
+  match !file with Some f -> f
+  | None -> Arg.usage spec usage; exit 1
 
 
 let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
@@ -42,8 +45,23 @@ let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
                           ^ ", col "
                           ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
 
+let preprocess f =
+  let c = open_in file in
+  let output_file = (Filename.chop_suffix file ".a6m") ^ ".pp.a6m" in
+  let out = open_out output_file in
+  let rec aux lb accu =
+    match Preprocessor.macro lb with
+    | "EOF" -> accu
+    | _ as str -> aux lb (accu^str)
+  in
+  Printf.fprintf out "%s\n" (aux (Lexing.from_channel c) "");
+  close_out out;
+  open_in output_file
+
 let () =
-  let c  = open_in file in
+  let c = if not !preprocessor then open_in file
+          else preprocess file in
+
   let lb = Lexing.from_channel c in
   let p  = if !prebuilt_frontend
     then (*PrebuiltParser.main PrebuiltLexer.token lb*)failwith "c + possible..."
