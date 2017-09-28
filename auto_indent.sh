@@ -1,4 +1,4 @@
-for entry in src/*.ml src/*.mli src/*.mll
+for entry in src/*.ml src/*.mli
 do
   ocp-indent "$entry" > tmp
   mv tmp "$entry"
