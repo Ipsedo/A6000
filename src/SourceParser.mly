@@ -39,6 +39,7 @@
 %left MULT DIV
 
 %token INCR DECR
+%token ADDSET SUBSET
 
 %start main
 %type <SourceAst.main> main
@@ -97,20 +98,28 @@ instruction:
 ;
 
 set:
-|id=location; SET; e=expression
+| id=location; SET; e=expression
   { Set(id, e) }
-|id=location; INCR
+| id=location; INCR
   {
     Set(id, Binop(Add, Location(id), Literal(Int(1, $symbolstartpos))))
   }
-|id=location; DECR
+| id=location; DECR
   {
     Set(id, Binop(Sub,
                   Location(id),
                   Literal(Int(1, $symbolstartpos))
                  )
-      )
+       )
   }
+  | id=location; ADDSET; e=expression
+    {
+      Set(id, Binop(Add, Location(id), e))
+    }
+  | id=location; SUBSET; e=expression
+    {
+      Set(id, Binop(Sub, Location(id), e))
+    }
 
 expression:
 | loc=location                            { Location(loc) }

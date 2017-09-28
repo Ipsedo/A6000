@@ -18,9 +18,20 @@ main(integer x) (
   for i := 9; i > 0; i-- (
     print(i + 48);
   );
-  i := true;
   print(10);
+
   for i := 9; i >= 0; i-- (
     print(i + 48);
   );
+  print(10);
+
+  for i := 9; i >= 0; i-=1 (
+    print(i + 48);
+  );
+  print(10);
+
+  for i := 0; i < 10; i+=1 (
+    print(i + 48);
+  );
+  print(10);
 )

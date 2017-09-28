@@ -77,6 +77,10 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { DECR }
           | "/"
               { DIV }
+          | "+="
+              { ADDSET }
+          | "-="
+              { SUBSET }
           | eof
               { EOF }
           | _

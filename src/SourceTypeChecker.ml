@@ -13,10 +13,10 @@ let raise_type_exception t1 t2 = let needed = string_of_typ t1 in
   let actual = string_of_typ t2 in
   let start_p = !current_pos in
   raise (Type_error ("Wrong type, actual : "^actual^", needed : "^needed
-                         ^ " at line "
-                         ^ (string_of_int start_p.pos_lnum)
-                         ^ ", col "
-                         ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
+                     ^ " at line "
+                     ^ (string_of_int start_p.pos_lnum)
+                     ^ ", col "
+                     ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
 
 (* comparetype: typ -> typ -> unit
    Lève une exception si les types diffèrent. *)

@@ -8,7 +8,7 @@ module T = UntypedAst (* Cible de la transformation  *)
 let erase_identifier_info i = i.S.kind
 
 let erase_location l = match l with
-  S.Identifier (str, _) -> T.Identifier str
+    S.Identifier (str, _) -> T.Identifier str
 
 let erase_literal l = match l with
     S.Int (i, _) -> T.Int i

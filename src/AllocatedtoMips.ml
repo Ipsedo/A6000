@@ -18,8 +18,8 @@ let generate_main p =
     | (l,i)::b -> comment l @@ generate_instr i @@ generate_block b
 
   and store_identifier res id = match find_alloc id with
-      |Stack o -> sw res o ~$fp
-      |Reg r -> move r res
+    |Stack o -> sw res o ~$fp
+    |Reg r -> move r res
 
   (* Un appel [load_value r v] génère du code qui place la valeur [v]
      dans le registre [r]. *)
