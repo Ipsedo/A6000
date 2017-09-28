@@ -36,10 +36,13 @@ and eval_expression env = function
       | Add  -> (+)
       | Mult -> ( * )
       | Sub  -> (-)
+      | Div  -> (/)
       | Eq   -> eval_bool_op (=)
       | Neq  -> eval_bool_op (<>)
       | Lt   -> eval_bool_op (<)
       | Le   -> eval_bool_op (<=)
+      | Me   -> eval_bool_op (>=)
+      | Mt   -> eval_bool_op (>)
       | And  -> min
       | Or   -> max
     in

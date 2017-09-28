@@ -31,14 +31,14 @@
 
 %token TRUE FALSE
 
-%token PLUS MULT SUB EQ NEQ LT LE AND OR
+%token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
 %left AND OR
-%left EQ NEQ LT LE
+%nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
-%left MULT
+%left MULT DIV
 
-%token INCR
+%token INCR DECR
 
 %start main
 %type <SourceAst.main> main
@@ -74,7 +74,7 @@ instructions:
 instruction:
 | PRINT; BEGIN; e=expression; END
   { [Print(e)] }
-| s=set { s }
+| s=set { [s] }
 | IF; e=expression; THEN;
  BEGIN; is1=instructions; END;
  ELSE;
@@ -88,20 +88,28 @@ instruction:
 | FOR;
   id1=location; SET; e1=expression; SEMI;
   e2=expression; SEMI;
-  id2=location; SET; e3=expression;
+  s=set;
   BEGIN; bl=instructions; END
   {
-    let block = bl @ [Set(id2, e3)] in
+    let block = bl @ [s] in
     [Set(id1, e1); While(e2, block)]
   }
 ;
 
 set:
 |id=location; SET; e=expression
-  { [Set(id, e)] }
+  { Set(id, e) }
 |id=location; INCR
   {
-    [Set(id, Binop(Add, Location(id), Literal(Int(1, $startpos(id)))))]
+    Set(id, Binop(Add, Location(id), Literal(Int(1, $symbolstartpos))))
+  }
+|id=location; DECR
+  {
+    Set(id, Binop(Sub,
+                  Location(id),
+                  Literal(Int(1, $symbolstartpos))
+                 )
+      )
   }
 
 expression:
@@ -113,21 +121,24 @@ expression:
 
 %inline binop:
 | MULT { Mult }
+| DIV  { Div }
 | PLUS { Add }
 | SUB  { Sub }
 | LT   { Lt }
 | LE   { Le }
+| MT   { Mt }
+| ME   { Me }
 | EQ   { Eq }
 | NEQ  { Neq }
 | AND  { And }
 | OR   { Or }
 
 literal:
-| i=LITINT { Int (i, $startpos(i)) }
-| TRUE { Bool (true, $startpos($1)) }
-| FALSE { Bool (false, $startpos($1)) }
+| i=LITINT { Int (i, $symbolstartpos) }
+| TRUE { Bool (true, $symbolstartpos) }
+| FALSE { Bool (false, $symbolstartpos) }
 
 
 location:
-| id=IDENT  { Identifier (id, $startpos(id)) }
+| id=IDENT  { Identifier (id, $symbolstartpos) }
 ;

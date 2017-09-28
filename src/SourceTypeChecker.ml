@@ -80,8 +80,8 @@ let typecheck_main p =
      d'un opérateur binaire. *)
   (* type_binop: binop -> typ * typ *)
   and type_binop = function
-    | Add | Sub | Mult     -> TypInteger, TypInteger
-    | Eq  | Neq | Lt  | Le -> TypInteger, TypBoolean
+    | Add | Sub | Mult | Div     -> TypInteger, TypInteger
+    | Eq  | Neq | Lt  | Le | Me | Mt -> TypInteger, TypBoolean
     | And | Or             -> TypBoolean, TypBoolean
 
   in

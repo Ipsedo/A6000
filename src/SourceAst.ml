@@ -41,9 +41,9 @@ and location =
   | Identifier of string * Lexing.position (* Variable en mémoire *)
 
 and binop =
-  | Add (* +  *) | Mult (* *  *) | Sub (* - *)
+  | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
   | Eq  (* == *) | Neq  (* != *)
-  | Lt  (* <  *) | Le   (* <= *)
+  | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
   | And (* && *) | Or   (* || *)
 
 
@@ -71,10 +71,13 @@ let print_binop = function
   | Add  -> "+"
   | Mult -> "*"
   | Sub  -> "-"
+  | Div  -> "/"
   | Eq   -> "=="
   | Neq  -> "!="
   | Lt   -> "<"
   | Le   -> "<="
+  | Mt   -> ">"
+  | Me   -> ">="
   | And  -> "&&"
   | Or   -> "||"
 let rec print_expression = function

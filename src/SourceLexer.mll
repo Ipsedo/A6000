@@ -61,6 +61,10 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { LT }
           | "<="
               { LE }
+          | ">"
+              { MT }
+          | ">="
+              { ME }
           | "&&"
               { AND }
           | "||"
@@ -69,6 +73,10 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { SET }
           | "++"
               { INCR }
+          | "--"
+              { DECR }
+          | "/"
+              { DIV }
           | eof
               { EOF }
           | _

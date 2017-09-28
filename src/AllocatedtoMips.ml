@@ -17,6 +17,10 @@ let generate_main p =
     | []       -> nop
     | (l,i)::b -> comment l @@ generate_instr i @@ generate_block b
 
+  and store_identifier res id = match find_alloc id with
+      |Stack o -> sw res o ~$fp
+      |Reg r -> move r res
+
   (* Un appel [load_value r v] génère du code qui place la valeur [v]
      dans le registre [r]. *)
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
@@ -34,28 +38,27 @@ let generate_main p =
     let op = (match b with
         | Add -> add res r1 r2
         | Mult -> mul res r1 r2
+        | Div  -> div res r1 r2
         | Sub -> sub res r1 r2
         | Eq -> seq res r1 r2
         | Neq -> sne res r1 r2
         | Lt -> slt res r1 r2 (* < *)
         | Le -> sle res r1 r2
+        | Mt -> sgt res r1 r2
+        | Me -> sge res r1 r2
         | And -> and_ res r1 r2
         | Or -> or_ res r1 r2)
     in
     load_value r1 v1
     @@ load_value r2 v2
     @@ op
-    @@ (match find_alloc id with
-        |Stack o -> sw res o ~$fp
-        |Reg r -> move r res )
+    @@ store_identifier res id
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
     | Value(id, v) -> (let reg = ~$t5 in
                        load_value reg v
-                       @@ (match find_alloc id with
-                           |Stack o -> sw reg o ~$fp
-                           |Reg r -> move r reg ))
+                       @@ store_identifier reg id)
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
     | Goto(l) -> jal l
