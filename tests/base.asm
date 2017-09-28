@@ -49,7 +49,7 @@
 #_label_main_9
 _label_main_9:
 #_main_10
-	li $t5, 1024
+	li $t5, 512
 	sw $t5, -112($fp)
 #_main_11
 	jal _label_main_11

@@ -40,6 +40,7 @@
 
 %token INCR DECR
 %token ADDSET SUBSET
+%token MULTSET DIVSET
 
 %start main
 %type <SourceAst.main> main
@@ -47,7 +48,7 @@
 %%
 
 main:
-| MAIN; BEGIN; INT; x=IDENT; END;
+  MAIN; BEGIN; INT; x=IDENT; END;
   BEGIN; vds=var_decls; is=instructions; END; EOF  {
 	let infox = { typ=TypInteger; kind=FormalX } in
     let init  = Symb_Tbl.singleton x infox in
@@ -57,23 +58,23 @@ main:
 ;
 
 var_decls:
-| (* empty *)                                { Symb_Tbl.empty    }
+ (* empty *)                                { Symb_Tbl.empty    }
 | VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in
                                               Symb_Tbl.add id info tbl}
 (* À compléter *)
 ;
 
 typ:
-| INT { TypInteger }
+  INT { TypInteger }
 | BOOL { TypBoolean }
 
 instructions:
-| (* empty *)                             { []                }
+ (* empty *)                             { []                }
 | i=instruction; SEMI; is=instructions    { i @ is           }
 ;
 
 instruction:
-| PRINT; BEGIN; e=expression; END
+  PRINT; BEGIN; e=expression; END
   { [Print(e)] }
 | s=set { [s] }
 | IF; e=expression; THEN;
@@ -98,38 +99,40 @@ instruction:
 ;
 
 set:
-| id=location; SET; e=expression
+  id=location; SET; e=expression
   { Set(id, e) }
-| id=location; INCR
+| id=location; op=macro_set_op
   {
-    Set(id, Binop(Add, Location(id), Literal(Int(1, $symbolstartpos))))
+    let to_c = Int(1, $symbolstartpos) in
+    let expr = Literal(to_c) in
+    let from = Location(id) in
+    let op = Binop(op, from, expr) in
+    Set(id, op)
   }
-| id=location; DECR
+| id=location; op=set_op; e=expression
   {
-    Set(id, Binop(Sub,
-                  Location(id),
-                  Literal(Int(1, $symbolstartpos))
-                 )
-       )
+      Set(id, Binop(op, Location(id), e))
   }
-  | id=location; ADDSET; e=expression
-    {
-      Set(id, Binop(Add, Location(id), e))
-    }
-  | id=location; SUBSET; e=expression
-    {
-      Set(id, Binop(Sub, Location(id), e))
-    }
+
+%inline macro_set_op:
+  INCR { Add }
+| DECR { Sub }
+
+%inline set_op:
+  ADDSET { Add }
+| SUBSET { Sub }
+| MULTSET { Mult }
+| DIVSET  { Div }
 
 expression:
-| loc=location                            { Location(loc) }
+  loc=location                            { Location(loc) }
 (* À compléter *)
 | lit=literal                             { Literal(lit) }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
 ;
 
 %inline binop:
-| MULT { Mult }
+  MULT { Mult }
 | DIV  { Div }
 | PLUS { Add }
 | SUB  { Sub }
@@ -143,11 +146,11 @@ expression:
 | OR   { Or }
 
 literal:
-| i=LITINT { Int (i, $symbolstartpos) }
+  i=LITINT { Int (i, $symbolstartpos) }
 | TRUE { Bool (true, $symbolstartpos) }
 | FALSE { Bool (false, $symbolstartpos) }
 
 
 location:
-| id=IDENT  { Identifier (id, $symbolstartpos) }
+  id=IDENT  { Identifier (id, $symbolstartpos) }
 ;

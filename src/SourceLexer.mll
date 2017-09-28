@@ -81,6 +81,10 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { ADDSET }
           | "-="
               { SUBSET }
+          | "*="
+              { MULTSET }
+          | "/="
+              { DIVSET }
           | eof
               { EOF }
           | _
