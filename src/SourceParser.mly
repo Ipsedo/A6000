@@ -101,7 +101,7 @@ set:
   { [Set(id, e)] }
 |id=location; INCR
   {
-    [Set(id, Binop(Add, Location(id), Literal(Int(1, Parsing.symbol_end_pos ()))))]
+    [Set(id, Binop(Add, Location(id), Literal(Int(1, $startpos(id)))))]
   }
 
 expression:
@@ -123,11 +123,11 @@ expression:
 | OR   { Or }
 
 literal:
-| i=LITINT { Int (i, Parsing.symbol_end_pos ()) }
-| TRUE { Bool (true, Parsing.symbol_end_pos ()) }
-| FALSE { Bool (false, Parsing.symbol_end_pos ()) }
+| i=LITINT { Int (i, $startpos(i)) }
+| TRUE { Bool (true, $startpos($1)) }
+| FALSE { Bool (false, $startpos($1)) }
 
 
 location:
-| id=IDENT  { Identifier (id, Parsing.symbol_end_pos ()) }
+| id=IDENT  { Identifier (id, $startpos(id)) }
 ;
