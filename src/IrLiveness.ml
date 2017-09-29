@@ -3,7 +3,7 @@ open IrAst
 (* Création du graphe de flot de contrôle, sous la forme d'une table associant
    à chaque étiquette d'un point de programme les étiquettes de ses successeurs.
      [mk_succ: IrAst.block -> (IrAst.label * IrAst.label) Hashtbl.t]
-   
+
    Note à propos des tables [Hashtbl] de Caml :
 
    - un appel [Hashtbl.add tbl k v] ajoute à la table [tbl] une association
@@ -23,6 +23,11 @@ open IrAst
      précédente
 *)
 
+let add_next_label code succ label_from =
+  match code with
+  | [] -> ()
+  | (lab,_) :: code -> Hashtbl.add succ label_from lab
+
 let mk_succ code =
   (* Création avec une capacité arbitraire ; la table sera étendue au besoin *)
   let succ = Hashtbl.create 257 in
@@ -36,6 +41,11 @@ let mk_succ code =
       Hashtbl.add succ lab target_lab;
       (* Puis on itère. *)
       mk_succ code
+    | (lab, CondGoto(c, target_lab)) :: code -> Hashtbl.add succ lab target_lab;
+                                                add_next_label code succ lab;
+                                                mk_succ code
+    | (lab, _) :: code -> add_next_label code succ lab;
+                          mk_succ code
     | _ -> (* À compléter *) failwith "Not implemented"
   in
   mk_succ code;
@@ -53,7 +63,7 @@ let mk_succ code =
      ensemblistes.
 *)
 module VarSet = Set.Make(String)
-  
+
 (* Fonction principale, renvoie deux tables associant à chaque étiquette d'un
    point de programme l'ensemble des variables vivantes en entrée/en sortie.
      [mk_lv: IrAst.main ->
