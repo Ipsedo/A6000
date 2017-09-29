@@ -79,11 +79,11 @@ let () =
     let p = UntypedtoGoto.destructure_main p in
     let p = GototoIr.flatten_main p in
     (* Code à réintégrer à la séance 3 *)
-    (* let p = *)
-    (*   if   !dead_code_elim *)
-    (*   then IrDeadCodeElim.dce p *)
-    (*   else p *)
-    (* in *)
+    let p =
+       if   !dead_code_elim
+       then IrDeadCodeElim.dce p
+       else p
+    in
     let p = IrtoAllocated.allocate_main !reg_allocation p in
     let asm = AllocatedtoMips.generate_main p in
     let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
