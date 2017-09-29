@@ -46,7 +46,7 @@ let mk_succ code =
                                                 mk_succ code
     | (lab, _) :: code -> add_next_label code succ lab;
                           mk_succ code
-    | _ -> (* À compléter *) failwith "Not implemented"
+    | _ -> (* À compléter *) failwith "Not implemented mk_succ"
   in
   mk_succ code;
   (* À la fin, on renvoie la table qu'on a remplie *)
@@ -92,8 +92,16 @@ let mk_lv p =
        [lv_gen:  IrAst.instruction -> VarSet.t]
        [lv_kill: IrAst.instruction -> VarSet.t]
   *)
+
+  let value_to_var_set v =
+    match v with
+    | Literal _ -> VarSet.empty
+    | Identifier id -> VarSet.singleton id
+  in
+
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
-    | Print(v) -> (* À compléter *) failwith "Not implemented"
+    | Print(v) -> value_to_var_set v
+    | Binop(_, _, v1, v2) -> VarSet.union (value_to_var_set v1) (value_to_var_set v2)
     | _        -> (* À compléter *) failwith "Not implemented"
   and lv_kill : IrAst.instruction -> VarSet.t = function
     | _        -> (* À compléter *) failwith "Not implemented"
