@@ -21,7 +21,7 @@ let allocate_main reg_flag p =
         coloring
         p.S.locals*)
 
-        (*S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
+        S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
             | FormalX -> T.Stack 0
             | Local ->  (let elt = GraphColoring.NodeMap.find id coloring in
@@ -31,13 +31,13 @@ let allocate_main reg_flag p =
                           current_offset := !current_offset - 4;
                           T.Stack (!current_offset)
                           end)
-          ) p.S.locals*)
+          ) p.S.locals
 
-          S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
+          (*S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
               match info with
               | FormalX -> T.Stack 0
               | Local ->  current_offset := !current_offset - 4; T.Stack (!current_offset)
-            ) p.S.locals
+            ) p.S.locals*)
       end
     else
       (* Tout sur la pile *)

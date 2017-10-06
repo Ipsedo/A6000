@@ -22,9 +22,10 @@ let pick_color g coloring n =
   List.fold_left
     (fun acc elt ->
       let color = NodeMap.find elt coloring in
+      Printf.printf "%d\n" color;
       if color < acc then color
       else acc)
-  max_int node_interference
+  500 node_interference
 
 let min_deg_node g =
   match Graph.min_degree g with
