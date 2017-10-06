@@ -44,5 +44,5 @@ let rec colorize (g : Graph.t) : coloring =
     let min_node = min_deg_node g in
     let new_g = Graph.del_node g min_node in
     let coloring = colorize new_g in
-    NodeMap.add min_node (pick_color new_g coloring min_node) coloring
+    NodeMap.add min_node (pick_color g coloring min_node) coloring (* g ou new_g ????! *)
   with ColoringFinished -> NodeMap.empty
