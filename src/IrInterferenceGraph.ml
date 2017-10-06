@@ -53,10 +53,8 @@ let interference_graph p : Graph.t =
             make_instruction_node acc instr)
           Graph.empty p.code
   in
-
   (* Ensuite, récupérer le résultat de l'analyse de vivacité. *)
   let _, lv_out = mk_lv p in
-
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
   List.fold_left

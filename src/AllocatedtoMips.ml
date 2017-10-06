@@ -32,8 +32,8 @@ let generate_main p =
         | Bool b -> li r (bool_to_int b))
 
   and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
-    let r1 = ~$t1 in
-    let r2 = ~$t2 in
+    let r1 = ~$t0 in
+    let r2 = ~$t1 in
     let res = ~$t0 in
     let op = (match b with
         | Add -> add res r1 r2
@@ -56,7 +56,7 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = ~$t5 in
+    | Value(id, v) -> (let reg = ~$t0 in
                        load_value reg v
                        @@ store_identifier reg id)
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
