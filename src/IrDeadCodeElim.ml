@@ -20,9 +20,16 @@ let dce_step p =
      un registre virtuel qui n'est pas vivant en sortie de cette instruction.
      Toutes les autres sont vivantes.
   *)
+  let var_updated : IrAst.instruction -> VarSet.t = function
+    | Binop(id, _, _, _) -> VarSet.singleton id
+    | Value(id, _) -> VarSet.singleton id
+    | _ -> VarSet.empty
+  in
+
   let live_instr = function
-    (* À compléter *)
-    | _ -> true
+    (lab, instr) -> let lv_out_instr = Hashtbl.find lv_out lab in
+                    let updated = var_updated instr in
+                    VarSet.subset updated lv_out_instr
   in
 
   (* Filtre la liste pour ne garder que les instructions vivantes *)
@@ -33,5 +40,5 @@ let dce_step p =
 
 (* Élimination itérée *)
 let rec dce p =
-  (* À compléter *)
-  p
+  let (b, new_p) = dce_step p in
+  if b then dce new_p else new_p

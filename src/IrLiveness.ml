@@ -103,18 +103,12 @@ let mk_lv p =
     | Print(v) -> value_to_var_set v
     | Binop(_, _, v1, v2) -> VarSet.union (value_to_var_set v1) (value_to_var_set v2)
     | Value(_, v) -> value_to_var_set v
-    | Label(_) -> VarSet.empty
-    | Goto(_) -> VarSet.empty
     | CondGoto(v, _) -> value_to_var_set v
-    | Comment(_) -> VarSet.empty
+    | _ -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
-    | Print(_) -> VarSet.empty
     | Binop(id, _, _, _) -> VarSet.singleton id
     | Value(id, _) -> VarSet.singleton id
-    | Label(_) -> VarSet.empty
-    | Goto(_) -> VarSet.empty
-    | CondGoto(_, _) -> VarSet.empty
-    | Comment(_) -> VarSet.empty
+    | _ -> VarSet.empty
   in
 
   (* Booléen qu'on met à [true] lorsque les tables [lv_in] et [lv_out] sont
@@ -157,6 +151,8 @@ let mk_lv p =
     let change_2 = tmp_in <> (Hashtbl.find lv_in lab) in
     Hashtbl.replace lv_in lab tmp_in;
 
+    (* On modifie la valeur de change si il y a eu des changements depuis
+       la dernière itéraion pour cette instruction *)
     if change_1 || change_2 then change := true;
 
     ()
