@@ -1,6 +1,8 @@
 module S = IrAst
 module T = AllocatedAst
 
+open IrInterferenceGraph
+
 (* Allocation *)
 let allocate_main reg_flag p =
   let current_offset = ref 0 in
