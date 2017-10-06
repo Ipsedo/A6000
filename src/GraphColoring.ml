@@ -34,12 +34,6 @@ let min_deg_node g =
 
 (** Renvoie une coloration pour le graphe [g]. *)
 let rec colorize (g : Graph.t) : coloring =
-  (* À compléter *)
-  (*let rec stack_node g list_acc =
-    match Graph.min_degree g with
-    | Some str -> stack_node (Graph.del_node g str) (str::list_acc)
-    | None -> list_acc
-  in*)
   try
     let min_node = min_deg_node g in
     let new_g = Graph.del_node g min_node in
