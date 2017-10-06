@@ -37,16 +37,16 @@ let mk_succ code =
     (* Cas offert : instruction [Goto] *)
     | (lab, Goto(target_lab)) :: code ->
       (* Le seul successeur d'une instruction [Goto] est l'instruction désignée
-	 par l'étiquette de saut. *)
+         	 par l'étiquette de saut. *)
       Hashtbl.add succ lab target_lab;
       (* Puis on itère. *)
       mk_succ code
     | (lab, CondGoto(c, target_lab)) :: code -> Hashtbl.add succ lab target_lab;
-                                                add_next_label code succ lab;
-                                                mk_succ code
+      add_next_label code succ lab;
+      mk_succ code
     | (lab, _) :: code -> add_next_label code succ lab;
-                          mk_succ code
-    | _ -> (* À compléter *) failwith "Not implemented mk_succ"
+      mk_succ code
+    | [] -> ()
   in
   mk_succ code;
   (* À la fin, on renvoie la table qu'on a remplie *)
@@ -82,9 +82,9 @@ let mk_lv p =
   (* Initialisation des tables [lv_in] et [lv_out],
      associe [VarSet.empty] à chaque point de programme. *)
   List.iter (fun (lab, _) ->
-    Hashtbl.add lv_in  lab VarSet.empty;
-    Hashtbl.add lv_out lab VarSet.empty
-  ) code;
+      Hashtbl.add lv_in  lab VarSet.empty;
+      Hashtbl.add lv_out lab VarSet.empty
+    ) code;
 
   (* Les fonctions [lv_gen] et [lv_kill] prennent en paramètre une instruction
      et indiquent respectivement l'ensemble des variables vivantes qu'elle
@@ -102,9 +102,19 @@ let mk_lv p =
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Print(v) -> value_to_var_set v
     | Binop(_, _, v1, v2) -> VarSet.union (value_to_var_set v1) (value_to_var_set v2)
-    | _        -> (* À compléter *) failwith "Not implemented"
+    | Value(_, v) -> value_to_var_set v
+    | Label(_) -> VarSet.empty
+    | Goto(_) -> VarSet.empty
+    | CondGoto(v, _) -> value_to_var_set v
+    | Comment(_) -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
-    | _        -> (* À compléter *) failwith "Not implemented"
+    | Print(_) -> VarSet.empty
+    | Binop(id, _, _, _) -> VarSet.singleton id
+    | Value(id, _) -> VarSet.singleton id
+    | Label(_) -> VarSet.empty
+    | Goto(_) -> VarSet.empty
+    | CondGoto(_, _) -> VarSet.empty
+    | Comment(_) -> VarSet.empty
   in
 
   (* Booléen qu'on met à [true] lorsque les tables [lv_in] et [lv_out] sont
@@ -127,7 +137,28 @@ let mk_lv p =
   let lv_step_instruction (lab, instr) =
     (* Récupération de la liste des successeurs *)
     let succs = Hashtbl.find_all succ lab in
-    (* À compléter *)
+
+    (* Out[lab] *)
+    let tmp_out = List.fold_left
+      (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
+      VarSet.empty
+      succs
+    in
+    let change_1 = tmp_out <> (Hashtbl.find lv_out lab) in
+    Hashtbl.replace lv_out lab tmp_out;
+
+    (* In[lab] *)
+    let tmp_kill = lv_kill instr in
+    let tmp_out_in = VarSet.fold
+      (fun elt a -> VarSet.remove elt a)
+      tmp_kill (Hashtbl.find lv_out lab)
+    in
+    let tmp_in = VarSet.union tmp_out_in (lv_gen instr) in
+    let change_2 = tmp_in <> (Hashtbl.find lv_in lab) in
+    Hashtbl.replace lv_in lab tmp_in;
+
+    if change_1 || change_2 then change := true;
+
     ()
   in
 

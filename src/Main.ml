@@ -32,7 +32,7 @@ let file =
   in
   Arg.parse spec set_file usage;
   match !file with Some f -> f
-  | None -> Arg.usage spec usage; exit 1
+                 | None -> Arg.usage spec usage; exit 1
 
 
 let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
@@ -60,7 +60,7 @@ let preprocess f =
 
 let () =
   let c = if not !preprocessor then open_in file
-          else preprocess file in
+    else preprocess file in
 
   let lb = Lexing.from_channel c in
   let p  = if !prebuilt_frontend
@@ -80,9 +80,9 @@ let () =
     let p = GototoIr.flatten_main p in
     (* Code à réintégrer à la séance 3 *)
     let p =
-       if   !dead_code_elim
-       then IrDeadCodeElim.dce p
-       else p
+      if   !dead_code_elim
+      then IrDeadCodeElim.dce p
+      else p
     in
     let p = IrtoAllocated.allocate_main !reg_allocation p in
     let asm = AllocatedtoMips.generate_main p in

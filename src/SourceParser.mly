@@ -57,7 +57,7 @@ main:
 ;
 
 var_decls:
- (* empty *)                                { Symb_Tbl.empty    }
+ (* empty *)                                 { Symb_Tbl.empty    }
 | VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in
                                               Symb_Tbl.add id info tbl}
 (* À compléter *)

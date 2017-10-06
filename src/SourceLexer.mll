@@ -25,7 +25,7 @@ let id_or_keyword =
   fun s ->
     try  Hashtbl.find h s
     with Not_found -> IDENT(s)
-    
+
 
 }
 
@@ -35,13 +35,13 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
 
     rule token = parse
           | [' ' '\t' '\r']+
-            { token lexbuf }
+              { token lexbuf }
           | '\n'
               { new_line lexbuf; token lexbuf }
           | ident
               { id_or_keyword (lexeme lexbuf) }
           | digit+
-            { LITINT (int_of_string (lexeme lexbuf))}
+              { LITINT (int_of_string (lexeme lexbuf))}
           | "("
               { BEGIN }
           | ")"

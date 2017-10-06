@@ -6,9 +6,9 @@ open IrLiveness
    où le booléen [b] vaut [true] si au moins une instruction a été
    éliminée.
      [dce_step: IrAst.main -> bool * IrAst.main]
- *)
+*)
 let dce_step p =
-  
+
   (* Calcul des informations de vivacité *)
   let _, lv_out = mk_lv p in
 
@@ -24,13 +24,13 @@ let dce_step p =
     (* À compléter *)
     | _ -> true
   in
-  
+
   (* Filtre la liste pour ne garder que les instructions vivantes *)
   let filtered_code = List.filter live_instr p.code in
   (* Renvoie le booléen et le code simplifié *)
   List.length p.code <> List.length filtered_code, { p with code=filtered_code }
 
-    
+
 (* Élimination itérée *)
 let rec dce p =
   (* À compléter *)
