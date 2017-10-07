@@ -10,9 +10,9 @@ let allocate_main reg_flag p =
     then
       begin
         let g = IrInterferenceGraph.interference_graph p in
-        (*Printf.printf "%s\n" (Graph.dump g);*)
+        Printf.printf "%s\n" (Graph.dump g);
         let coloring = GraphColoring.colorize g in
-        (*GraphColoring.NodeMap.iter (fun key elt -> Printf.printf "%s %d\n" key elt) coloring;*)
+        GraphColoring.NodeMap.iter (fun key elt -> Printf.printf "%s %d\n" key elt) coloring;
 
         S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
