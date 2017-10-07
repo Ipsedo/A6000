@@ -10,7 +10,7 @@ main(integer x) (
     continue := false;
     j := 0;
     while j < x+1 (
-      if i*i + j*j < x*x then (
+      if i*i + j*j - 1 < x*x - 1 then (
         print(46);
         continue := true;
       ) else (

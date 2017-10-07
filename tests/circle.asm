@@ -10,7 +10,7 @@
 	move $t2, $t0
 #_main_1
 	li $t0, 0
-	move $t3, $t0
+	move $t4, $t0
 #_main_2
 	jal _label_main_1
 #_label_main_2
@@ -26,97 +26,104 @@ _label_main_2:
 #_label_main_4
 _label_main_4:
 #_main_8
-	move $t0, $t3
-	move $t1, $t3
+	move $t0, $t4
+	move $t1, $t4
 	mul $t0, $t0, $t1
-	move $t3, $t0
+	move $t6, $t0
 #_main_9
 	move $t0, $t3
 	move $t1, $t3
 	mul $t0, $t0, $t1
-	move $t3, $t0
+	move $t5, $t0
 #_main_10
-	move $t0, $t3
-	move $t1, $t3
+	move $t0, $t6
+	move $t1, $t5
 	add $t0, $t0, $t1
-	move $t3, $t0
+	move $t5, $t0
 #_main_11
+	move $t0, $t5
+	li $t1, 1
+	sub $t0, $t0, $t1
+	move $t6, $t0
+#_main_12
 	lw $t0, 0($fp)
 	lw $t1, 0($fp)
 	mul $t0, $t0, $t1
-	move $t3, $t0
-#_main_12
-	move $t0, $t3
-	move $t1, $t3
-	slt $t0, $t0, $t1
-	move $t3, $t0
+	move $t5, $t0
 #_main_13
-	li $t0, 1
-	move $t1, $t3
-	beq $t1, $t0, _label_main_5
+	move $t0, $t5
+	li $t1, 1
+	sub $t0, $t0, $t1
+	move $t5, $t0
 #_main_14
+	move $t0, $t6
+	move $t1, $t5
+	slt $t0, $t0, $t1
+	move $t5, $t0
+#_main_15
+	move $t0, $t5
+	bgtz $t0, _label_main_5
+#_main_16
 	li $a0, 35
 	li $v0, 11
 	syscall
-#_main_15
+#_main_17
 	jal _label_main_6
 #_label_main_5
 _label_main_5:
-#_main_17
+#_main_19
 	li $a0, 46
 	li $v0, 11
 	syscall
-#_main_18
+#_main_20
 	li $t0, 1
 	move $t2, $t0
 #_label_main_6
 _label_main_6:
-#_main_20
+#_main_22
 	li $a0, 32
 	li $v0, 11
 	syscall
-#_main_21
+#_main_23
 	move $t0, $t3
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t2, $t0
-#_main_22
-	move $t0, $t2
+	move $t3, $t0
+#_main_24
+	move $t0, $t3
 	move $t3, $t0
 #_label_main_3
 _label_main_3:
-#_main_24
+#_main_26
 	lw $t0, 0($fp)
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t2, $t0
-#_main_25
-	move $t0, $t3
-	move $t1, $t2
-	slt $t0, $t0, $t1
-	move $t3, $t0
-#_main_26
-	li $t0, 1
-	move $t1, $t3
-	beq $t1, $t0, _label_main_4
+	move $t5, $t0
 #_main_27
+	move $t0, $t3
+	move $t1, $t5
+	slt $t0, $t0, $t1
+	move $t5, $t0
+#_main_28
+	move $t0, $t5
+	bgtz $t0, _label_main_4
+#_main_29
 	li $a0, 10
 	li $v0, 11
 	syscall
-#_main_28
-	move $t0, $t3
+#_main_30
+	move $t0, $t4
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t2, $t0
-#_main_29
-	move $t0, $t2
 	move $t3, $t0
+#_main_31
+	move $t0, $t3
+	move $t4, $t0
 #_label_main_1
 _label_main_1:
-#_main_31
-	li $t0, 1
-	move $t1, $t2
-	beq $t1, $t0, _label_main_2
+#_main_33
+	move $t0, $t2
+	bgtz $t0, _label_main_2
 	li $v0, 10
 	syscall
 atoi:

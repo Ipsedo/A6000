@@ -42,7 +42,7 @@ let generate_main p =
         | Sub -> sub res r1 r2
         | Eq -> seq res r1 r2
         | Neq -> sne res r1 r2
-        | Lt -> slt res r1 r2 (* < *)
+        | Lt -> slt res r1 r2
         | Le -> sle res r1 r2
         | Mt -> sgt res r1 r2
         | Me -> sge res r1 r2
@@ -63,10 +63,8 @@ let generate_main p =
     | Label(l) -> label l
     | Goto(l) -> jal l
     | CondGoto(value, l) -> (let tmp1 = ~$t0 in
-                             let tmp2 = ~$t1 in
-                             li tmp1 1
-                             @@ load_value tmp2 value
-                             @@ beq tmp2 tmp1 l)
+                             load_value tmp1 value
+                             @@ bgtz tmp1 l)
     | Comment(str) -> comment str
   in
 

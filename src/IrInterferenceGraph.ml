@@ -19,11 +19,15 @@ open IrLiveness
 let add_interferences g lv_out_at_node = function
   | Value(a, Identifier c) ->
     (* Copie : ne pas introduire de conflit entre [a] et [c]. *)
-    (* À compléter. *)
-    VarSet.fold (fun elt acc -> Graph.add_edge g a elt) lv_out_at_node g
+    VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | Binop(a, _, Identifier c1, Identifier c2) ->
-    let tmp = VarSet.fold (fun elt acc -> Graph.add_edge g a elt) lv_out_at_node g
-    in Graph.add_edge tmp c1 c2
+    let tmp = VarSet.fold
+              (fun elt acc -> Graph.add_edge acc a elt)
+              lv_out_at_node g
+    in
+    Graph.add_edge tmp c1 c2
+  | Binop(a, _, _, _) ->
+    VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | _ -> g
 
 let add_node_bourrin g str =
@@ -38,7 +42,15 @@ let make_instruction_node g = function
   let tmp1 = add_node_bourrin g id in
   let tmp2 = add_node_bourrin tmp1 c1 in
   add_node_bourrin tmp2 c2
-| Print( Identifier c) ->
+(* Partie suivante obligatoire ? *)
+| Binop(id, _,  Identifier c1,  Literal _) ->
+  let tmp1 = add_node_bourrin g id in
+  add_node_bourrin tmp1 c1
+| Binop(id, _,  Literal _,  Identifier c2) ->
+  let tmp1 = add_node_bourrin g id in
+  add_node_bourrin tmp1 c2
+(* Fin partie suivante *)
+| Print(Identifier c) ->
   add_node_bourrin g c
 | CondGoto(Identifier c, _) ->
   add_node_bourrin g c
