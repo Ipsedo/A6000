@@ -4,55 +4,55 @@
 	lw $a0, 0($a1)
 	jal atoi
 	sw $v0, 0($fp)
-	addi $sp, $sp, -48
+	addi $sp, $sp, 0
 #_main_0
 	li $t0, 1
-	sw $t0, -40($fp)
+	move $t2, $t0
 #_main_1
 	li $t0, 0
-	sw $t0, -44($fp)
+	move $t3, $t0
 #_main_2
 	jal _label_main_1
 #_label_main_2
 _label_main_2:
 #_main_4
 	li $t0, 0
-	sw $t0, -40($fp)
+	move $t2, $t0
 #_main_5
 	li $t0, 0
-	sw $t0, -48($fp)
+	move $t3, $t0
 #_main_6
 	jal _label_main_3
 #_label_main_4
 _label_main_4:
 #_main_8
-	lw $t0, -44($fp)
-	lw $t1, -44($fp)
+	move $t0, $t3
+	move $t1, $t3
 	mul $t0, $t0, $t1
-	sw $t0, -20($fp)
+	move $t3, $t0
 #_main_9
-	lw $t0, -48($fp)
-	lw $t1, -48($fp)
+	move $t0, $t3
+	move $t1, $t3
 	mul $t0, $t0, $t1
-	sw $t0, -24($fp)
+	move $t3, $t0
 #_main_10
-	lw $t0, -20($fp)
-	lw $t1, -24($fp)
+	move $t0, $t3
+	move $t1, $t3
 	add $t0, $t0, $t1
-	sw $t0, -28($fp)
+	move $t3, $t0
 #_main_11
 	lw $t0, 0($fp)
 	lw $t1, 0($fp)
 	mul $t0, $t0, $t1
-	sw $t0, -32($fp)
+	move $t3, $t0
 #_main_12
-	lw $t0, -28($fp)
-	lw $t1, -32($fp)
+	move $t0, $t3
+	move $t1, $t3
 	slt $t0, $t0, $t1
-	sw $t0, -36($fp)
+	move $t3, $t0
 #_main_13
 	li $t0, 1
-	lw $t1, -36($fp)
+	move $t1, $t3
 	beq $t1, $t0, _label_main_5
 #_main_14
 	li $a0, 35
@@ -68,7 +68,7 @@ _label_main_5:
 	syscall
 #_main_18
 	li $t0, 1
-	sw $t0, -40($fp)
+	move $t2, $t0
 #_label_main_6
 _label_main_6:
 #_main_20
@@ -76,46 +76,46 @@ _label_main_6:
 	li $v0, 11
 	syscall
 #_main_21
-	lw $t0, -48($fp)
+	move $t0, $t3
 	li $t1, 1
 	add $t0, $t0, $t1
-	sw $t0, -16($fp)
+	move $t2, $t0
 #_main_22
-	lw $t0, -16($fp)
-	sw $t0, -48($fp)
+	move $t0, $t2
+	move $t3, $t0
 #_label_main_3
 _label_main_3:
 #_main_24
 	lw $t0, 0($fp)
 	li $t1, 1
 	add $t0, $t0, $t1
-	sw $t0, -8($fp)
+	move $t2, $t0
 #_main_25
-	lw $t0, -48($fp)
-	lw $t1, -8($fp)
+	move $t0, $t3
+	move $t1, $t2
 	slt $t0, $t0, $t1
-	sw $t0, -12($fp)
+	move $t3, $t0
 #_main_26
 	li $t0, 1
-	lw $t1, -12($fp)
+	move $t1, $t3
 	beq $t1, $t0, _label_main_4
 #_main_27
 	li $a0, 10
 	li $v0, 11
 	syscall
 #_main_28
-	lw $t0, -44($fp)
+	move $t0, $t3
 	li $t1, 1
 	add $t0, $t0, $t1
-	sw $t0, -4($fp)
+	move $t2, $t0
 #_main_29
-	lw $t0, -4($fp)
-	sw $t0, -44($fp)
+	move $t0, $t2
+	move $t3, $t0
 #_label_main_1
 _label_main_1:
 #_main_31
 	li $t0, 1
-	lw $t1, -40($fp)
+	move $t1, $t2
 	beq $t1, $t0, _label_main_2
 	li $v0, 10
 	syscall

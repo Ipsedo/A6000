@@ -22,20 +22,20 @@ let pick_color g coloring n =
   List.fold_left
     (fun acc elt ->
       let color = NodeMap.find elt coloring in
-      Printf.printf "%d\n" color;
-      if color < acc then color
+      Printf.printf "%d %d %s\n" color acc elt;
+      if color = acc then (color + 1)
       else acc)
-  500 node_interference
+  0 node_interference
 
 let min_deg_node g =
   match Graph.min_degree g with
   | Some str -> str
   | None -> raise ColoringFinished
 
-
 (** Renvoie une coloration pour le graphe [g]. *)
 let rec colorize (g : Graph.t) : coloring =
   try
+    Printf.printf "%s\n" (Graph.dump g);
     let min_node = min_deg_node g in
     let new_g = Graph.del_node g min_node in
     let coloring = colorize new_g in
