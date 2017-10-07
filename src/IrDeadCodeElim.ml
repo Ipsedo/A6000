@@ -27,9 +27,9 @@ let dce_step p =
   in
 
   let live_instr = function
-    (lab, instr) -> let lv_out_instr = Hashtbl.find lv_out lab in
-                    let updated = var_updated instr in
-                    VarSet.subset updated lv_out_instr
+      (lab, instr) -> let lv_out_instr = Hashtbl.find lv_out lab in
+      let updated = var_updated instr in
+      VarSet.subset updated lv_out_instr
   in
 
   (* Filtre la liste pour ne garder que les instructions vivantes *)

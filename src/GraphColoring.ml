@@ -21,12 +21,12 @@ let pick_color g coloring n =
   let node_interference = Graph.neighbours g n in
 
   let list_color = List.fold_left
-    (fun acc elt -> (NodeMap.find elt coloring)::acc)
-    [] node_interference
+      (fun acc elt -> (NodeMap.find elt coloring)::acc)
+      [] node_interference
   in
 
   let sorted_list = List.sort compare list_color in
-  
+
   List.fold_left
     (fun acc color -> if color = acc then (acc + 1) else acc)
     0 sorted_list

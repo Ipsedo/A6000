@@ -22,8 +22,8 @@ let add_interferences g lv_out_at_node = function
     VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | Binop(a, _, Identifier c1, Identifier c2) ->
     let tmp = VarSet.fold
-              (fun elt acc -> Graph.add_edge acc a elt)
-              lv_out_at_node g
+        (fun elt acc -> Graph.add_edge acc a elt)
+        lv_out_at_node g
     in
     Graph.add_edge tmp c1 c2
   | Binop(a, _, _, _) ->
@@ -35,41 +35,41 @@ let add_node_bourrin g str =
   with Graph.InvalidNode -> g
 
 let make_instruction_node g = function
-| Value(id, Identifier c) ->
-  let tmp = add_node_bourrin g id
-  in add_node_bourrin tmp c
-| Binop(id, _,  Identifier c1,  Identifier c2) ->
-  let tmp1 = add_node_bourrin g id in
-  let tmp2 = add_node_bourrin tmp1 c1 in
-  add_node_bourrin tmp2 c2
-(* Partie suivante obligatoire ? *)
-| Binop(id, _,  Identifier c1,  Literal _) ->
-  let tmp1 = add_node_bourrin g id in
-  add_node_bourrin tmp1 c1
-| Binop(id, _,  Literal _,  Identifier c2) ->
-  let tmp1 = add_node_bourrin g id in
-  add_node_bourrin tmp1 c2
-(* Fin partie suivante *)
-| Print(Identifier c) ->
-  add_node_bourrin g c
-| CondGoto(Identifier c, _) ->
-  add_node_bourrin g c
-| _ -> g
+  | Value(id, Identifier c) ->
+    let tmp = add_node_bourrin g id
+    in add_node_bourrin tmp c
+  | Binop(id, _,  Identifier c1,  Identifier c2) ->
+    let tmp1 = add_node_bourrin g id in
+    let tmp2 = add_node_bourrin tmp1 c1 in
+    add_node_bourrin tmp2 c2
+  (* Partie suivante obligatoire ? *)
+  | Binop(id, _,  Identifier c1,  Literal _) ->
+    let tmp1 = add_node_bourrin g id in
+    add_node_bourrin tmp1 c1
+  | Binop(id, _,  Literal _,  Identifier c2) ->
+    let tmp1 = add_node_bourrin g id in
+    add_node_bourrin tmp1 c2
+  (* Fin partie suivante *)
+  | Print(Identifier c) ->
+    add_node_bourrin g c
+  | CondGoto(Identifier c, _) ->
+    add_node_bourrin g c
+  | _ -> g
 
 (* Fonction principale, qui itère sur l'ensemble des points du programme. *)
 let interference_graph p : Graph.t =
   (* D'abord, définir le graphe sans arêtes contenant un sommet pour chaque
      identifiant de la table des symboles. *)
   let g = List.fold_left
-          (fun acc (_, instr) ->
-            make_instruction_node acc instr)
-          Graph.empty p.code
+      (fun acc (_, instr) ->
+         make_instruction_node acc instr)
+      Graph.empty p.code
   in
   (* Ensuite, récupérer le résultat de l'analyse de vivacité. *)
   let _, lv_out = mk_lv p in
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
   List.fold_left
-  (fun acc (lab, instr) ->
-    add_interferences acc (Hashtbl.find lv_out lab) instr)
-  g p.code
+    (fun acc (lab, instr) ->
+       add_interferences acc (Hashtbl.find lv_out lab) instr)
+    g p.code

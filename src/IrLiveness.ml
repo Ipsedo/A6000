@@ -134,9 +134,9 @@ let mk_lv p =
 
     (* Out[lab] *)
     let tmp_out = List.fold_left
-      (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
-      VarSet.empty
-      succs
+        (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
+        VarSet.empty
+        succs
     in
     let change_1 = tmp_out <> (Hashtbl.find lv_out lab) in
     Hashtbl.replace lv_out lab tmp_out;
@@ -144,8 +144,8 @@ let mk_lv p =
     (* In[lab] *)
     let tmp_kill = lv_kill instr in
     let tmp_out_in = VarSet.fold
-      (fun elt a -> VarSet.remove elt a)
-      tmp_kill (Hashtbl.find lv_out lab)
+        (fun elt a -> VarSet.remove elt a)
+        tmp_kill (Hashtbl.find lv_out lab)
     in
     let tmp_in = VarSet.union tmp_out_in (lv_gen instr) in
     let change_2 = tmp_in <> (Hashtbl.find lv_in lab) in
