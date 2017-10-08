@@ -83,7 +83,11 @@ let print_binop = function
 let rec print_expression = function
   | Literal lit -> print_literal lit
   | Location id -> print_location id
-  | Binop(op, e1, e2) -> sprintf "( %s %s %s )" (print_expression e1) (print_binop op) (print_expression e2)
+  | Binop(op, e1, e2) ->
+    sprintf "( %s %s %s )"
+      (print_expression e1)
+      (print_binop op)
+      (print_expression e2)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function

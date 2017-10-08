@@ -64,7 +64,8 @@ let () =
 
   let lb = Lexing.from_channel c in
   let p  = if !prebuilt_frontend
-    then (*PrebuiltParser.main PrebuiltLexer.token lb*)failwith "c + possible..."
+    then (*PrebuiltParser.main PrebuiltLexer.token lb*)
+      failwith "c + possible..."
     else begin
       try SourceParser.main SourceLexer.token lb
       with SourceParser.Error -> raise_token_excpetion lb

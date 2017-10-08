@@ -74,7 +74,8 @@ let typecheck_main p =
 
   (* type_location: location -> typ *)
   and type_location = function
-    | Identifier(id, pos) -> current_pos := pos; (Symb_Tbl.find id symb_tbl).typ
+    | Identifier(id, pos) -> current_pos := pos;
+      (Symb_Tbl.find id symb_tbl).typ
 
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)

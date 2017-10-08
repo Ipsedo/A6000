@@ -92,13 +92,13 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               {
                 let start_p = lexeme_start_p lexbuf in
                 raise (UnknowChar ("Unknow char(s) \""
-                                   ^ (lexeme lexbuf)
-                                   ^ "\" in "
-                                   ^ start_p.pos_fname (* /!\ j'arrive pas à recup nom fichier *)
-                                   ^ " at line "
-                                   ^ (string_of_int start_p.pos_lnum)
-                                   ^ ", col "
-                                   ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))}
+                      ^ (lexeme lexbuf)
+                      ^ "\" in "
+                      ^ start_p.pos_fname (* arrive pas à recup nom fichier *)
+                      ^ " at line "
+                      ^ (string_of_int start_p.pos_lnum)
+                      ^ ", col "
+                      ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))}
 
 and comment = parse
             | "(*"

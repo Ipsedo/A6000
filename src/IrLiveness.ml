@@ -101,7 +101,8 @@ let mk_lv p =
 
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Print(v) -> value_to_var_set v
-    | Binop(_, _, v1, v2) -> VarSet.union (value_to_var_set v1) (value_to_var_set v2)
+    | Binop(_, _, v1, v2) ->
+      VarSet.union (value_to_var_set v1) (value_to_var_set v2)
     | Value(_, v) -> value_to_var_set v
     | CondGoto(v, _) -> value_to_var_set v
     | _ -> VarSet.empty

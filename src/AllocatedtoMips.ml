@@ -26,7 +26,7 @@ let generate_main p =
   and load_value r : AllocatedAst.value -> 'a Mips.asm = function
     | Identifier id -> (match find_alloc id with
         | Stack o -> lw r o ~$fp
-        | Reg reg -> move r reg) (* /!\ on utilise tt le temps les regitres [0-3] *)
+        | Reg reg -> move r reg)
     | Literal id -> (match id with
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))

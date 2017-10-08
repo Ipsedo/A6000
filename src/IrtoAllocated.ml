@@ -12,7 +12,9 @@ let allocate_main reg_flag p =
         let g = IrInterferenceGraph.interference_graph p in
         Printf.printf "%s\n" (Graph.dump g);
         let coloring = GraphColoring.colorize g in
-        GraphColoring.NodeMap.iter (fun key elt -> Printf.printf "%s %d\n" key elt) coloring;
+        GraphColoring.NodeMap.iter
+          (fun key elt -> Printf.printf "%s %d\n" key elt)
+          coloring;
 
         S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
@@ -31,7 +33,8 @@ let allocate_main reg_flag p =
       S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
           match info with
           | FormalX -> T.Stack 0
-          | Local ->  current_offset := !current_offset - 4; T.Stack (!current_offset)
+          | Local -> current_offset := !current_offset - 4;
+            T.Stack (!current_offset)
         ) p.S.locals
   in
 

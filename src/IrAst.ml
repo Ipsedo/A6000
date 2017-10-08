@@ -49,5 +49,6 @@ and print_instruction = function
   | Comment(c)       -> sprintf "# %s" c
 
 and print_value = function
-  | Literal(lit)   -> failwith "unimplemented printf UntypedAst.literal (Source.Ast)"
+  | Literal(lit)   ->
+    failwith "unimplemented printf UntypedAst.literal (Source.Ast)"
   | Identifier(id) -> id
