@@ -1,0 +1,10 @@
+main(integer x) (
+  var integer a;
+  print(x);
+  a := 1 + 5 + 8 - 9 * 5 * 2 - 7 + 6 * 7 * 9 + 6 * 6;
+  if a == 331 then (
+    print(10);
+    print(x);
+  );
+)
+

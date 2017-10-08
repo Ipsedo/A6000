@@ -13,9 +13,9 @@
 	li $t0, 1
 	li $t1, 5
 	add $t0, $t0, $t1
-	move $t3, $t0
+	move $t4, $t0
 #_main_2
-	move $t0, $t3
+	move $t0, $t4
 	li $t1, 8
 	add $t0, $t0, $t1
 	move $t4, $t0
@@ -33,9 +33,9 @@
 	move $t0, $t4
 	move $t1, $t3
 	sub $t0, $t0, $t1
-	move $t3, $t0
+	move $t4, $t0
 #_main_6
-	move $t0, $t3
+	move $t0, $t4
 	li $t1, 7
 	sub $t0, $t0, $t1
 	move $t4, $t0
@@ -63,17 +63,17 @@
 	move $t0, $t4
 	move $t1, $t3
 	add $t0, $t0, $t1
-	move $t3, $t0
+	move $t4, $t0
 #_main_12
-	move $t0, $t3
+	move $t0, $t4
 	move $t3, $t0
 #_main_13
 	move $t0, $t3
 	li $t1, 331
 	seq $t0, $t0, $t1
-	move $t3, $t0
+	move $t4, $t0
 #_main_14
-	move $t0, $t3
+	move $t0, $t4
 	bgtz $t0, _label_main_1
 #_main_15
 	jal _label_main_2

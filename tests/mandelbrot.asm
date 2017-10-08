@@ -5,9 +5,6 @@
 	jal atoi
 	sw $v0, 0($fp)
 	addi $sp, $sp, -12
-#_main_0
-	li $t0, 0
-	move $t8, $t0
 #_main_1
 	li $t0, 0
 	move $t7, $t0
