@@ -39,9 +39,9 @@ _label_main_4:
 	move $t0, $t6
 	move $t1, $t5
 	add $t0, $t0, $t1
-	move $t5, $t0
+	move $t6, $t0
 #_main_11
-	move $t0, $t5
+	move $t0, $t6
 	li $t1, 1
 	sub $t0, $t0, $t1
 	move $t6, $t0
@@ -59,9 +59,9 @@ _label_main_4:
 	move $t0, $t6
 	move $t1, $t5
 	slt $t0, $t0, $t1
-	move $t5, $t0
+	move $t6, $t0
 #_main_15
-	move $t0, $t5
+	move $t0, $t6
 	bgtz $t0, _label_main_5
 #_main_16
 	li $a0, 35
@@ -88,9 +88,9 @@ _label_main_6:
 	move $t0, $t3
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t3, $t0
+	move $t6, $t0
 #_main_24
-	move $t0, $t3
+	move $t0, $t6
 	move $t3, $t0
 #_label_main_3
 _label_main_3:
@@ -98,14 +98,14 @@ _label_main_3:
 	lw $t0, 0($fp)
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t5, $t0
+	move $t6, $t0
 #_main_27
 	move $t0, $t3
-	move $t1, $t5
+	move $t1, $t6
 	slt $t0, $t0, $t1
-	move $t5, $t0
+	move $t6, $t0
 #_main_28
-	move $t0, $t5
+	move $t0, $t6
 	bgtz $t0, _label_main_4
 #_main_29
 	li $a0, 10
@@ -115,9 +115,9 @@ _label_main_3:
 	move $t0, $t4
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t3, $t0
+	move $t6, $t0
 #_main_31
-	move $t0, $t3
+	move $t0, $t6
 	move $t4, $t0
 #_label_main_1
 _label_main_1:

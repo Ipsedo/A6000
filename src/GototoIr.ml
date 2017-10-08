@@ -15,16 +15,23 @@ let flatten_main p =
     symb_tbl := T.Symb_Tbl.add s (Local: T.identifier_info) !symb_tbl;
   in
 
+  let reinit_tmp = ref true in
+
   (* new_tmp: unit -> string *)
   (* Un appel [new_tmp()] crée un nouvel identifiant de registre virtuel
      et l'ajoute à la table des symboles. *)
-  let new_tmp =
+  let new_tmp nb =
     let cpt = ref 0 in
-    fun () ->
-      incr cpt;
-      let tmp = Printf.sprintf "_tmp_%i" !cpt in
-      add_symb tmp;
-      tmp
+    begin
+      match !reinit_tmp with
+      | true -> (cpt := 0;
+                 reinit_tmp := false;)
+      | _ -> cpt := nb;
+    end;
+    incr cpt;
+    let tmp = Printf.sprintf "_tmp_%i" !cpt in
+    add_symb tmp;
+    tmp
   in
 
   (* flatten_block: S.block -> T.instruction list *)
@@ -35,14 +42,19 @@ let flatten_main p =
   (* flatten_instruction: S.instruction -> T.instruction list *)
   and flatten_instruction = function
     | S.Print(e) ->
-      let ce, ve = flatten_expression e in
+      reinit_tmp := true;
+      let ce, ve = flatten_expression 0 e in
       ce @ [ T.Print(ve) ]
     | S.Goto(l) -> [ T.Goto(l) ]
-    | S.CondGoto(c, l) -> let ce, ve = flatten_expression c in
+    | S.CondGoto(c, l) ->
+      reinit_tmp := true;
+      let ce, ve = flatten_expression 0 c in
       ce @ [ T.CondGoto(ve, l) ]
     | S.Label(l) -> [ T.Label(l) ]
-    | S.Set(loc, e) -> (match loc with 
-          Identifier(id) -> let ce, ve = flatten_expression e in
+    | S.Set(loc, e) -> (match loc with
+          Identifier(id) ->
+          reinit_tmp := true;
+          let ce, ve = flatten_expression 0 e in
           ce @ [ T.Value(id, ve) ])
     | S.Comment(str) -> [ T.Comment(str) ]
 
@@ -56,13 +68,13 @@ let flatten_main p =
      - l'expression est composée, et la valeur sera l'identifiant du registre
        virtuel dans lequel a été placé le résultat.
   *)
-  and flatten_expression : S.expression -> T.instruction list * T.value =
+  and flatten_expression (nb : int) : S.expression -> T.instruction list * T.value =
     function
     | Location(Identifier id) -> [], T.Identifier(id)
     | Literal (l) -> [], T.Literal(l)
-    | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression e1 in
-      let ce2, ve2 = flatten_expression e2 in
-      let id_tmp = new_tmp () in
+    | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression nb e1 in
+      let ce2, ve2 = flatten_expression (nb + 1) e2 in
+      let id_tmp = new_tmp nb in
       ce1 @ ce2 @ [ T.Binop(id_tmp, b, ve1, ve2) ], T.Identifier(id_tmp)
   in
 
@@ -83,4 +95,3 @@ let flatten_main p =
 
   let flattened_code = flatten_block p.S.code in
   { T.locals = !symb_tbl; T.code = List.map label_instruction flattened_code }
-
