@@ -160,13 +160,14 @@ let mk_lv p =
   in
 
   (* Une passe complète : met à jour une fois chaque instruction
-     On inverse la liste d'instructions pour faire un parcour de la sorte :
+     On inverse la liste d'instructions :
      Label instruction de 0 à n,
      1) Out[n] puis In[n]
      ( n-1 ... 1 )
      n) Out[0] puis In[0] *)
+  let rev_code = List.rev code in
   let lv_step_main () =
-    List.iter lv_step_instruction (List.rev code)
+    List.iter lv_step_instruction rev_code
   in
   let nb_it = ref 0 in
   (* Répéter tant qu'il reste des changements *)
