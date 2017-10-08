@@ -1,4 +1,4 @@
-#DEFINE limit <50>
+#DEFINE limit <x>
 
 main(integer x) (
   var integer current_it;

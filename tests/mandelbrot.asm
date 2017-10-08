@@ -4,50 +4,50 @@
 	lw $a0, 0($a1)
 	jal atoi
 	sw $v0, 0($fp)
-	addi $sp, $sp, -8
+	addi $sp, $sp, -12
 #_main_0
 	li $t0, 0
-	move $t7, $t0
+	move $t8, $t0
 #_main_1
 	li $t0, 0
-	move $t6, $t0
+	move $t7, $t0
 #_main_2
 	jal _label_main_1
 #_label_main_2
 _label_main_2:
 #_main_4
 	li $t0, 0
-	move $t5, $t0
+	move $t6, $t0
 #_main_5
 	jal _label_main_3
 #_label_main_4
 _label_main_4:
 #_main_7
-	li $t0, 50
+	lw $t0, 0($fp)
 	li $t1, 2
 	div $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_8
-	move $t0, $t6
+	move $t0, $t7
 	lw $t1, -4($fp)
 	sub $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_9
 	lw $t0, -4($fp)
-	move $t8, $t0
+	move $t9, $t0
 #_main_10
-	li $t0, 50
+	lw $t0, 0($fp)
 	li $t1, 2
 	div $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_11
-	move $t0, $t5
+	move $t0, $t6
 	lw $t1, -4($fp)
 	sub $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_12
 	lw $t0, -4($fp)
-	move $t9, $t0
+	sw $t0, -12($fp)
 #_main_13
 	li $t0, 0
 	move $t2, $t0
@@ -56,14 +56,14 @@ _label_main_4:
 	move $t3, $t0
 #_main_15
 	li $t0, 0
-	move $t7, $t0
+	move $t8, $t0
 #_main_16
 	jal _label_main_7
 #_label_main_8
 _label_main_8:
 #_main_18
 	move $t0, $t2
-	move $t4, $t0
+	move $t5, $t0
 #_main_19
 	move $t0, $t2
 	move $t1, $t2
@@ -81,7 +81,7 @@ _label_main_8:
 	sw $t0, -4($fp)
 #_main_22
 	lw $t0, -4($fp)
-	move $t1, $t8
+	move $t1, $t9
 	add $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_23
@@ -94,25 +94,25 @@ _label_main_8:
 	sw $t0, -4($fp)
 #_main_25
 	lw $t0, -4($fp)
-	move $t1, $t4
+	move $t1, $t5
 	mul $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_26
 	lw $t0, -4($fp)
-	move $t1, $t9
+	lw $t1, -12($fp)
 	add $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_27
 	lw $t0, -4($fp)
 	move $t3, $t0
 #_main_28
-	move $t0, $t7
+	move $t0, $t8
 	li $t1, 1
 	add $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_29
 	lw $t0, -4($fp)
-	move $t7, $t0
+	move $t8, $t0
 #_label_main_7
 _label_main_7:
 #_main_31
@@ -136,8 +136,8 @@ _label_main_7:
 	slt $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_35
-	move $t0, $t7
-	li $t1, 50
+	move $t0, $t8
+	lw $t1, 0($fp)
 	slt $t0, $t0, $t1
 	sw $t0, -8($fp)
 #_main_36
@@ -149,8 +149,8 @@ _label_main_7:
 	lw $t0, -4($fp)
 	bgtz $t0, _label_main_8
 #_main_38
-	move $t0, $t7
-	li $t1, 50
+	move $t0, $t8
+	lw $t1, 0($fp)
 	seq $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_39
@@ -179,18 +179,18 @@ _label_main_5:
 #_label_main_6
 _label_main_6:
 #_main_47
-	move $t0, $t5
+	move $t0, $t6
 	li $t1, 1
 	add $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_48
 	lw $t0, -4($fp)
-	move $t5, $t0
+	move $t6, $t0
 #_label_main_3
 _label_main_3:
 #_main_50
-	move $t0, $t5
-	li $t1, 50
+	move $t0, $t6
+	lw $t1, 0($fp)
 	slt $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_51
@@ -201,18 +201,18 @@ _label_main_3:
 	li $v0, 11
 	syscall
 #_main_53
-	move $t0, $t6
+	move $t0, $t7
 	li $t1, 1
 	add $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_54
 	lw $t0, -4($fp)
-	move $t6, $t0
+	move $t7, $t0
 #_label_main_1
 _label_main_1:
 #_main_56
-	move $t0, $t6
-	li $t1, 50
+	move $t0, $t7
+	lw $t1, 0($fp)
 	slt $t0, $t0, $t1
 	sw $t0, -4($fp)
 #_main_57
