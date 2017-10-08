@@ -24,8 +24,8 @@ let flatten_main p =
     let cpt = ref 0 in
     begin
       match !reinit_tmp with
-      | true -> (cpt := 0;
-                 reinit_tmp := false;)
+      | true -> cpt := 0;
+        reinit_tmp := false;
       | _ -> cpt := nb;
     end;
     incr cpt;
@@ -68,7 +68,7 @@ let flatten_main p =
      - l'expression est composée, et la valeur sera l'identifiant du registre
        virtuel dans lequel a été placé le résultat.
   *)
-  and flatten_expression (nb : int) : S.expression -> T.instruction list * T.value =
+  and flatten_expression nb : S.expression -> T.instruction list * T.value =
     function
     | Location(Identifier id) -> [], T.Identifier(id)
     | Literal (l) -> [], T.Literal(l)
