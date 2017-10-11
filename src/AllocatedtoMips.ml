@@ -31,10 +31,25 @@ let generate_main p =
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
+  and load_value_ad_hoc r : AllocatedAst.value -> 'a Mips.asm * Mips.register option = function
+    | Identifier id -> (match find_alloc id with
+      | Stack o -> lw r o ~$fp, None
+      | Reg reg -> nop, Some reg)
+    | Literal id -> (match id with
+      | Int i  -> li r i, None
+      | Bool b -> li r (bool_to_int b), None)
+
   and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
-    let r1 = ~$t0 in
-    let r2 = ~$t1 in
-    let res = ~$t0 in
+    let dest = ref "" in
+    let will_ad_hoc = match find_alloc id with
+      | Reg reg -> dest := reg; true
+      | Stack _ -> false
+    in
+    let instr1, o1 = load_value_ad_hoc ~$t0 v1 in
+    let instr2, o2 = load_value_ad_hoc ~$t1 v2 in
+    let r1 = match o1 with Some r -> r | _ -> ~$t0 in
+    let r2 = match o2 with Some r -> r | _ -> ~$t1 in
+    let res = if will_ad_hoc then !dest else ~$t0 in
     let op = ((match b with
         | Add -> add
         | Mult -> mul
@@ -50,10 +65,10 @@ let generate_main p =
         | Or -> or_)
          res r1 r2)
     in
-    load_value r1 v1
-    @@ load_value r2 v2
+    instr1
+    @@ instr2
     @@ op
-    @@ store_identifier res id
+    @@ if will_ad_hoc then nop else store_identifier res id
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
@@ -64,8 +79,11 @@ let generate_main p =
     | Label(l) -> label l
     | Goto(l) -> jal l
     | CondGoto(value, l) -> (let tmp1 = ~$t0 in
-                             load_value tmp1 value
-                             @@ bgtz tmp1 l)
+                             let instr, o = load_value_ad_hoc tmp1 value in
+                             instr
+                             @@ match o with
+                              Some r -> bnez r l
+                              | _ -> bgtz tmp1 l)
     | Comment(str) -> comment str
   in
 
