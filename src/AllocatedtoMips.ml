@@ -48,7 +48,7 @@ let generate_main p =
         | Me -> sge
         | And -> and_
         | Or -> or_)
-        res r1 r2)
+         res r1 r2)
     in
     load_value r1 v1
     @@ load_value r2 v2
