@@ -266,54 +266,65 @@ _label_main_3:
 	syscall
 #_main_74
 	li $t0, 0
-	move $t4, $t0
+	move $t3, $t0
 #_main_75
+	li $t0, 0
+	move $t4, $t0
+#_main_76
 	jal _label_main_1
 #_label_main_2
 _label_main_2:
-#_main_77
-	move $t0, $t4
+#_main_78
+	move $t0, $t3
 	li $t1, 48
 	add $t0, $t0, $t1
 	move $t5, $t0
-#_main_78
+#_main_79
 	move $a0, $t5
 	li $v0, 11
 	syscall
-#_main_79
+#_main_80
+	move $t0, $t3
+	li $t1, 2
+	add $t0, $t0, $t1
+	move $t5, $t0
+#_main_81
+	move $t0, $t5
+	move $t3, $t0
+#_main_82
 	move $t0, $t4
 	li $t1, 2
 	add $t0, $t0, $t1
 	move $t5, $t0
-#_main_80
+#_main_83
 	move $t0, $t5
 	move $t4, $t0
 #_label_main_1
 _label_main_1:
-#_main_82
-	move $t0, $t4
+#_main_85
+	move $t0, $t3
 	li $t1, 10
 	slt $t0, $t0, $t1
 	move $t5, $t0
-#_main_83
+#_main_86
 	move $t0, $t5
 	bgtz $t0, _label_main_2
-#_main_84
+#_main_87
 	li $a0, 10
 	li $v0, 11
 	syscall
-#_main_85
+#_main_88
 	li $t0, 48
 	move $t4, $t0
-#_main_86
+#_main_89
 	move $t0, $t4
 	li $t1, 2
 	add $t0, $t0, $t1
 	move $t5, $t0
-#_main_87
+#_main_90
 	move $t0, $t5
 	move $t4, $t0
-#_main_88
+#_main_91
 	move $a0, $t4
 	li $v0, 11
 	syscall
