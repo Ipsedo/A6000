@@ -31,13 +31,14 @@ let generate_main p =
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
-  and load_value_ad_hoc r : AllocatedAst.value -> 'a Mips.asm * Mips.register option = function
+  and load_value_ad_hoc r : AllocatedAst.value ->
+    'a Mips.asm * Mips.register option = function
     | Identifier id -> (match find_alloc id with
-      | Stack o -> lw r o ~$fp, None
-      | Reg reg -> nop, Some reg)
+        | Stack o -> lw r o ~$fp, None
+        | Reg reg -> nop, Some reg)
     | Literal id -> (match id with
-      | Int i  -> li r i, None
-      | Bool b -> li r (bool_to_int b), None)
+        | Int i  -> li r i, None
+        | Bool b -> li r (bool_to_int b), None)
 
   and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
     let dest = ref "" in
@@ -82,8 +83,8 @@ let generate_main p =
                              let instr, o = load_value_ad_hoc tmp1 value in
                              instr
                              @@ match o with
-                              Some r -> bnez r l
-                              | _ -> bnez tmp1 l)
+                               Some r -> bnez r l
+                             | _ -> bnez tmp1 l)
     | Comment(str) -> comment str
   in
 
