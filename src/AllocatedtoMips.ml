@@ -83,7 +83,7 @@ let generate_main p =
                              instr
                              @@ match o with
                               Some r -> bnez r l
-                              | _ -> bgtz tmp1 l)
+                              | _ -> bnez tmp1 l)
     | Comment(str) -> comment str
   in
 
