@@ -1,1 +1,0 @@
-src/Main.ml: AllocatedtoMips Arg Filename Format GototoIr IrDeadCodeElim IrtoAllocated Lexing Mips Preprocessor Printf SourceInterpreter SourceLexer SourceParser SourceTypeChecker SourcetoUntyped UntypedtoGoto

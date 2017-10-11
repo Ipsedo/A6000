@@ -1,2 +1,0 @@
-src/SourceParser.ml: Lexing SourceAst Symb_Tbl
-src/SourceParser.mli: Lexing SourceAst
