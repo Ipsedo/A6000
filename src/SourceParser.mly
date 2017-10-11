@@ -72,7 +72,7 @@ instructions:
 | i=instruction; SEMI; is=instructions    { i @ is           }
 ;
 
-(* Pour ajouter le for de façon "sucre styntaxique",
+(* Pour ajouter la boucle for de façon "sucre styntaxique",
    il faut placer avant la boucle while une affectation.
    De ce fait il a fallu modifier la signature de la règle instruction
    en une list au lieu d'un élément simple *)
