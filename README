@@ -36,6 +36,6 @@ ont du être retiré de la fonction principale pour eviter les erreurs à
 la compilation
 
 - La deuxième extension du 3e TP figure dans les fichiers sources mais n'est
-pas implémentée.
+pas implémentée (IrAccessibility et IrConstantPropagation).
 
 - Les erreurs de lexème ne retournent pas bien la colonne courante.
