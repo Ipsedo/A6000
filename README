@@ -28,6 +28,7 @@ Parties ayant été faites et fonctionnelles :
   registres, pour de vrai)
   + extensions : - Réutilisation d'identifiants inter-instructions.
                  - Réutilisation d'identifiants intra-expressions.
+                 - Économiser les mouvements (ad hoc)
 
 Autres informations :
 - Du fait de l'ajout de nouveaux opérateurs, PrebuiltParser et PrebuiltLexer
