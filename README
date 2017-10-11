@@ -14,7 +14,7 @@ Parties ayant été faites et fonctionnelles :
                  - Aider son prochain : messages d'erreur :
                   Message d'erreur pour caractère non reconnu,
                   lexème non attendu et erreur de typage
-                  (les erreur de lexèmes ne sont pas gérées par les outils
+                  (NB : les erreur de lexème ne sont pas gérées par les outils
                   d'erreurs de menhir).
                  - Macros constantes (la valeur du macro est à mettre sur
                   une seule ligne).
