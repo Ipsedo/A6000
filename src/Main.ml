@@ -39,7 +39,7 @@ let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
   raise (UnexpectedToken ("Unexpected token \""
                           ^ (Lexing.lexeme lb)
                           ^ "\" in "
-                          ^ start_p.pos_fname (* /!\ j'arrive pas à recup nom fichier *)
+                          ^ start_p.pos_fname
                           ^ " at line "
                           ^ (string_of_int start_p.pos_lnum)
                           ^ ", col "

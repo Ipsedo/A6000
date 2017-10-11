@@ -94,7 +94,7 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
                 raise (UnknowChar ("Unknow char(s) \""
                       ^ (lexeme lexbuf)
                       ^ "\" in "
-                      ^ start_p.pos_fname (* arrive pas à recup nom fichier *)
+                      ^ start_p.pos_fname
                       ^ " at line "
                       ^ (string_of_int start_p.pos_lnum)
                       ^ ", col "
