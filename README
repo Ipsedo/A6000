@@ -2,7 +2,6 @@ Devoir de compilation - Acte I.
 Auteur : Samuel BERRIEN
 
 Parties ayant été faites et fonctionnelles :
-
 - TP 1 - Représentations intermédiaires et génération de code assembleur MIPS
 
 - TP 2 - Analyse lexicale, analyse syntaxique
@@ -31,6 +30,10 @@ Parties ayant été faites et fonctionnelles :
                  - Réutilisation d'identifiants intra-expressions.
 
 Autres informations :
+- Du fait de l'ajout de nouveaux opérateurs, PrebuiltParser et PrebuiltLexer
+ont du être retiré de la fonction principale pour eviter les erreurs à
+la compilation
+
 - La deuxième extension du 3e TP figure dans les fichiers sources mais n'est
 pas implémentée.
 
