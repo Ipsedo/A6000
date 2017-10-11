@@ -17,16 +17,13 @@ open IrLiveness
    dues à une instruction donnée, connaissant l'ensemble des variables
    vivantes en sortie de cette instruction. *)
 let add_interferences g lv_out_at_node = function
-  | Value(a, _) ->
-    (* Copie : ne pas introduire de conflit entre [a] et [c]. *)
-    VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | Binop(a, _, Identifier c1, Identifier c2) ->
     let tmp = VarSet.fold
         (fun elt acc -> Graph.add_edge acc a elt)
         lv_out_at_node g
     in
     Graph.add_edge tmp c1 c2
-  | Binop(a, _, _, _) ->
+  | Binop(a, _, _, _) | Value(a, _) ->
     VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | _ -> g
 

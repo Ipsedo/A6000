@@ -59,9 +59,8 @@ let preprocess f =
   open_in output_file
 
 let () =
-  let c = if not !preprocessor then open_in file
-    else preprocess file in
-
+  let c = if !preprocessor then preprocess file
+    else open_in file in
   let lb = Lexing.from_channel c in
   let p  = if !prebuilt_frontend
     then (*PrebuiltParser.main PrebuiltLexer.token lb*)

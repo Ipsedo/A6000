@@ -100,15 +100,12 @@ let mk_lv p =
   in
 
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
-    | Print(v) -> value_to_var_set v
     | Binop(_, _, v1, v2) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
-    | Value(_, v) -> value_to_var_set v
-    | CondGoto(v, _) -> value_to_var_set v
+    | Value(_, v) | Print(v) | CondGoto(v, _) -> value_to_var_set v
     | _ -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
-    | Binop(id, _, _, _) -> VarSet.singleton id
-    | Value(id, _) -> VarSet.singleton id
+    | Binop(id, _, _, _) | Value(id, _) -> VarSet.singleton id
     | _ -> VarSet.empty
   in
 
@@ -177,6 +174,6 @@ let mk_lv p =
     incr nb_it;
   done;
 
-  Printf.printf "nb it IrLiveness : %d\n" !nb_it;
+  (*Printf.printf "nb it IrLiveness : %d\n" !nb_it;*)
   (* Enfin, renvoyer les versions finales des tables *)
   lv_in, lv_out

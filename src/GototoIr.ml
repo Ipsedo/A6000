@@ -20,16 +20,9 @@ let flatten_main p =
   (* new_tmp: unit -> string *)
   (* Un appel [new_tmp()] crée un nouvel identifiant de registre virtuel
      et l'ajoute à la table des symboles. *)
+  (* On ajoute un argument qui donne l'index du registre temporel à utiliser *)
   let new_tmp nb =
-    let cpt = ref 0 in
-    begin
-      match !reinit_tmp with
-      | true -> cpt := 0;
-        reinit_tmp := false;
-      | _ -> cpt := nb;
-    end;
-    incr cpt;
-    let tmp = Printf.sprintf "_tmp_%i" !cpt in
+    let tmp = Printf.sprintf "_tmp_%i" nb in
     add_symb tmp;
     tmp
   in

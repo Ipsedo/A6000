@@ -6,7 +6,7 @@ module NodeMap = Map.Make(String)
 type color = int
 type coloring = color NodeMap.t
 
-exception ColoringFinished
+exception ColoringCanBegin
 
 (** Plus grande couleur utilisée dans une coloration.
     Sera utile plus tard pour initialiser le pointeur de pile. *)
@@ -31,10 +31,14 @@ let pick_color g coloring n =
     (fun acc color -> if color = acc then (acc + 1) else acc)
     0 sorted_list
 
+(* L'exception sera levée quand il ne restera plus de noeuds dans notre graphe
+   (ie. il faut commencer à colorier notre graphe),
+   cette exception sera rattrapée dans colorize où nous renverrons le NodeMap.t
+   dans lequel il faudra ajouter la couleur de chaque variables. *)
 let min_deg_node g =
   match Graph.min_degree g with
   | Some str -> str
-  | None -> raise ColoringFinished
+  | None -> raise ColoringCanBegin
 
 (** Renvoie une coloration pour le graphe [g]. *)
 let rec colorize (g : Graph.t) : coloring =
@@ -43,4 +47,4 @@ let rec colorize (g : Graph.t) : coloring =
     let new_g = Graph.del_node g min_node in
     let coloring = colorize new_g in
     NodeMap.add min_node (pick_color g coloring min_node) coloring
-  with ColoringFinished -> NodeMap.empty
+  with ColoringCanBegin -> NodeMap.empty

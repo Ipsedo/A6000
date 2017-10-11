@@ -33,6 +33,8 @@ and expression =
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
 
+(* On ajoute une position de lexeme pour les erreurs de type,
+   sera enlevé dans UntypedAst *)
 and literal =
   | Int  of int * Lexing.position  (* Constante entière   *)
   | Bool of bool * Lexing.position (* Constante booléenne *)

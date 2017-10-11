@@ -30,10 +30,8 @@ Parties ayant été faites et fonctionnelles :
   + extensions : - Réutilisation d'identifiants inter-instructions.
                  - Réutilisation d'identifiants intra-expressions.
 
-L'extension "Économiser les mouvements" du TP4 n'a pas été traitée du fait que
-l'extension du TP3 nécéssaire à sa réalisation ne l'est pas non plus.
-Cependant pour un soucis de perfectionnement elle finira par être traitée par
-simple curiosité.
+Autres informations :
+- La deuxième extension du 3e TP figure dans les fichiers sources mais n'est
+pas implémentée.
 
-Les erreurs de lexème ne retournent pas la colonne courante mais le lexème
-courant d'une ligne pour une raison qui n'a pas encore été trouvée.
+- Les erreurs de lexème ne retournent pas bien la colonne courante.

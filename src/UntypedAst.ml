@@ -6,6 +6,9 @@ type identifier_kind = SourceAst.identifier_kind
 type identifier_info = identifier_kind
 type binop = SourceAst.binop
 type block = instruction list
+(* Il faut tout redéfinir car la position du lexème courant
+   (pour erreur de type)
+   était placée dans les types literal et location *)
 and instruction =
   | Set   of location   * expression    (* Affectation *)
   | While of expression * block         (* Boucle      *)

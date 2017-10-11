@@ -14,30 +14,30 @@
 	li $t0, 3
 	li $t1, 4
 	mul $t0, $t0, $t1
-	move $t3, $t0
+	move $t2, $t0
 #_main_2
 	li $t0, 15
 	li $t1, 3
 	sub $t0, $t0, $t1
-	move $t2, $t0
-#_main_3
-	move $t0, $t3
-	move $t1, $t2
-	seq $t0, $t0, $t1
 	move $t3, $t0
+#_main_3
+	move $t0, $t2
+	move $t1, $t3
+	seq $t0, $t0, $t1
+	move $t2, $t0
 #_main_4
 	move $t0, $t5
-	move $t1, $t3
+	move $t1, $t2
 	and $t0, $t0, $t1
 	move $t5, $t0
 #_main_5
 	li $t0, 1
 	li $t1, 2
 	slt $t0, $t0, $t1
-	move $t3, $t0
+	move $t2, $t0
 #_main_6
 	move $t0, $t5
-	move $t1, $t3
+	move $t1, $t2
 	or $t0, $t0, $t1
 	move $t5, $t0
 #_main_7
@@ -103,10 +103,10 @@ _label_main_15:
 	move $t0, $t4
 	move $t1, $t4
 	mul $t0, $t0, $t1
-	move $t5, $t0
+	move $t2, $t0
 #_main_27
 	li $t0, 50
-	move $t1, $t5
+	move $t1, $t2
 	slt $t0, $t0, $t1
 	move $t5, $t0
 #_main_28

@@ -98,10 +98,10 @@ _label_main_3:
 	lw $t0, 0($fp)
 	li $t1, 1
 	add $t0, $t0, $t1
-	move $t7, $t0
+	move $t6, $t0
 #_main_27
 	move $t0, $t3
-	move $t1, $t7
+	move $t1, $t6
 	slt $t0, $t0, $t1
 	move $t7, $t0
 #_main_28

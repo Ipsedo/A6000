@@ -35,19 +35,20 @@ let generate_main p =
     let r1 = ~$t0 in
     let r2 = ~$t1 in
     let res = ~$t0 in
-    let op = (match b with
-        | Add -> add res r1 r2
-        | Mult -> mul res r1 r2
-        | Div  -> div res r1 r2
-        | Sub -> sub res r1 r2
-        | Eq -> seq res r1 r2
-        | Neq -> sne res r1 r2
-        | Lt -> slt res r1 r2
-        | Le -> sle res r1 r2
-        | Mt -> sgt res r1 r2
-        | Me -> sge res r1 r2
-        | And -> and_ res r1 r2
-        | Or -> or_ res r1 r2)
+    let op = ((match b with
+        | Add -> add
+        | Mult -> mul
+        | Div  -> div
+        | Sub -> sub
+        | Eq -> seq
+        | Neq -> sne
+        | Lt -> slt
+        | Le -> sle
+        | Mt -> sgt
+        | Me -> sge
+        | And -> and_
+        | Or -> or_)
+        res r1 r2)
     in
     load_value r1 v1
     @@ load_value r2 v2
