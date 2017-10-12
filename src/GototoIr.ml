@@ -35,18 +35,15 @@ let flatten_main p =
   (* flatten_instruction: S.instruction -> T.instruction list *)
   and flatten_instruction = function
     | S.Print(e) ->
-      reinit_tmp := true;
       let ce, ve = flatten_expression 0 e in
       ce @ [ T.Print(ve) ]
     | S.Goto(l) -> [ T.Goto(l) ]
     | S.CondGoto(c, l) ->
-      reinit_tmp := true;
       let ce, ve = flatten_expression 0 c in
       ce @ [ T.CondGoto(ve, l) ]
     | S.Label(l) -> [ T.Label(l) ]
     | S.Set(loc, e) -> (match loc with
           Identifier(id) ->
-          reinit_tmp := true;
           let ce, ve = flatten_expression 0 e in
           ce @ [ T.Value(id, ve) ])
     | S.Comment(str) -> [ T.Comment(str) ]
