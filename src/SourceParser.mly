@@ -47,6 +47,10 @@
 
 %%
 
+prog:
+| (* empty *) { [] }
+| f=fun_delc; p=prog { f::p }
+
 main:
   MAIN; BEGIN; INT; x=IDENT; END;
   BEGIN; vds=var_decls; is=instructions; END; EOF  {
@@ -61,7 +65,6 @@ var_decls:
  (* empty *)                                 { Symb_Tbl.empty    }
 | VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in
                                               Symb_Tbl.add id info tbl}
-(* À compléter *)
 ;
 
 typ:
@@ -167,7 +170,7 @@ location:
   id=IDENT  { Identifier (id, $startpos(id)) }
 ;
 
-/*call:
+call:
   id=IDENT; BEGIN; arg=arguments; END
   {
 
@@ -176,9 +179,32 @@ location:
 
 
 arguments:
-  e=expression { [e] }
-  | e1=expression; COMMA; es=arguments { e1::es }
+  | (* empty *) { [] }
+  | e=expression { [e] }
+  | e1=expression; COMMA; args=arguments { e1::args }
 ;
 
 fun_delc:
-|t=typ*/
+  |m=main { m }
+  |t=typ; id=IDENT; BEGIN; p=parameters; END;
+  BEGIN; vds=var_decls; is=instructions; END {
+    let params = List.fold_left
+    (fun (t, id) acc -> Symb_Tbl.add id {typ=t; kind=Local} acc)
+    p Symb_Tbl.empty in
+    let union_vars = fun _ _ v -> Some v in
+    {locals = Symb_Tbl.union union_vars params var_decls; code=is}
+  }
+  |id=IDENT; BEGIN; p=parameters; END;
+  BEGIN; vds=var_decls; is=instructions; END {
+    let params = List.fold_left
+    (fun (t, id) acc -> Symb_Tbl.add id {typ=t; kind=Local} acc)
+    p Symb_Tbl.empty in
+    let union_vars = fun _ _ v -> Some v in
+    {locals = Symb_Tbl.union union_vars params var_decls; code=is}
+  }
+;
+
+parameters:
+| (* empty *) { [] }
+| t=typ; id=IDENT { [(t, id)] }
+| t=typ; id=IDENT; p=parameters { (t, id)::p }
