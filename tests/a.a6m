@@ -1,6 +1,5 @@
 main(integer x) (
-  var integer a;
   print(x);
-  a := 1;
-  x := a + 1;
+  x := x + 1;
+  print(x);
 )

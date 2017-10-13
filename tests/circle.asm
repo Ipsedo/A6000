@@ -12,7 +12,7 @@
 	li $t0, 0
 	move $t4, $t0
 #_main_2
-	jal _label_main_1
+	b _label_main_1
 #_label_main_2
 _label_main_2:
 #_main_4
@@ -22,7 +22,7 @@ _label_main_2:
 	li $t0, 0
 	move $t3, $t0
 #_main_6
-	jal _label_main_3
+	b _label_main_3
 #_label_main_4
 _label_main_4:
 #_main_8
@@ -44,7 +44,7 @@ _label_main_4:
 	li $v0, 11
 	syscall
 #_main_15
-	jal _label_main_6
+	b _label_main_6
 #_label_main_5
 _label_main_5:
 #_main_17
@@ -64,8 +64,7 @@ _label_main_6:
 	li $t1, 1
 	add $t7, $t3, $t1
 #_main_22
-	move $t0, $t7
-	move $t3, $t0
+	move $t3, $t7
 #_label_main_3
 _label_main_3:
 #_main_24
@@ -84,8 +83,7 @@ _label_main_3:
 	li $t1, 1
 	add $t7, $t4, $t1
 #_main_29
-	move $t0, $t7
-	move $t4, $t0
+	move $t4, $t7
 #_label_main_1
 _label_main_1:
 #_main_31

@@ -7,6 +7,7 @@
 %token <string> IDENT
 %token BEGIN END
 %token SEMI
+%token COMMA
 
 %token BOOL
 %token INT
@@ -66,6 +67,7 @@ var_decls:
 typ:
   INT { TypInteger }
 | BOOL { TypBoolean }
+;
 
 instructions:
  (* empty *)                             { []                }
@@ -119,16 +121,19 @@ set:
   {
       Set(id, Binop(op, Location(id), e))
   }
+;
 
 %inline instant_set_op:
   INCR { Add }
 | DECR { Sub }
+;
 
 %inline set_op:
   ADDSET { Add }
 | SUBSET { Sub }
 | MULTSET { Mult }
 | DIVSET  { Div }
+;
 
 expression:
   loc=location                            { Location(loc) }
@@ -150,12 +155,30 @@ expression:
 | NEQ  { Neq }
 | AND  { And }
 | OR   { Or }
+;
 
 literal:
   i=LITINT { Int (i, $startpos(i)) }
 | b=LITBOOL { Bool (b, $startpos(b)) }
+;
 
 
 location:
   id=IDENT  { Identifier (id, $startpos(id)) }
 ;
+
+/*call:
+  id=IDENT; BEGIN; arg=arguments; END
+  {
+
+  }
+;
+
+
+arguments:
+  e=expression { [e] }
+  | e1=expression; COMMA; es=arguments { e1::es }
+;
+
+fun_delc:
+|t=typ*/

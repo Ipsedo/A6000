@@ -48,6 +48,8 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { END }
           | ";"
               { SEMI }
+          | ","
+              { COMMA }
           | "+"
               { PLUS }
           | "*"

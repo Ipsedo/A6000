@@ -73,12 +73,23 @@ let generate_main p =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let reg = ~$t0 in
-                       load_value reg v
-                       @@ store_identifier reg id)
+    | Value(id, v) -> (let dest = ref ~$t0 in
+                       let instr, o = load_value_ad_hoc ~$t0 v in
+                       let will_ad_hoc = match find_alloc id with
+                         | Reg r -> dest := r; true
+                         | Stack _ -> false
+                       in
+                       let r1 = match o with
+                         | Some r -> r
+                         | _ -> ~$t0
+                       in
+                       instr
+                       @@ if will_ad_hoc then
+                         move !dest r1
+                       else store_identifier r1 id)
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
-    | Goto(l) -> jal l
+    | Goto(l) -> b l
     | CondGoto(value, l) -> (let tmp1 = ~$t0 in
                              let instr, o = load_value_ad_hoc tmp1 value in
                              instr

@@ -1,0 +1,35 @@
+main(integer x) (
+        loop(0, x);
+      )
+
+loop(integer i, integer r) (
+  if line(point(i, r), r) then (
+    loop(i+1, r);
+  ) else ( );
+)
+
+integer point(integer i, integer r) (
+  var integer j;
+  j := 0;
+  while i*i + j*j < r*r (
+    j := j+1;
+  );
+  result := j;
+)
+
+boolean line(integer p, integer r) (
+  var integer j;
+  result := false;
+  j := 0;
+  while j < r+1 (
+    if j < p then (
+      print_string(46);
+      result := true;
+    ) else (
+      print(35);
+    );
+    print(32);
+    j := j+1;
+  );
+  print(10);
+)
