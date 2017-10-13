@@ -180,8 +180,12 @@ call:
 
 arguments:
   | (* empty *) { [] }
-  | e=expression { [e] }
-  | e1=expression; COMMA; args=arguments { e1::args }
+  | a=args { a }
+;
+
+args:
+| e=expression { [e] }
+| e=expression; COMMA; a=args { e::a }
 ;
 
 fun_delc:
@@ -206,5 +210,10 @@ fun_delc:
 
 parameters:
 | (* empty *) { [] }
+| p=params { p }
+;
+
+params:
 | t=typ; id=IDENT { [(t, id)] }
-| t=typ; id=IDENT; p=parameters { (t, id)::p }
+| t=typ; id=IDENT; p=params { (t, id)::p }
+;
