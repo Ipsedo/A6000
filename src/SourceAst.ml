@@ -5,16 +5,24 @@ module Symb_Tbl = Map.Make(String)
 (* Programme principal : une table de symboles et un bloc de code *)
 type main = {
   locals: identifier_info Symb_Tbl.t;
-  code: block;
+  code: block
 }
-
+and function_info = {
+        return:  typ option;
+        formals: typ list;
+        locals:  identifier_info Symb_Tbl.t;
+        code:    block
+      }
 (* La table des symboles contient, pour chaque variable :
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
+and call = string * expression list
 and identifier_kind =
   | Local   (* Variable locale    *)
-  | FormalX (* Paramètre formel x *)
+  | FormalX (* Paramètre formel x -> à suppr *)
+  | Formal of int
+  | Return
 and identifier_info = { typ: typ; kind: identifier_kind }
 and typ =
   | TypInteger
@@ -27,11 +35,15 @@ and instruction =
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
   | Print of expression                 (* Affichage   *)
+  | FunCall of call
+  | ProcCall of call
 
 and expression =
   | Literal   of literal      (* Valeur immédiate   *)
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
+  | FunCall of call
+  | ProcCall of call
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)

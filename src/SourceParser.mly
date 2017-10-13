@@ -215,5 +215,5 @@ parameters:
 
 params:
 | t=typ; id=IDENT { [(t, id)] }
-| t=typ; id=IDENT; p=params { (t, id)::p }
+| t=typ; id=IDENT; COMMA; p=params { (t, id)::p }
 ;
