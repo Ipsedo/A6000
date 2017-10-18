@@ -20,8 +20,9 @@ and instruction =
   | CondGoto of expression * label    (* Saut conditionnel *)
   | Comment  of string                (* Commentaire       *)
 
-type main = {
-  locals: identifier_info Symb_Tbl.t;
-  code:   block
-}    
+type function_info = {
+  locals:  identifier_info Symb_Tbl.t;
+  code:    block
+}
 
+type prog = (string * function_info) list    

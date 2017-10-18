@@ -64,7 +64,7 @@ let typecheck_main p =
 
   (* [type_expression/literal/location] vérifient le bon typage des
      expressions et renvoient leur type. *)
-(* type_expression: expression -> typ *)
+  (* type_expression: expression -> typ *)
   and type_expression = function
     | Literal lit  ->  type_literal lit
 

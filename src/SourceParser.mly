@@ -32,6 +32,9 @@
 
 %token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
+%nonassoc IDENT
+%nonassoc BEGIN
+
 %left AND OR
 %nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
@@ -82,7 +85,8 @@ instructions:
   for id := expr; cond; instr ( block );
 *)
 instruction:
-  PRINT; BEGIN; e=expression; END
+  c=call { [ProcCall(c)] }
+| PRINT; BEGIN; e=expression; END
   { [Print(e)] }
 | s=set { [s] }
 | IF; e=expression; THEN;
@@ -104,7 +108,6 @@ instruction:
     let block = bl @ [s] in
     [Set(id1, e1); While(e2, block)]
   }
-| c=call { [ProcCall(c)] }
 ;
 
 set:
@@ -135,14 +138,14 @@ set:
 ;
 
 expression:
-| c=call                                  { FunCall(c)       }
+  c=call                                  { FunCall(c)       }
 | loc=location                            { Location(loc)    }
 | lit=literal                             { Literal(lit)     }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
 ;
 
 call:
-id=IDENT; BEGIN; arg=arguments; END { id, arg }
+id=IDENT; BEGIN; args=arguments; END; { id, args }
 ;
 
 %inline binop:
@@ -171,7 +174,7 @@ location:
 ;
 
 arguments:
-  | (* empty *) { [] }
+  (* empty *) { [] }
   | a=args { a }
 ;
 

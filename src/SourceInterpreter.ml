@@ -26,11 +26,13 @@ and eval_instruction env = function
     then eval_block env b1
     else eval_block env b2
   | Print(e) -> Printf.printf "%c" (char_of_int (eval_expression env e)); env
+  | ProcCall(c) -> failwith "unimplemented proc interpreteur"
 
 (* [eval_expression: state -> expression -> int] *)
 and eval_expression env = function
   | Literal lit  -> eval_literal env lit
   | Location loc -> eval_location env loc
+  | FunCall(c) -> failwith "unimplemented fun interpreteur"
   | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
     let v2 = eval_expression env e2 in
     let op = match op with

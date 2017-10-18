@@ -30,7 +30,10 @@ let rec erase_instruction i = match i with
   | S.While(e, b) -> T.While(erase_expression e, erase_code b)
   | S.If(e, b1, b2) -> T.If(erase_expression e, erase_code b1, erase_code b2)
   | S.Print(e) -> T.Print(erase_expression e)
-  | S.ProcCall(c) -> failwith "not implemented SourceToUntyped"
+  | S.ProcCall(c) -> let str, e = c in
+    let ne = List.fold_left
+        (fun acc elt -> acc@[(erase_expression elt)]) [] e in
+    T.ProcCall((str, ne))
 
 and erase_code c = let rec aux c accu = match c with
     | [] -> accu
@@ -38,11 +41,14 @@ and erase_code c = let rec aux c accu = match c with
   in List.rev (aux c [])
 
 let erase_main p =
-  let locals =
-    S.Symb_Tbl.fold
-      (fun id info tbl ->
-         T.Symb_Tbl.add id (erase_identifier_info info) tbl)
-      p.S.locals
-      T.Symb_Tbl.empty
-  in
-  { T.locals = locals; T.code = erase_code p.S.code }
+  let rec aux p acc = match p with
+    | [] -> acc
+    | (n,fct)::tl -> let locals =
+                       S.Symb_Tbl.fold
+                         (fun id info tbl ->
+                            T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+                         fct.S.locals
+                         T.Symb_Tbl.empty
+      in
+      aux tl ((n,{ T.locals = locals; T.code = erase_code fct.S.code })::acc)
+  in aux p []
