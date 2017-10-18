@@ -11,7 +11,6 @@ let id_or_keyword =
   List.iter (fun (s, k) -> Hashtbl.add h s k)
     [	"integer",  INT;
       "print",    PRINT;
-      "main",     MAIN;
       "var",      VAR;
       "boolean",  BOOL;
       "true",     LITBOOL(true);

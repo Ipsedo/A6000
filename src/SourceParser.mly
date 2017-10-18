@@ -22,7 +22,6 @@
 
 %token PRINT
 %token EOF
-%token MAIN
 
 %token SET
 
@@ -42,23 +41,21 @@
 %token ADDSET SUBSET
 %token MULTSET DIVSET
 
-%start main
-%type <SourceAst.main> main
+%start prog
+%type <SourceAst.prog> prog
 
 %%
 
 prog:
-| (* empty *) { [] }
-| f=fun_delc; p=prog { f::p }
-
-main:
-  MAIN; BEGIN; INT; x=IDENT; END;
+  (*MAIN; BEGIN; INT; x=IDENT; END;
   BEGIN; vds=var_decls; is=instructions; END; EOF  {
 	let infox = { typ=TypInteger; kind=FormalX } in
     let init  = Symb_Tbl.singleton x infox in
     let union_vars = fun _ _ v -> Some v in
     let locals = Symb_Tbl.union union_vars init vds in
-    {locals = locals; code=is} }
+    {locals = locals; code=is} }*)
+    EOF { [] }
+  | fct=fun_delc; m=prog { fct::m }
 ;
 
 var_decls:
@@ -73,7 +70,7 @@ typ:
 ;
 
 instructions:
- (* empty *)                             { []                }
+ (* empty *)                              { []               }
 | i=instruction; SEMI; is=instructions    { i @ is           }
 ;
 
@@ -107,6 +104,7 @@ instruction:
     let block = bl @ [s] in
     [Set(id1, e1); While(e2, block)]
   }
+| c=call { [ProcCall(c)] }
 ;
 
 set:
@@ -121,9 +119,7 @@ set:
     Set(id, op)
   }
 | id=location; op=set_op; e=expression
-  {
-      Set(id, Binop(op, Location(id), e))
-  }
+  { Set(id, Binop(op, Location(id), e)) }
 ;
 
 %inline instant_set_op:
@@ -139,10 +135,14 @@ set:
 ;
 
 expression:
-  loc=location                            { Location(loc) }
-(* À compléter *)
-| lit=literal                             { Literal(lit) }
+| c=call                                  { FunCall(c)       }
+| loc=location                            { Location(loc)    }
+| lit=literal                             { Literal(lit)     }
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
+;
+
+call:
+id=IDENT; BEGIN; arg=arguments; END { id, arg }
 ;
 
 %inline binop:
@@ -170,14 +170,6 @@ location:
   id=IDENT  { Identifier (id, $startpos(id)) }
 ;
 
-call:
-  id=IDENT; BEGIN; arg=arguments; END
-  {
-
-  }
-;
-
-
 arguments:
   | (* empty *) { [] }
   | a=args { a }
@@ -189,22 +181,42 @@ args:
 ;
 
 fun_delc:
-  |m=main { m }
   |t=typ; id=IDENT; BEGIN; p=parameters; END;
-  BEGIN; vds=var_decls; is=instructions; END {
-    let params = List.fold_left
-    (fun (t, id) acc -> Symb_Tbl.add id {typ=t; kind=Local} acc)
-    p Symb_Tbl.empty in
+  BEGIN; vds=var_decls; is=instructions; END
+  {
+    let (_,params) = List.fold_left
+    (fun (index, acc) (t1, ident) ->
+      (index + 1, Symb_Tbl.add ident {typ=t1; kind=Formal(index)} acc))
+    (0, Symb_Tbl.empty) p in
     let union_vars = fun _ _ v -> Some v in
-    {locals = Symb_Tbl.union union_vars params var_decls; code=is}
+    let tmp = Symb_Tbl.union union_vars params vds in
+    let local = Symb_Tbl.add "return" {typ=t; kind=Return} tmp in
+    let formal = Symb_Tbl.fold
+      (fun _ v acc -> acc@[v.typ]) params [] in
+    id, {
+      return = Some t;
+      formals = formal;
+      locals = local;
+      code = is
+    }
   }
   |id=IDENT; BEGIN; p=parameters; END;
-  BEGIN; vds=var_decls; is=instructions; END {
-    let params = List.fold_left
-    (fun (t, id) acc -> Symb_Tbl.add id {typ=t; kind=Local} acc)
-    p Symb_Tbl.empty in
+  BEGIN; vds=var_decls; is=instructions; END
+  {
+    let (_,params) = List.fold_left
+    (fun (index, acc) (t, ident) ->
+      (index + 1, Symb_Tbl.add ident {typ=t; kind=Formal(index)} acc))
+    (0, Symb_Tbl.empty) p in
     let union_vars = fun _ _ v -> Some v in
-    {locals = Symb_Tbl.union union_vars params var_decls; code=is}
+    let local = Symb_Tbl.union union_vars params vds in
+    let formal = Symb_Tbl.fold
+      (fun _ v acc -> acc@[v.typ]) params [] in
+    id, {
+      return = None;
+      formals = formal;
+      locals = local;
+      code = is
+    }
   }
 ;
 

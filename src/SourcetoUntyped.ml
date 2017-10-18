@@ -20,12 +20,17 @@ let rec erase_expression e = match e with
   | S.Binop(b, e1, e2) -> let ne1 = erase_expression e1 in
     let ne2 = erase_expression e2 in
     T.Binop(b, ne1, ne2)
+  | S.FunCall(c) -> let str, e = c in
+    let ne = List.fold_left
+        (fun acc elt -> acc@[(erase_expression elt)]) [] e in
+    T.FunCall((str, ne))
 
 let rec erase_instruction i = match i with
   | S.Set(loc, e) -> T.Set(erase_location loc, erase_expression e)
   | S.While(e, b) -> T.While(erase_expression e, erase_code b)
   | S.If(e, b1, b2) -> T.If(erase_expression e, erase_code b1, erase_code b2)
   | S.Print(e) -> T.Print(erase_expression e)
+  | S.ProcCall(c) -> failwith "not implemented SourceToUntyped"
 
 and erase_code c = let rec aux c accu = match c with
     | [] -> accu

@@ -4,7 +4,8 @@ module State = Map.Make(String)
 type state = int State.t
 
 let rec eval_main p x =
-  eval_block (State.singleton "x" x) p.code
+  let _, fct = (List.find (fun (str, c) -> str = "main") p) in
+  eval_block (State.singleton "x" x) fct.code
 
 (* [eval_block: state -> block -> state] *)
 and eval_block env = function

@@ -3,20 +3,18 @@
 module Symb_Tbl = Map.Make(String)
 
 (* Programme principal : une table de symboles et un bloc de code *)
-type main = {
-  locals: identifier_info Symb_Tbl.t;
-  code: block
-}
-and function_info = {
-        return:  typ option;
-        formals: typ list;
-        locals:  identifier_info Symb_Tbl.t;
-        code:    block
-      }
+
 (* La table des symboles contient, pour chaque variable :
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
+type prog = (string * function_info) list
+and function_info = {
+  return:  typ option;
+  formals: typ list;
+  locals:  identifier_info Symb_Tbl.t;
+  code:    block
+}
 and call = string * expression list
 and identifier_kind =
   | Local   (* Variable locale    *)
@@ -35,7 +33,6 @@ and instruction =
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
   | Print of expression                 (* Affichage   *)
-  | FunCall of call
   | ProcCall of call
 
 and expression =
@@ -43,7 +40,6 @@ and expression =
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
-  | ProcCall of call
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -59,7 +55,6 @@ and binop =
   | Eq  (* == *) | Neq  (* != *)
   | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
   | And (* && *) | Or   (* || *)
-
 
 (* Cadeau pour le débogage : un afficheur.
    [print_main m] produit une chaîne de caractère représentant le programme
@@ -94,7 +89,17 @@ let print_binop = function
   | Me   -> ">="
   | And  -> "&&"
   | Or   -> "||"
-let rec print_expression = function
+
+let rec print_call c =
+  match c with
+    (str, e) ->
+    (sprintf "%s(" str)
+    ^List.fold_left
+      (fun acc elt -> acc^(print_expression elt)^", ")
+      "" e
+    ^")"
+
+and print_expression = function
   | Literal lit -> print_literal lit
   | Location id -> print_location id
   | Binop(op, e1, e2) ->
@@ -102,6 +107,7 @@ let rec print_expression = function
       (print_expression e1)
       (print_binop op)
       (print_expression e2)
+  | FunCall(c) -> print_call c
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function
@@ -119,6 +125,7 @@ and print_instruction o = function
       (print_block (o+1) b1) (offset o)
       (print_block (o+1) b2) (offset o)
   | Print(e) -> sprintf "print(%s)" (print_expression e)
+  | ProcCall(c) -> print_call c
 
 let print_main m =
   sprintf "main(int x) (\n%s%s)\n"

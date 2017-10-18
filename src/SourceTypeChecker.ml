@@ -29,12 +29,15 @@ let typecheck_main p =
   (* L'analyse de tout le programme se fait dans le contexte de la même
      table de symboles. On la définit ici puis on définit les fonctions
      d'analyse récursives dans ce contexte. *)
-  let symb_tbl = p.locals in
+  let symb_tbl = ref Symb_Tbl.empty in
 
   (* [typecheck_block/instruction] vérifient le bon typage des instructions
      et lèvent une exception en cas de problème. *)
   (* typecheck_block: block -> unit *)
-  let rec typecheck_block b = List.iter typecheck_instruction b
+  let rec typecheck_fct f = List.iter
+      (fun (_,c) -> symb_tbl := c.locals; typecheck_block c.code) f
+
+  and typecheck_block b = List.iter typecheck_instruction b
 
   (* typecheck_instruction: instruction -> unit *)
   and typecheck_instruction = function
@@ -52,10 +55,16 @@ let typecheck_main p =
 
     | Print(e) ->
       comparetype TypInteger (type_expression e)
+    | ProcCall(c) ->
+      let str, e = c in
+      let (id, infos) = List.find (fun (n, i) -> n = str) p in
+      List.iter2
+        (fun a b -> comparetype a (type_expression b))
+        infos.formals e
 
   (* [type_expression/literal/location] vérifient le bon typage des
      expressions et renvoient leur type. *)
-  (* type_expression: expression -> typ *)
+(* type_expression: expression -> typ *)
   and type_expression = function
     | Literal lit  ->  type_literal lit
 
@@ -66,6 +75,15 @@ let typecheck_main p =
       comparetype ty_op (type_expression e1);
       comparetype ty_op (type_expression e2);
       ty_r
+    | FunCall(c) ->
+      let str, e = c in
+      let (id, infos) = List.find (fun (n, i) -> n = str) p in
+      List.iter2
+        (fun a b -> comparetype a (type_expression b))
+        infos.formals e;
+      match infos.return with
+        Some t -> t
+      | _ -> failwith "No return type for function"
 
   (* type_literal: literal -> typ *)
   and type_literal = function
@@ -75,7 +93,7 @@ let typecheck_main p =
   (* type_location: location -> typ *)
   and type_location = function
     | Identifier(id, pos) -> current_pos := pos;
-      (Symb_Tbl.find id symb_tbl).typ
+      (Symb_Tbl.find id !symb_tbl).typ
 
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)
@@ -87,4 +105,4 @@ let typecheck_main p =
 
   in
 
-  typecheck_block p.code
+  typecheck_fct p

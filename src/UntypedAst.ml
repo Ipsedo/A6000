@@ -14,19 +14,27 @@ and instruction =
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
   | Print of expression                 (* Affichage   *)
+  | ProcCall of call
 
 and expression =
   | Literal   of literal      (* Valeur immédiate   *)
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
+  | FunCall of call
 and location =
   | Identifier of string
 and literal =
   | Int  of int  (* Constante entière   *)
   | Bool of bool
 
+and call = string * expression list
+
 (* Programme principal : une table de symboles et un bloc de code *)
-type main = {
-  locals: identifier_info Symb_Tbl.t;
-  code:   block;
+
+
+and function_info = {
+  locals:  identifier_info Symb_Tbl.t;
+  code:    block
 }
+
+and prog = (string * function_info) list
