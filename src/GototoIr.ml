@@ -45,6 +45,15 @@ let flatten_main p =
           let ce, ve = flatten_expression 0 e in
           ce @ [ T.Value(id, ve) ])
     | S.Comment(str) -> [ T.Comment(str) ]
+    | S.ProcCall(c) -> let (str, args) = c in
+      let tmp_cpt = ref 0 in
+      let (es, vs) = List.fold_left
+          (fun (ce_acc, ve_acc) expr ->
+             let (ce, ve) = flatten_expression !tmp_cpt expr in
+             incr tmp_cpt;
+             ce_acc@ce, ve_acc@[ve])
+          ([], []) args in
+      es @ [ T.ProcCall(str, vs) ]
 
   (* flatten_expression: S.expression -> T.instruction list -> T.value *)
   (* Appliquée à une expression, [flatten_expression] renvoie une liste
@@ -64,6 +73,16 @@ let flatten_main p =
       let ce2, ve2 = flatten_expression (nb + 1) e2 in
       let id_tmp = new_tmp nb in
       ce1 @ ce2 @ [ T.Binop(id_tmp, b, ve1, ve2) ], T.Identifier(id_tmp)
+    | FunCall(c) -> let (str, args) = c in
+      let tmp_cpt = ref nb in
+      let (es, vs) = List.fold_left
+          (fun (ce_acc, ve_acc) expr ->
+             let (ce, ve) = flatten_expression !tmp_cpt expr in
+             incr tmp_cpt;
+             ce_acc@ce, ve_acc@[ve])
+          ([], []) args in
+      let id_tmp = new_tmp nb in
+      es @ [ T.FunCall(str, id_tmp, vs) ], T.Identifier(id_tmp)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)

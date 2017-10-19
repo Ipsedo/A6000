@@ -18,7 +18,7 @@ let allocate_main reg_flag p =
 
         S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
-            | FormalX -> T.Stack 0
+            | Formal n -> failwith "unimplemented Formal IrToAllacated"
             | Local -> (let elt = GraphColoring.NodeMap.find id coloring in
                         if elt <= 7 then
                           T.Reg ("$t"^(string_of_int (elt + 2)))
@@ -32,7 +32,7 @@ let allocate_main reg_flag p =
       (* Tout sur la pile *)
       S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
           match info with
-          | FormalX -> T.Stack 0
+          | Formal n -> failwith "unimplemented Formal IrToAllacated"
           | Local -> current_offset := !current_offset - 4;
             T.Stack (!current_offset)
         ) p.S.locals

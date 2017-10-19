@@ -193,7 +193,7 @@ fun_delc:
     (0, Symb_Tbl.empty) p in
     let union_vars = fun _ _ v -> Some v in
     let tmp = Symb_Tbl.union union_vars params vds in
-    let local = Symb_Tbl.add "return" {typ=t; kind=Return} tmp in
+    let local = Symb_Tbl.add "result" {typ=t; kind=Return} tmp in
     let formal = Symb_Tbl.fold
       (fun _ v acc -> acc@[v.typ]) params [] in
     id, {

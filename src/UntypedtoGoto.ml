@@ -23,17 +23,17 @@ let destructure_main p =
 
         (* destructure_instruction: S.instruction -> T.block *)
         and destructure_instruction : S.instruction -> T.block = function
-          | Print(e) -> [ T.Print(e)  ]
-          | ProcCall(c) -> failwith "unimplemented ProcCall UntypedToGoto"
-          | While(c, b) -> let loop_text = new_label () in
+          | S.Print(e) -> [ T.Print(e)  ]
+          | S.ProcCall(c) -> [ T.ProcCall(c) ]
+          | S.While(c, b) -> let loop_text = new_label () in
             let loop_code = new_label () in
             [ T.Goto(loop_text);
               T.Label(loop_code) ]
             @ (destructure_block b)
             @ [ T.Label(loop_text);
                 T.CondGoto(c, loop_code) ]
-          | Set(l, e) -> [ T.Set(l, e) ]
-          | If(c, b1, b2) -> let label_then = new_label () in
+          | S.Set(l, e) -> [ T.Set(l, e) ]
+          | S.If(c, b1, b2) -> let label_then = new_label () in
             let label_else = new_label () in
             [ T.CondGoto(c, label_then) ]
             @ (destructure_block b2)

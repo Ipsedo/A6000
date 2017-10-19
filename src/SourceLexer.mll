@@ -92,14 +92,14 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
           | _
               {
                 let start_p = lexeme_start_p lexbuf in
-                raise (UnknowChar ("Unknow char(s) \""
-                      ^ (lexeme lexbuf)
-                      ^ "\" in "
-                      ^ start_p.pos_fname
-                      ^ " at line "
-                      ^ (string_of_int start_p.pos_lnum)
-                      ^ ", col "
-                      ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))}
+                let msg = Printf.sprintf
+                  "Unknow char(s) \"%s\" in %s at line %d, col %d"
+                  (lexeme lexbuf)
+                  start_p.pos_fname
+                  start_p.pos_lnum
+                  (start_p.pos_cnum - start_p.pos_bol)
+                  in
+                raise (UnknowChar (msg))}
 
 and comment = parse
             | "(*"

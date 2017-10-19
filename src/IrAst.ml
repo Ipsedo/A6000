@@ -24,6 +24,8 @@ and instruction =
   | Goto     of label                              (* Saut                    *)
   | CondGoto of value * label                      (* Saut conditionnel       *)
   | Comment  of string                             (* Commentaire             *)
+  | FunCall  of string * identifier * value list
+  | ProcCall of string * value list
 
 and identifier = string (* Identifiant d'un registre virtuel *)
 

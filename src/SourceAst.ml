@@ -18,7 +18,6 @@ and function_info = {
 and call = string * expression list
 and identifier_kind =
   | Local   (* Variable locale    *)
-  | FormalX (* Paramètre formel x -> à suppr *)
   | Formal of int
   | Return
 and identifier_info = { typ: typ; kind: identifier_kind }

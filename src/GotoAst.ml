@@ -8,6 +8,7 @@ type location        = UntypedAst.location
 type identifier_info = UntypedAst.identifier_info
 type literal         = UntypedAst.literal
 type binop           = UntypedAst.binop
+type call            = UntypedAst.call
 
 type label = string
 
@@ -19,10 +20,11 @@ and instruction =
   | Goto     of label                 (* Saut              *)
   | CondGoto of expression * label    (* Saut conditionnel *)
   | Comment  of string                (* Commentaire       *)
+  | ProcCall of call
 
 type function_info = {
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
 
-type prog = (string * function_info) list    
+type prog = (string * function_info) list
