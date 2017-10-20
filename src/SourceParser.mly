@@ -32,8 +32,8 @@
 
 %token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
-%nonassoc IDENT
-%nonassoc BEGIN
+%left IDENT
+%right BEGIN
 
 %left AND OR
 %nonassoc EQ NEQ LT LE MT ME

@@ -10,9 +10,12 @@ type literal         = GotoAst.literal
 type identifier_info = GotoAst.identifier_info
 type binop           = GotoAst.binop
 
-type main = {
-  locals: identifier_info Symb_Tbl.t;
-  code:   block;
+
+type prog = (string * function_info) list
+
+and function_info = {
+  locals:  identifier_info Symb_Tbl.t;
+  code:    block
 }
 
 and block = (label * instruction) list
@@ -35,8 +38,10 @@ and value =
 
 
 open Printf
-
-let rec print_block = function
+let rec print_prog = function
+  | [] -> "\n"
+  | (name, fct)::tl -> sprintf "%s() (%s)\n%s" name (print_block fct.code) (print_prog tl)
+and print_block = function
   | []          -> "\n"
   | (l, i) :: b -> sprintf "%s: %s\n%s" l (print_instruction i) (print_block b)
 
@@ -49,6 +54,16 @@ and print_instruction = function
   | Goto(lab)        -> sprintf "goto %s" lab
   | CondGoto(v, lab) -> sprintf "goto %s when %s" lab (print_value v)
   | Comment(c)       -> sprintf "# %s" c
+  | FunCall(str, dest, v) -> (sprintf "%s <- %s(" dest str)
+                             ^(List.fold_left
+                                 (fun acc elt -> acc^(print_value elt)^", ")
+                                 "" v)
+                             ^")"
+  | ProcCall(str, v) -> (sprintf "%s(" str)
+                        ^(List.fold_left
+                            (fun acc elt -> acc^(print_value elt)^", ")
+                            "" v)
+                        ^")"
 
 and print_value = function
   | Literal(lit)   ->

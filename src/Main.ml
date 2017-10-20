@@ -78,8 +78,9 @@ let () =
     let p = SourcetoUntyped.erase_main p in
     let p = UntypedtoGoto.destructure_main p in
     let p = GototoIr.flatten_main p in
+    Printf.printf "%s" (IrAst.print_prog p);
     (* Code à réintégrer à la séance 3 *)
-    let p =
+    (*let p =
       if   !dead_code_elim
       then IrDeadCodeElim.dce p
       else p
@@ -91,6 +92,7 @@ let () =
     let outf = formatter_of_out_channel out in
     Mips.print_program outf asm;
     pp_print_flush outf ();
-    close_out out;
+      close_out out;*)
+
   end;
   exit 0
