@@ -28,7 +28,7 @@ let comparetype t1 t2 =
   then raise_type_exception t1 t2
 
 (* Vérification des types d'un programme *)
-let typecheck_main p =
+let typecheck_prog p =
   (* L'analyse de tout le programme se fait dans le contexte de la même
      table de symboles. On la définit ici puis on définit les fonctions
      d'analyse récursives dans ce contexte. *)
@@ -37,8 +37,10 @@ let typecheck_main p =
   (* [typecheck_block/instruction] vérifient le bon typage des instructions
      et lèvent une exception en cas de problème. *)
   (* typecheck_block: block -> unit *)
-  let rec typecheck_fct f = List.iter
-      (fun (_,c) -> symb_tbl := c.locals; typecheck_block c.code) f
+  let rec typecheck_prog_aux prog =
+    Symb_Tbl.fold
+      (fun _ fct _ -> symb_tbl := fct.locals; typecheck_block fct.code)
+      prog ()
 
   and typecheck_block b = List.iter typecheck_instruction b
 
@@ -60,7 +62,7 @@ let typecheck_main p =
       comparetype TypInteger (type_expression e)
     | ProcCall(c) ->
       let str, e = c in
-      let (id, infos) = List.find (fun (n, i) -> n = str) p in
+      let infos = Symb_Tbl.find str p in
       List.iter2
         (fun a b -> comparetype a (type_expression b))
         infos.formals e
@@ -80,7 +82,7 @@ let typecheck_main p =
       ty_r
     | FunCall(c) ->
       let str, e = c in
-      let (id, infos) = List.find (fun (n, i) -> n = str) p in
+      let infos = Symb_Tbl.find str p in
       List.iter2
         (fun a b -> comparetype a (type_expression b))
         infos.formals e;
@@ -108,4 +110,4 @@ let typecheck_main p =
 
   in
 
-  typecheck_fct p
+  typecheck_prog_aux p

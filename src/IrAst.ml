@@ -11,7 +11,7 @@ type identifier_info = GotoAst.identifier_info
 type binop           = GotoAst.binop
 
 
-type prog = (string * function_info) list
+type prog = function_info Symb_Tbl.t
 
 and function_info = {
   locals:  identifier_info Symb_Tbl.t;
@@ -38,9 +38,10 @@ and value =
 
 
 open Printf
-let rec print_prog = function
-  | [] -> "\n"
-  | (name, fct)::tl -> sprintf "%s() (%s)\n%s" name (print_block fct.code) (print_prog tl)
+let rec print_prog p =
+  Symb_Tbl.fold
+    (fun id infos acc -> sprintf "%s%s() (%s)\n" acc id (print_block infos.code))
+    p ""
 and print_block = function
   | []          -> "\n"
   | (l, i) :: b -> sprintf "%s: %s\n%s" l (print_instruction i) (print_block b)

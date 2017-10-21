@@ -40,15 +40,30 @@ and erase_code c = let rec aux c accu = match c with
     | i::t -> aux t ((erase_instruction i)::accu)
   in List.rev (aux c [])
 
-let erase_main p =
-  let rec aux p acc = match p with
-    | [] -> acc
-    | (n,fct)::tl -> let locals =
-                       S.Symb_Tbl.fold
-                         (fun id info tbl ->
-                            T.Symb_Tbl.add id (erase_identifier_info info) tbl)
-                         fct.S.locals
-                         T.Symb_Tbl.empty
-      in
-      aux tl ((n,{ T.locals = locals; T.code = erase_code fct.S.code })::acc)
-  in aux p []
+let erase_prog p =
+  S.Symb_Tbl.fold
+    (fun id infos acc -> let locals = S.Symb_Tbl.fold
+                             (fun id info tbl ->
+                                T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+                             infos.S.locals
+                             T.Symb_Tbl.empty in
+      T.Symb_Tbl.add id
+        { T.locals = locals; T.code = erase_code infos.S.code }
+        acc)
+    p T.Symb_Tbl.empty
+
+
+
+
+
+(*let rec aux p acc = match p with
+  | [] -> acc
+  | (n,fct)::tl -> let locals =
+                     S.Symb_Tbl.fold
+                       (fun id info tbl ->
+                          T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+                       fct.S.locals
+                       T.Symb_Tbl.empty
+    in
+    aux tl ((n,{ T.locals = locals; T.code = erase_code fct.S.code })::acc)
+  in aux p []*)

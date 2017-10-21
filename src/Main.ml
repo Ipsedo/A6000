@@ -71,27 +71,27 @@ let () =
     end
   in
   close_in c;
-  SourceTypeChecker.typecheck_main p;
+  SourceTypeChecker.typecheck_prog p;
   if !interpret
   then let _ = SourceInterpreter.eval_main p !input in ()
   else begin
-    let p = SourcetoUntyped.erase_main p in
-    let p = UntypedtoGoto.destructure_main p in
-    let p = GototoIr.flatten_main p in
+    let p = SourcetoUntyped.erase_prog p in
+    let p = UntypedtoGoto.destructure_prog p in
+    let p = GototoIr.flatten_prog p in
     Printf.printf "%s" (IrAst.print_prog p);
     (* Code à réintégrer à la séance 3 *)
     (*let p =
       if   !dead_code_elim
       then IrDeadCodeElim.dce p
       else p
-    in
-    let p = IrtoAllocated.allocate_main !reg_allocation p in
-    let asm = AllocatedtoMips.generate_main p in
-    let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
-    let out = open_out output_file in
-    let outf = formatter_of_out_channel out in
-    Mips.print_program outf asm;
-    pp_print_flush outf ();
+      in
+      let p = IrtoAllocated.allocate_main !reg_allocation p in
+      let asm = AllocatedtoMips.generate_main p in
+      let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
+      let out = open_out output_file in
+      let outf = formatter_of_out_channel out in
+      Mips.print_program outf asm;
+      pp_print_flush outf ();
       close_out out;*)
 
   end;

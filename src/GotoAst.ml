@@ -27,4 +27,4 @@ type function_info = {
   code:    block
 }
 
-type prog = (string * function_info) list
+type prog = function_info Symb_Tbl.t

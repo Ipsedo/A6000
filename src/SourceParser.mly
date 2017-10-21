@@ -32,13 +32,11 @@
 
 %token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
-%left IDENT
-%right BEGIN
-
 %left AND OR
 %nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
 %left MULT DIV
+%left IDENT
 
 %token INCR DECR
 %token ADDSET SUBSET
@@ -57,8 +55,10 @@ prog:
     let union_vars = fun _ _ v -> Some v in
     let locals = Symb_Tbl.union union_vars init vds in
     {locals = locals; code=is} }*)
-    EOF { [] }
-  | fct=fun_delc; m=prog { fct::m }
+    EOF { Symb_Tbl.empty }
+  | fct=fun_delc; m=prog { let (id, infos) = fct in
+      Symb_Tbl.add id infos m
+    }
 ;
 
 var_decls:
@@ -144,10 +144,6 @@ expression:
 | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
 ;
 
-call:
-id=IDENT; BEGIN; args=arguments; END; { id, args }
-;
-
 %inline binop:
   MULT { Mult }
 | DIV  { Div }
@@ -163,14 +159,8 @@ id=IDENT; BEGIN; args=arguments; END; { id, args }
 | OR   { Or }
 ;
 
-literal:
-  i=LITINT { Int (i, $startpos(i)) }
-| b=LITBOOL { Bool (b, $startpos(b)) }
-;
-
-
-location:
-  id=IDENT  { Identifier (id, $startpos(id)) }
+call:
+id=IDENT; BEGIN; args=arguments; END { id, args }
 ;
 
 arguments:
@@ -181,6 +171,16 @@ arguments:
 args:
 | e=expression { [e] }
 | e=expression; COMMA; a=args { e::a }
+;
+
+literal:
+  i=LITINT { Int (i, $startpos(i)) }
+| b=LITBOOL { Bool (b, $startpos(b)) }
+;
+
+
+location:
+  id=IDENT  { Identifier (id, $startpos(id)) }
 ;
 
 fun_delc:

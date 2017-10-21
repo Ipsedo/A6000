@@ -4,15 +4,16 @@ module S = GotoAst
 module T = IrAst
 
 
-let flatten_main p =
+let flatten_prog p =
 
   (* On extrait la table des symboles de notre programme, qui sera étendue
      avec les registres virtuels créés à la volée. *)
-  let rec aux p acc =
+  (*let rec aux p acc =
     match p with
     | [] -> acc
-    | (str, fct)::tl ->
-      let symb_tbl = ref fct.S.locals in
+    | (str, fct)::tl ->*)
+  let symb_tbl = ref S.Symb_Tbl.empty in
+  let curr_id = ref "" in
 
       (* Ajout à la table des symboles d'un nouveau registre virtuel *)
       let add_symb s =
@@ -95,7 +96,7 @@ let flatten_main p =
          de saut. *)
       let label_instruction =
         let cpt = ref 0 in
-        fun i -> let lab = Printf.sprintf "_%s_%d" str !cpt in
+        fun i -> let lab = Printf.sprintf "_%s_%d" !curr_id !cpt in
           incr cpt;
           match i with
           (* On force une correspondance entre étiquette de saut
@@ -103,6 +104,12 @@ let flatten_main p =
           | T.Label l -> l, i
           | _         -> lab, i
       in
-      let flattened_code = flatten_block fct.S.code in
-      aux tl acc@[(str, { T.locals = !symb_tbl; T.code = List.map label_instruction flattened_code })]
-  in aux p []
+      S.Symb_Tbl.fold
+        (fun id infos acc -> curr_id := id;
+           symb_tbl := infos.S.locals;
+           let flattened_code = flatten_block infos.S.code in
+           T.Symb_Tbl.add id
+             { T.locals = !symb_tbl;
+               T.code = List.map label_instruction flattened_code }
+             acc)
+      p T.Symb_Tbl.empty

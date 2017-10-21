@@ -37,4 +37,4 @@ and function_info = {
   code:    block
 }
 
-and prog = (string * function_info) list
+and prog = function_info Symb_Tbl.t

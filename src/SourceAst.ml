@@ -8,7 +8,7 @@ module Symb_Tbl = Map.Make(String)
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
-type prog = (string * function_info) list
+type prog = function_info Symb_Tbl.t
 and function_info = {
   return:  typ option;
   formals: typ list;

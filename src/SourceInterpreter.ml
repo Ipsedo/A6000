@@ -4,7 +4,7 @@ module State = Map.Make(String)
 type state = int State.t
 
 let rec eval_main p x =
-  let _, fct = (List.find (fun (str, c) -> str = "main") p) in
+  let fct = Symb_Tbl.find "main" p in
   eval_block (State.singleton "x" x) fct.code
 
 (* [eval_block: state -> block -> state] *)
