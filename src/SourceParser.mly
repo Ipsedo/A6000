@@ -32,15 +32,16 @@
 
 %token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
 
+%token INCR DECR
+%token ADDSET SUBSET
+%token MULTSET DIVSET
+
 %left AND OR
 %nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
 %left MULT DIV
-%left IDENT
-
-%token INCR DECR
-%token ADDSET SUBSET
-%token MULTSET DIVSET
+%nonassoc IDENT
+%nonassoc BEGIN
 
 %start prog
 %type <SourceAst.prog> prog
@@ -56,7 +57,9 @@ prog:
     let locals = Symb_Tbl.union union_vars init vds in
     {locals = locals; code=is} }*)
     EOF { Symb_Tbl.empty }
-  | fct=fun_delc; m=prog { let (id, infos) = fct in
+  | fct=fun_delc; m=prog; EOF
+    {
+      let (id, infos) = fct in
       Symb_Tbl.add id infos m
     }
 ;
@@ -73,8 +76,8 @@ typ:
 ;
 
 instructions:
- (* empty *)                              { []               }
-| i=instruction; SEMI; is=instructions    { i @ is           }
+ (* empty *)                              { []     }
+| i=instruction; SEMI; is=instructions    { i @ is }
 ;
 
 (* Pour ajouter la boucle for de façon "sucre styntaxique",
@@ -131,10 +134,10 @@ set:
 ;
 
 %inline set_op:
-  ADDSET { Add }
-| SUBSET { Sub }
+  ADDSET  { Add  }
+| SUBSET  { Sub  }
 | MULTSET { Mult }
-| DIVSET  { Div }
+| DIVSET  { Div  }
 ;
 
 expression:
@@ -146,21 +149,21 @@ expression:
 
 %inline binop:
   MULT { Mult }
-| DIV  { Div }
-| PLUS { Add }
-| SUB  { Sub }
-| LT   { Lt }
-| LE   { Le }
-| MT   { Mt }
-| ME   { Me }
-| EQ   { Eq }
-| NEQ  { Neq }
-| AND  { And }
-| OR   { Or }
+| DIV  { Div  }
+| PLUS { Add  }
+| SUB  { Sub  }
+| LT   { Lt   }
+| LE   { Le   }
+| MT   { Mt   }
+| ME   { Me   }
+| EQ   { Eq   }
+| NEQ  { Neq  }
+| AND  { And  }
+| OR   { Or   }
 ;
 
 call:
-id=IDENT; BEGIN; args=arguments; END { id, args }
+  id=IDENT; BEGIN; args=arguments; END { id, args }
 ;
 
 arguments:
@@ -169,12 +172,12 @@ arguments:
 ;
 
 args:
-| e=expression { [e] }
+  e=expression { [e] }
 | e=expression; COMMA; a=args { e::a }
 ;
 
 literal:
-  i=LITINT { Int (i, $startpos(i)) }
+  i=LITINT  { Int (i, $startpos(i))  }
 | b=LITBOOL { Bool (b, $startpos(b)) }
 ;
 
@@ -184,18 +187,22 @@ location:
 ;
 
 fun_delc:
-  |t=typ; id=IDENT; BEGIN; p=parameters; END;
-  BEGIN; vds=var_decls; is=instructions; END
+    t=typ; id=IDENT; BEGIN; p=parameters; END;
+    BEGIN; vds=var_decls; is=instructions; END
   {
-    let (_,params) = List.fold_left
-    (fun (index, acc) (t1, ident) ->
-      (index + 1, Symb_Tbl.add ident {typ=t1; kind=Formal(index)} acc))
-    (0, Symb_Tbl.empty) p in
+    let index = ref 0 in
+    let params = List.fold_left
+    (fun acc (t1, ident) -> incr index;
+      Symb_Tbl.add ident {typ=t1; kind=Formal(!index)} acc)
+    Symb_Tbl.empty p in
+
     let union_vars = fun _ _ v -> Some v in
-    let tmp = Symb_Tbl.union union_vars params vds in
-    let local = Symb_Tbl.add "result" {typ=t; kind=Return} tmp in
+    let local = Symb_Tbl.union union_vars params vds in
+    let local = Symb_Tbl.add "result" {typ=t; kind=Return} local in
+
     let formal = Symb_Tbl.fold
       (fun _ v acc -> acc@[v.typ]) params [] in
+
     id, {
       return = Some t;
       formals = formal;
@@ -203,17 +210,21 @@ fun_delc:
       code = is
     }
   }
-  |id=IDENT; BEGIN; p=parameters; END;
-  BEGIN; vds=var_decls; is=instructions; END
+  | id=IDENT; BEGIN; p=parameters; END;
+    BEGIN; vds=var_decls; is=instructions; END
   {
-    let (_,params) = List.fold_left
-    (fun (index, acc) (t, ident) ->
-      (index + 1, Symb_Tbl.add ident {typ=t; kind=Formal(index)} acc))
-    (0, Symb_Tbl.empty) p in
+    let index = ref 0 in
+    let params = List.fold_left
+    (fun acc (t, ident) -> incr index;
+      Symb_Tbl.add ident {typ=t; kind=Formal(!index)} acc)
+    Symb_Tbl.empty p in
+
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
+
     let formal = Symb_Tbl.fold
       (fun _ v acc -> acc@[v.typ]) params [] in
+
     id, {
       return = None;
       formals = formal;

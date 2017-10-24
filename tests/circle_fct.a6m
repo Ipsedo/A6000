@@ -11,7 +11,7 @@ loop(integer i, integer r) (
 integer point(integer i, integer r) (
   var integer j;
   j := 0;
-  while i*i + j*j < r*r (
+  while true (
     j := j+1;
   );
   result := j;
@@ -23,7 +23,7 @@ boolean line(integer p, integer r) (
   j := 0;
   while j < r+1 (
     if j < p then (
-      print_string(46);
+      print(46);
       result := true;
     ) else (
       print(35);

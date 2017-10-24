@@ -78,7 +78,7 @@ let () =
     let p = SourcetoUntyped.erase_prog p in
     let p = UntypedtoGoto.destructure_prog p in
     let p = GototoIr.flatten_prog p in
-    Printf.printf "%s" (IrAst.print_prog p);
+      Printf.printf "%s" (IrAst.print_prog p);
     (* Code à réintégrer à la séance 3 *)
     (*let p =
       if   !dead_code_elim

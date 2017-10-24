@@ -68,5 +68,7 @@ and print_instruction = function
 
 and print_value = function
   | Literal(lit)   ->
-    failwith "unimplemented printf UntypedAst.literal (Source.Ast)"
+    (match lit with
+       Int i -> sprintf "%d" i
+     | Bool b -> sprintf "%b" b)
   | Identifier(id) -> id

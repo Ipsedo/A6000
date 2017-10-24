@@ -39,7 +39,7 @@ let typecheck_prog p =
   (* typecheck_block: block -> unit *)
   let rec typecheck_prog_aux prog =
     Symb_Tbl.fold
-      (fun _ fct _ -> symb_tbl := fct.locals; typecheck_block fct.code)
+      (fun id fct _ -> symb_tbl := fct.locals; typecheck_block fct.code)
       prog ()
 
   and typecheck_block b = List.iter typecheck_instruction b
@@ -86,9 +86,10 @@ let typecheck_prog p =
       List.iter2
         (fun a b -> comparetype a (type_expression b))
         infos.formals e;
-      match infos.return with
-        Some t -> t
-      | _ -> failwith "No return type for function"
+        match infos.return with
+            Some t -> t
+        | _ -> failwith "No return type for function"
+
 
   (* type_literal: literal -> typ *)
   and type_literal = function
