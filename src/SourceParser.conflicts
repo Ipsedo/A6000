@@ -9,7 +9,7 @@ IDENT BEGIN parameters END BEGIN var_decls WHILE IDENT
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
+fun_delc prog EOF 
 IDENT BEGIN parameters END BEGIN var_decls instructions END 
                                            instruction SEMI instructions 
                                            (?)

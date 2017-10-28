@@ -65,13 +65,16 @@ prog:
 ;
 
 var_decls:
- (* empty *)                                 { Symb_Tbl.empty    }
-| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls  { let info = {typ=t; kind=Local} in
-                                              Symb_Tbl.add id info tbl}
+ (* empty *) { Symb_Tbl.empty }
+| VAR; t=typ; id=IDENT; SEMI; tbl=var_decls
+  {
+    let info = { typ=t; kind=Local } in
+    Symb_Tbl.add id info tbl
+  }
 ;
 
 typ:
-  INT { TypInteger }
+  INT  { TypInteger }
 | BOOL { TypBoolean }
 ;
 
@@ -141,12 +144,60 @@ set:
 ;
 
 expression:
-  c=call                                  { FunCall(c)       }
-| loc=location                            { Location(loc)    }
-| lit=literal                             { Literal(lit)     }
-| e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
+    c=call                                  { FunCall(c)       }
+  | loc=location                            { Location(loc)    }
+  | lit=literal                             { Literal(lit)     }
+  | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
+  ;
+
+(*expression:
+    e1=expression; PLUS; s1=sub { Binop(Add, e1, s1) }
+  | s=sub { s }
+  ;
+
+sub:
+    s1=sub; SUB; t1=terme { Binop(Sub, s1, t1) }
+  | t=terme { t }
+  ;
+
+terme:
+   t1=terme; MULT; d1=div { Binop(Mult, t1, d1) }
+  | d=div { d }
+  ;
+
+div:
+    d1=div; DIV; c1=compare { Binop(Div, d1, c1) }
+  | c=compare { c }
+  ;
+
+%inline compare_op:
+ LT   { Lt   }
+| LE   { Le   }
+| MT   { Mt   }
+| ME   { Me   }
+| EQ   { Eq   }
+| NEQ  { Neq  }
 ;
 
+compare:
+    c1=compare; b=compare_op; b1=bool_compare { Binop(b, c1, b1) }
+  | b=bool_compare { b }
+  ;
+
+%inline bool_op:
+  AND  { And  }
+| OR   { Or   }
+
+bool_compare:
+    b1=bool_compare; b=bool_op; d1=direct { Binop(b, b1, f1) }
+  | d=direct { d }
+
+direct:
+    loc=location { Location(loc) }
+  | lit=literal  { Literal(lit)  }
+  | c=call       { FunCall(c)    }
+  ;
+*)
 %inline binop:
   MULT { Mult }
 | DIV  { Div  }
@@ -187,12 +238,12 @@ location:
 ;
 
 fun_delc:
-    t=typ; id=IDENT; BEGIN; p=parameters; END;
-    BEGIN; vds=var_decls; is=instructions; END
+  t=typ; id=IDENT; BEGIN; p=parameters; END;
+  BEGIN; vds=var_decls; is=instructions; END
   {
     let index = ref 0 in
     let params = List.fold_left
-    (fun acc (t1, ident) -> incr index;
+      (fun acc (t1, ident) -> incr index;
       Symb_Tbl.add ident {typ=t1; kind=Formal(!index)} acc)
     Symb_Tbl.empty p in
 
@@ -215,7 +266,7 @@ fun_delc:
   {
     let index = ref 0 in
     let params = List.fold_left
-    (fun acc (t, ident) -> incr index;
+      (fun acc (t, ident) -> incr index;
       Symb_Tbl.add ident {typ=t; kind=Formal(!index)} acc)
     Symb_Tbl.empty p in
 

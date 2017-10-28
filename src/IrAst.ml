@@ -40,7 +40,7 @@ and value =
 open Printf
 let rec print_prog p =
   Symb_Tbl.fold
-    (fun id infos acc -> sprintf "%s%s() (%s)\n" acc id (print_block infos.code))
+    (fun id infos acc -> sprintf "%s%s(%s) (\n%s)\n" acc id "\"unimplemented print params\""(print_block infos.code))
     p ""
 and print_block = function
   | []          -> "\n"

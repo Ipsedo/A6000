@@ -94,10 +94,11 @@ let flatten_prog p =
       (* Un appel [label_instruction i] crée une nouvelle étiquette pour
          identifier l'instruction [i], si celle-ci n'est pas déjà une étiquette
          de saut. *)
+
+      let cpt_label = ref 0 in
       let label_instruction =
-        let cpt = ref 0 in
-        fun i -> let lab = Printf.sprintf "_%s_%d" !curr_id !cpt in
-          incr cpt;
+        fun i -> let lab = Printf.sprintf "_%s_%d" !curr_id !cpt_label in
+          incr cpt_label;
           match i with
           (* On force une correspondance entre étiquette de saut
              		  et étiquette d'analyse. *)
@@ -106,6 +107,7 @@ let flatten_prog p =
       in
       S.Symb_Tbl.fold
         (fun id infos acc -> curr_id := id;
+           cpt_label := 0;
            symb_tbl := infos.S.locals;
            let flattened_code = flatten_block infos.S.code in
            T.Symb_Tbl.add id

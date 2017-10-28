@@ -11,7 +11,7 @@ loop(integer i, integer r) (
 integer point(integer i, integer r) (
   var integer j;
   j := 0;
-  while true (
+  while i*i + j*j < r*r (
     j := j+1;
   );
   result := j;
