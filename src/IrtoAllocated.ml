@@ -5,13 +5,13 @@ module T = AllocatedAst
 let allocate_prog reg_flag prog =
   let current_offset = ref 0 in
 
-  let delete_formal p =
+  (*let delete_formal p =
     { S.locals = S.Symb_Tbl.filter
           (fun _ (id_info: S.identifier_info) ->
              match id_info with Formal _ -> false | _ -> true)
       p.S.locals;
       S.code = p.S.code }
-in
+    in*)
 
 
   let tbl p =
@@ -35,7 +35,7 @@ in
               end
             | Local -> (let elt = GraphColoring.NodeMap.find id coloring in
                         if elt <= 7 then
-                          T.Reg ("$t"^(string_of_int (elt + 2)))
+                          T.Reg (Printf.sprintf "$t%d" (elt + 2))
                         else begin
                           current_offset := !current_offset - 4;
                           T.Stack (!current_offset)
@@ -47,10 +47,8 @@ in
       (* Tout sur la pile *)
       S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
           match info with
-          | Formal n -> failwith "unimplemented Formal IrToAllacated"
-          | Local -> current_offset := !current_offset - 4;
+          | _ -> current_offset := !current_offset - 4;
             T.Stack (!current_offset)
-          | Return -> failwith "Return pas fait"
         ) p.S.locals
   in
 
