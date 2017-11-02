@@ -40,6 +40,7 @@
 %nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
 %left MULT DIV
+
 %nonassoc IDENT
 %nonassoc BEGIN
 

@@ -8,10 +8,14 @@ loop(integer i, integer r) (
   ) else ( );
 )
 
+integer un() (
+  result := 1;
+)
+
 integer point(integer i, integer r) (
   var integer j;
   j := 0;
-  while i*i + j*j < r*r (
+  while i*i + j*j < r*r * un () (
     j := j+1;
   );
   result := j;

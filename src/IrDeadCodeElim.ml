@@ -38,6 +38,11 @@ let dce_step p =
 
 
 (* Élimination itérée *)
-let rec dce p =
-  let (b, new_p) = dce_step p in
-  if b then dce new_p else new_p
+let dce p =
+  let rec aux p =
+    let (b, new_p) = dce_step p in
+    if b then aux new_p else new_p
+  in
+  Symb_Tbl.fold
+    (fun id info acc -> Symb_Tbl.add id (aux info) acc)
+    p Symb_Tbl.empty

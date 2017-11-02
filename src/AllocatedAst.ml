@@ -13,8 +13,10 @@ type alloc_info =
   | Reg   of string
   | Stack of int
 
-type main = {
+type function_info = {
   locals: alloc_info Symb_Tbl.t;
   offset: int;
   code:   block
 }
+
+type prog = function_info Symb_Tbl.t
