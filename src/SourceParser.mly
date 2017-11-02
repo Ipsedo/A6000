@@ -88,7 +88,7 @@ instructions:
    De ce fait il a fallu modifier la signature de la règle instruction
    en une list au lieu d'un élément simple *)
 (* syntaxe for :
-  for id := expr; cond; instr ( block );
+  for id := expr; cond; set ( block );
 *)
 instruction:
   c=call { [ProcCall(c)] }
@@ -214,16 +214,17 @@ direct:
 ;
 
 call:
+  (*id=IDENT; args=preceded(BEGIN, terminated(separated_list(COMMA,expression), END)) { id, args }*)
   id=IDENT; BEGIN; args=arguments; END { id, args }
 ;
 
 arguments:
   (* empty *) { [] }
-  | a=args { a }
+  | a=args    { a  }
 ;
 
 args:
-  e=expression { [e] }
+  e=expression                { [e]  }
 | e=expression; COMMA; a=args { e::a }
 ;
 
