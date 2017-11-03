@@ -251,12 +251,12 @@ fun_delc:
     let local = Symb_Tbl.union union_vars params vds in
     let local = Symb_Tbl.add "result" {typ=t; kind=Return} local in
 
-    let formal = Symb_Tbl.fold
-      (fun _ v acc -> acc@[v.typ]) params [] in
+    (*let formal = Symb_Tbl.fold
+      (fun _ v acc -> acc@[v.typ]) params [] in*)
 
     id, {
       return = Some t;
-      formals = formal;
+      formals = p;
       locals = local;
       code = is
     }
@@ -273,12 +273,12 @@ fun_delc:
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
 
-    let formal = Symb_Tbl.fold
-      (fun _ v acc -> acc@[v.typ]) params [] in
+    (*let formal = Symb_Tbl.fold
+      (fun _ v acc -> acc@[v.typ]) params [] in*)
 
     id, {
       return = None;
-      formals = formal;
+      formals = p;
       locals = local;
       code = is
     }

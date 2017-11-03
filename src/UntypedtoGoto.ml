@@ -47,7 +47,9 @@ let destructure_prog p =
   S.Symb_Tbl.fold
     (fun id infos acc ->
        T.Symb_Tbl.add id
-         { T.locals = infos.S.locals; T.code = destructure_block infos.S.code }
+         { T.formals = infos.S.formals;
+           T.locals = infos.S.locals;
+           T.code = destructure_block infos.S.code }
          acc)
     p T.Symb_Tbl.empty
 

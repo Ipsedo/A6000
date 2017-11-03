@@ -109,7 +109,8 @@ let flatten_prog p =
        symb_tbl := infos.S.locals;
        let flattened_code = flatten_block infos.S.code in
        T.Symb_Tbl.add id
-         { T.locals = !symb_tbl;
+         { T.formals = infos.S.formals;
+           T.locals = !symb_tbl;
            T.code = List.map label_instruction flattened_code }
          acc)
     p T.Symb_Tbl.empty

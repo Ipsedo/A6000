@@ -43,12 +43,18 @@ and erase_code c = let rec aux c accu = match c with
 let erase_prog p =
   S.Symb_Tbl.fold
     (fun id infos acc -> let locals = S.Symb_Tbl.fold
-                             (fun id info tbl ->
-                                T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+                             (fun id info tbl -> T.Symb_Tbl.add id (erase_identifier_info info) tbl)
                              infos.S.locals
-                             T.Symb_Tbl.empty in
+                             T.Symb_Tbl.empty
+      in
+      let formal = List.fold_left
+          (fun acc (_, a) -> acc@[a])
+          [] infos.S.formals
+      in
       T.Symb_Tbl.add id
-        { T.locals = locals; T.code = erase_code infos.S.code }
+        { T.locals = locals;
+          T.formals = formal;
+          T.code = erase_code infos.S.code }
         acc)
     p T.Symb_Tbl.empty
 

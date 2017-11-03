@@ -1,0 +1,11 @@
+main(integer x) (
+  print_ixe(x);
+)
+
+print_ixe(integer x) (
+  print_ixeprime(x);
+)
+
+print_ixeprime(integer x) (
+  print(x);
+)

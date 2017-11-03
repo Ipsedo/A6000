@@ -59,7 +59,7 @@ let typecheck_prog p =
       let str, e = c in
       let infos = Symb_Tbl.find str p in
       List.iter2
-        (fun a b -> comparetype a (type_expression b))
+        (fun (a, _) b -> comparetype a (type_expression b))
         infos.formals e
 
   (* [type_expression/literal/location] vérifient le bon typage des
@@ -79,7 +79,7 @@ let typecheck_prog p =
       let str, e = c in
       let infos = Symb_Tbl.find str p in
       List.iter2
-        (fun a b -> comparetype a (type_expression b))
+        (fun (a, _) b -> comparetype a (type_expression b))
         infos.formals e;
       match infos.return with
         Some t -> t

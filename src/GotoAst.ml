@@ -23,6 +23,7 @@ and instruction =
   | ProcCall of call
 
 type function_info = {
+  formals: string list;
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }

@@ -32,6 +32,7 @@ and call = string * expression list
 
 
 and function_info = {
+  formals: string list;
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }

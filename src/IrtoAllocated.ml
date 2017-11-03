@@ -3,16 +3,8 @@ module T = AllocatedAst
 
 (* Allocation *)
 let allocate_prog reg_flag prog =
+
   let current_offset = ref 0 in
-
-  (*let delete_formal p =
-    { S.locals = S.Symb_Tbl.filter
-          (fun _ (id_info: S.identifier_info) ->
-             match id_info with Formal _ -> false | _ -> true)
-      p.S.locals;
-      S.code = p.S.code }
-    in*)
-
 
   let tbl p =
     if reg_flag
@@ -37,7 +29,6 @@ let allocate_prog reg_flag prog =
           ) p.S.locals
       end
     else
-      (* Tout sur la pile *)
       S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
           match info with
           | _ -> current_offset := !current_offset - 4;
@@ -50,6 +41,9 @@ let allocate_prog reg_flag prog =
        current_offset := 0;
        Printf.printf "%s\n" id;
        T.Symb_Tbl.add id
-         { T.locals = tbl info; T.offset = !current_offset; T.code = info.S.code }
+         { T.formals = info.S.formals;
+           T.locals = tbl info;
+           T.offset = !current_offset;
+           T.code = info.S.code }
          acc)
     prog T.Symb_Tbl.empty

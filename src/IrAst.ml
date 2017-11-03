@@ -14,6 +14,7 @@ type binop           = GotoAst.binop
 type prog = function_info Symb_Tbl.t
 
 and function_info = {
+  formals: string list;
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }

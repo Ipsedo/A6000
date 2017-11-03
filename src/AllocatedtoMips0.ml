@@ -8,6 +8,7 @@ let generate_function fct =
   (* Affecte des emplacements mémoire aux variables locales. *)
   let sp_off   = fct.offset in
   let symb_tbl = fct.locals in
+
   let find_alloc id =
     try  AllocatedAst.Symb_Tbl.find id symb_tbl
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
@@ -97,13 +98,59 @@ let generate_function fct =
                                Some r -> bnez r l
                              | _ -> bnez tmp1 l)
     | Comment(str) -> comment str
+    | ProcCall(str, v_list) -> generate_pre_proccall str v_list
+      @@ addi sp sp (List.length v_list)
+  and generate_pre_proccall str v_list =
+    let allocate_reg_formal index value =
+      load_value (Printf.sprintf "$a%d" index) value
+    in
+    let allocate_stack_formal index value = (* index ne pas comprenant a0-a3 ! *)
+      load_value ~$t0 value
+      @@ sw ~$t0 (-index * 4) ~$sp
+    in
+
+    let arg, nb = List.fold_left
+        (fun (acc, index) elt -> let alloc =
+                                   if index < 4 then
+                                     allocate_reg_formal index elt
+                                   else
+                                     allocate_stack_formal (index - 4) elt
+          in
+          (acc@@alloc, index + 1))
+        (nop, 0) v_list
+    in
+    arg
+    @@ addi sp sp (if nb < 4 then 0 else -nb - 4) (* -4 pour a0-a3 *)
+    @@ jal str
+  in
+
+  let affect_formals =
+    let aux index str =
+      if index < 4 then begin
+        match find_alloc str with
+          Stack o -> sw (Printf.sprintf "$a%d" index) o ~$fp
+        | Reg r -> move r (Printf.sprintf "$a%d" index)
+      end
+      else begin
+        match find_alloc str with
+          Stack o -> nop
+        | Reg r -> nop
+      end
+    in
+    let aff, _ = List.fold_left
+        (fun (acc, index) str_formal ->
+           (acc @@ (aux index str_formal), index + 1))
+        (nop, 0) fct.formals
+    in aff
   in
 
   let init_fct =
-    addi sp sp (-4)
-    @@ sw ra 4 sp
-    @@ sw fp 0 sp
-    @@ addi sp sp sp_off
+    sw fp (-4) fp                 (* save $fp *)
+    @@ sw ra (-8) fp              (* old_ra <- $ra *)
+    @@ addi sp sp (-8)         (* new @ stack pointer *)
+    @@ move fp sp              (* fp pointe sur old_ra *)
+    @@ addi sp sp sp_off       (* allocation variable locale *)
+    @@ affect_formals          (* affectation des paramètres formels *)
     (* passer params *)
     (*move fp sp
       @@ addi fp fp (-4)
@@ -114,10 +161,11 @@ let generate_function fct =
   in
 
   let close_fct =
-    lw ra 4 sp
-    @@ lw fp 0 sp
-    @@ addi sp sp 4
-    @@ addi sp sp (-sp_off)
+    lw ra 0 fp
+    @@ addi fp fp 4
+    @@ lw fp 0 fp
+    @@ addi sp sp (-sp_off + 4)
+    @@ jr ra
   in
 
   (*let asm = Symb_Tbl.fold

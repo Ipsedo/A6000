@@ -14,6 +14,7 @@ type alloc_info =
   | Stack of int
 
 type function_info = {
+  formals : string list;
   locals: alloc_info Symb_Tbl.t;
   offset: int;
   code:   block

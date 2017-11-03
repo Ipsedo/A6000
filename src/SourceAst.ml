@@ -11,7 +11,7 @@ module Symb_Tbl = Map.Make(String)
 type prog = function_info Symb_Tbl.t
 and function_info = {
   return:  typ option;
-  formals: typ list;
+  formals: (typ * string) list;
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
