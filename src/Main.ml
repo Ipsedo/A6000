@@ -86,13 +86,13 @@ let () =
       else p
     in
     let p = IrtoAllocated.allocate_prog !reg_allocation p in
-    (*let asm = AllocatedtoMips.generate_main p in
-      let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
-      let out = open_out output_file in
-      let outf = formatter_of_out_channel out in
-      Mips.print_program outf asm;
-      pp_print_flush outf ();
-      close_out out;*)
+    let asm = AllocatedtoMips0.generate_prog p in
+    let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
+    let out = open_out output_file in
+    let outf = formatter_of_out_channel out in
+    Mips.print_program outf asm;
+    pp_print_flush outf ();
+    close_out out;
     ()
 
   end;

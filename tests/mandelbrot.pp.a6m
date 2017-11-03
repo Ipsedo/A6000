@@ -11,15 +11,15 @@ main(integer x) (
 
   current_it := 0;
 
-  for i := 0; i < x; i++ (
-    for j := 0; j < x; j++ (
+  for (i := 0; i < x; i++) (
+    for (j := 0; j < x; j++) (
       c_r := i - x / 2;
       c_i := j - x / 2;
       z_r := 0;
       z_i :=0;
       current_it := 0;
 
-      while z_r*z_r + z_i*z_i < 4 && current_it < x (
+      while (z_r*z_r + z_i*z_i < 4 && current_it < x) (
         tmp := z_r;
         z_r := z_r*z_r - z_i*z_i + c_r;
         z_i := 2*z_i*tmp + c_i;

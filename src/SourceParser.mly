@@ -41,9 +41,6 @@
 %left PLUS SUB
 %left MULT DIV
 
-%nonassoc IDENT
-%nonassoc BEGIN
-
 %start prog
 %type <SourceAst.prog> prog
 
@@ -104,12 +101,13 @@ instruction:
 | IF; e=expression; THEN;
   BEGIN; is=instructions; END
   { [If(e, is, [])] }
-| WHILE; e=expression; BEGIN; is=instructions; END
+| WHILE; BEGIN; e=expression; END; BEGIN; is=instructions; END
   { [While(e, is)] }
-| FOR;
+| FOR; BEGIN;
   id1=location; SET; e1=expression; SEMI;
   e2=expression; SEMI;
   s=set;
+  END;
   BEGIN; bl=instructions; END
   {
     let block = bl @ [s] in
@@ -190,15 +188,16 @@ compare:
 | OR   { Or   }
 
 bool_compare:
-    b1=bool_compare; b=bool_op; d1=direct { Binop(b, b1, f1) }
+    b1=bool_compare; b=bool_op; d1=direct { Binop(b, b1, d1) }
   | d=direct { d }
 
 direct:
     loc=location { Location(loc) }
   | lit=literal  { Literal(lit)  }
   | c=call       { FunCall(c)    }
-  ;
-*)
+  | BEGIN; e=expression; END { e }
+  ;*)
+
 %inline binop:
   MULT { Mult }
 | DIV  { Div  }
@@ -215,7 +214,6 @@ direct:
 ;
 
 call:
-  (*id=IDENT; args=preceded(BEGIN, terminated(separated_list(COMMA,expression), END)) { id, args }*)
   id=IDENT; BEGIN; args=arguments; END { id, args }
 ;
 

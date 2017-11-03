@@ -6,10 +6,10 @@ main(integer x) (
   continue := true;
   i := 0;
 
-  while continue (
+  while (continue) (
     continue := false;
     j := 0;
-    while j < x+1 (
+    while (j < x+1) (
       if i*i + j*j < x*x then (
         print(46);
         continue := true;
