@@ -100,16 +100,24 @@ let generate_function fct =
   in
 
   let init_fct =
+    addi sp sp (-4)
+    @@ sw ra 4 sp
+    @@ sw fp 0 sp
+    @@ addi sp sp sp_off
+    (* passer params *)
     (*move fp sp
       @@ addi fp fp (-4)
       @@ lw a0 0 a1
       @@ jal "atoi"
       @@ sw v0 0 fp
-      @@*) addi sp sp sp_off
+      @@ addi sp sp sp_off*)
   in
 
   let close_fct =
-    nop
+    lw ra 4 sp
+    @@ lw fp 0 sp
+    @@ addi sp sp 4
+    @@ addi sp sp (-sp_off)
   in
 
   (*let asm = Symb_Tbl.fold
@@ -122,10 +130,11 @@ let generate_function fct =
 
 let init_prog =
   move fp sp
-  @@ addi fp fp (-4)
+  (*@@ addi fp fp (-4)*)
   @@ lw a0 0 a1
   @@ jal "atoi"
-  @@ sw v0 0 fp
+  (*@@ sw v0 0 fp*)
+  @@ move a0 v0
   (*@@ addi sp sp sp_off*)
   @@ jal "main"
 
