@@ -5,7 +5,6 @@ let add_interference_formals v_list g =
   let add_edge id1 id2 g =
     match id1, id2 with
       Identifier i1, Identifier i2 ->
-      Printf.printf "add %s %s\n" i1 i2;
       Graph.add_edge g i1 i2
     | _ -> g
   in
@@ -61,7 +60,13 @@ let interference_graph p : Graph.t =
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
 
-
+  (* add interference formals *)
+  let formals = Symb_Tbl.fold
+      (fun id (id_info : IrAst.identifier_info) acc ->
+         match id_info with Formal _ -> acc@[Identifier id] | _ -> acc)
+      p.locals []
+  in
+  let g = add_interference_formals formals g in
 
   List.fold_left
     (fun acc (lab, instr) ->

@@ -40,6 +40,7 @@ let allocate_prog reg_flag prog =
 
   S.Symb_Tbl.fold
     (fun id info acc ->
+       Printf.printf "%s\n" id;
        let n_tbl, offset = tbl info in
        T.Symb_Tbl.add id
          { T.formals = info.S.formals;

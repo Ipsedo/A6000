@@ -107,7 +107,7 @@ let generate_function fct =
     in
     let allocate_stack_formal index value = (* index ne pas comprenant a0-a3 ! *)
       load_value ~$t0 value
-      @@ sw ~$t0 (-index * 4 - 4) ~$sp
+      @@ sw ~$t0 (-index * 4 - 4) ~$sp (* -4 pour @ suivante de sp *)
     in
     let alloc_formal index value =
       if index < 4 then
@@ -121,28 +121,36 @@ let generate_function fct =
     in
     let stack_args = if nb < 4 then 0 else (nb - 4) * 4 (* -4 pour a0-a3 *)
     in
-    (*save_t_reg
-      @@*) arg
+    let nb_reg = Symb_Tbl.fold
+        (fun id alloc_info acc ->
+           match alloc_info with
+             Reg s -> let index = int_of_string (String.sub s 2 1) in
+             if index > acc then index else acc
+           | _ -> acc)
+        fct.locals 0
+    in
+    save_t_reg nb_reg
+    @@ arg
     @@ addi sp sp (-stack_args)
     @@ jal str
     @@ addi sp sp stack_args
-  (* @@ load_t_reg *)
+    @@ load_t_reg nb_reg
 
-  and save_t_reg =
+  and save_t_reg nb =
     let acc = ref nop in
-    for i=0 to 7 do
+    for i=0 to (nb - 1) do
       let reg = Printf.sprintf "$t%d" (i + 2) in
-      acc := !acc @@ sw reg (-i * 4) sp
+      acc := !acc @@ sw reg (-i * 4 - 4) sp
     done;
-    !acc @@ addi sp sp (-7 * 4)
+    !acc @@ addi sp sp (-nb * 4)
 
-  and load_t_reg =
+  and load_t_reg nb =
     let acc = ref nop in
-    for i=0 to 7 do
+    for i=0 to (nb - 1) do
       let reg = Printf.sprintf "$t%d" (7 - i + 2) in
-      acc := !acc @@ lw reg (i * 4) sp
+      acc := !acc @@ lw reg (i * 4 + 4) sp
     done;
-    !acc @@ addi sp sp (7 * 4)
+    !acc @@ addi sp sp (nb * 4)
   in
 
   let affect_formals = (* ok *)
@@ -155,11 +163,11 @@ let generate_function fct =
       end
       else begin
         let index_stack = index - 4 in
-        let real_index = (nb - 4) - index_stack in
+        let real_index = ((nb - 4) - index_stack) * 4 + 8 in (* +8 pr pointer au dessus de old_fp *)
         match find_alloc str with
-          Stack o -> lw ~$t0 (8 + real_index * 4) ~$fp (* 4 + car old_fp au dessus de old_ra (où pointe fp) *)
+          Stack o -> lw ~$t0 real_index ~$fp
           @@ sw ~$t0 o ~$fp
-        | Reg r -> lw r (8 + real_index * 4) ~$fp
+        | Reg r -> lw r real_index ~$fp
       end
     in
     let aff, _ = List.fold_left
@@ -191,23 +199,13 @@ let generate_function fct =
     @@ addi sp sp (-sp_off + 8)
     @@ jr ra
   in
-
-  (*let asm = Symb_Tbl.fold
-    (fun id info acc ->
-      acc @@ (label id) @@ (generate_block info.code))
-    fct nop
-    in
-    { text = init @@ asm @@ close @@ built_ins; data = nop }*)
   init_fct @@ generate_block fct.code @@ close_fct
 
 let init_prog =
   move fp sp
-  (*@@ addi fp fp (-4)*)
   @@ lw a0 0 a1
   @@ jal "atoi"
-  (*@@ sw v0 0 fp*)
   @@ move a0 v0
-  (*@@ addi sp sp sp_off*)
   @@ jal "main"
 
 let close_prog = li v0 10 @@ syscall
