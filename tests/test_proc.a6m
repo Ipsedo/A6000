@@ -1,11 +1,22 @@
 main(integer x) (
-  print_ixe(x);
+  var integer i;
+  i := 51;
+  print_ixe(x, i);
+  i := i + 1;
+  print_ixe(x, i);
 )
 
-print_ixe(integer x) (
-  print_ixeprime(x);
+print_ixe(integer x, integer i) (
+  print_ixeprime(x, i, 52, 53, 54, 55, 56, 57);
 )
 
-print_ixeprime(integer x) (
-  print(x);
+print_ixeprime(integer x1, integer x2, integer x3, integer x4, integer x5, integer x6, integer x7, integer x8) (
+  print(x1);
+  print(x2);
+  print(x3);
+  print(x4);
+  print(x5);
+  print(x6);
+  print(x7);
+  print(x8);
 )

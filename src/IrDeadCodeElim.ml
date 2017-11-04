@@ -21,7 +21,7 @@ let dce_step p =
      Toutes les autres sont vivantes.
   *)
   let var_updated : IrAst.instruction -> VarSet.t = function
-    | Binop(id, _, _, _) | Value(id, _) -> VarSet.singleton id
+    | Binop(id, _, _, _) | Value(id, _) | FunCall(_, id, _) -> VarSet.singleton id
     | _ -> VarSet.empty
   in
 

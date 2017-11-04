@@ -1,6 +1,21 @@
 open IrAst
 open IrLiveness
 
+let add_interference_formals v_list g =
+  let add_edge id1 id2 g =
+    match id1, id2 with
+      Identifier i1, Identifier i2 ->
+      Printf.printf "add %s %s\n" i1 i2;
+      Graph.add_edge g i1 i2
+    | _ -> g
+  in
+  let rec aux v_list acc =
+    match v_list with
+      [] -> acc
+    | elt::tl -> aux tl (List.fold_left (fun a e -> add_edge elt e a) acc tl)
+  in aux v_list g
+
+
 (**
    Construction du graphe d'interférence :
 
@@ -16,13 +31,19 @@ open IrLiveness
 (* Fonction auxiliaire : ajoute à un graphe l'ensemble des interférences
    dues à une instruction donnée, connaissant l'ensemble des variables
    vivantes en sortie de cette instruction. *)
-let add_interferences g lv_out_at_node = function
+let add_interferences p g lv_out_at_node = function
   | Binop(a, _, Identifier c1, Identifier c2) ->
     let tmp = VarSet.fold
         (fun elt acc -> Graph.add_edge acc a elt)
         lv_out_at_node g
     in
     Graph.add_edge tmp c1 c2
+  | FunCall(_, a, v) -> let tmp = VarSet.fold
+                            (fun elt acc -> Graph.add_edge acc a elt)
+                            lv_out_at_node g
+    in
+    add_interference_formals v tmp
+  | ProcCall(_, v) -> add_interference_formals v g
   | Binop(a, _, _, _) | Value(a, _) ->
     VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | _ -> g
@@ -39,7 +60,10 @@ let interference_graph p : Graph.t =
   let _, lv_out = mk_lv p in
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
+
+
+
   List.fold_left
     (fun acc (lab, instr) ->
-       add_interferences acc (Hashtbl.find lv_out lab) instr)
+       add_interferences p acc (Hashtbl.find lv_out lab) instr)
     g p.code

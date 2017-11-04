@@ -1,0 +1,12 @@
+main(integer x) (
+  var integer i;
+  i := 51;
+  print_ixe(x, i);
+  i := i + 1;
+  print_ixe(x, i);
+)
+
+print_ixe(integer x, integer i) (
+  print(x);
+  print(i);
+)

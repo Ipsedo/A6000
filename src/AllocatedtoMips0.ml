@@ -98,33 +98,55 @@ let generate_function fct =
                                Some r -> bnez r l
                              | _ -> bnez tmp1 l)
     | Comment(str) -> comment str
-    | ProcCall(str, v_list) -> generate_pre_proccall str v_list
-      @@ addi sp sp (List.length v_list)
-  and generate_pre_proccall str v_list =
+    | FunCall(_) -> failwith "unimplemented funcall allocatedToMips"
+    | ProcCall(str, v_list) -> generate_proccall str v_list
+
+  and generate_proccall str v_list = (* ok *)
     let allocate_reg_formal index value =
       load_value (Printf.sprintf "$a%d" index) value
     in
     let allocate_stack_formal index value = (* index ne pas comprenant a0-a3 ! *)
       load_value ~$t0 value
-      @@ sw ~$t0 (-index * 4) ~$sp
+      @@ sw ~$t0 (-index * 4 - 4) ~$sp
     in
-
+    let alloc_formal index value =
+      if index < 4 then
+        allocate_reg_formal index value
+      else
+        allocate_stack_formal (index - 4) value
+    in
     let arg, nb = List.fold_left
-        (fun (acc, index) elt -> let alloc =
-                                   if index < 4 then
-                                     allocate_reg_formal index elt
-                                   else
-                                     allocate_stack_formal (index - 4) elt
-          in
-          (acc@@alloc, index + 1))
+        (fun (acc, index) elt -> (acc @@ alloc_formal index elt, index + 1))
         (nop, 0) v_list
     in
-    arg
-    @@ addi sp sp (if nb < 4 then 0 else -nb - 4) (* -4 pour a0-a3 *)
+    let stack_args = if nb < 4 then 0 else (nb - 4) * 4 (* -4 pour a0-a3 *)
+    in
+    (*save_t_reg
+      @@*) arg
+    @@ addi sp sp (-stack_args)
     @@ jal str
+    @@ addi sp sp stack_args
+  (* @@ load_t_reg *)
+
+  and save_t_reg =
+    let acc = ref nop in
+    for i=0 to 7 do
+      let reg = Printf.sprintf "$t%d" (i + 2) in
+      acc := !acc @@ sw reg (-i * 4) sp
+    done;
+    !acc @@ addi sp sp (-7 * 4)
+
+  and load_t_reg =
+    let acc = ref nop in
+    for i=0 to 7 do
+      let reg = Printf.sprintf "$t%d" (7 - i + 2) in
+      acc := !acc @@ lw reg (i * 4) sp
+    done;
+    !acc @@ addi sp sp (7 * 4)
   in
 
-  let affect_formals =
+  let affect_formals = (* ok *)
+    let nb = List.length fct.formals in
     let aux index str =
       if index < 4 then begin
         match find_alloc str with
@@ -132,23 +154,26 @@ let generate_function fct =
         | Reg r -> move r (Printf.sprintf "$a%d" index)
       end
       else begin
+        let index_stack = index - 4 in
+        let real_index = (nb - 4) - index_stack in
         match find_alloc str with
-          Stack o -> nop
-        | Reg r -> nop
+          Stack o -> lw ~$t0 (8 + real_index * 4) ~$fp (* 4 + car old_fp au dessus de old_ra (où pointe fp) *)
+          @@ sw ~$t0 o ~$fp
+        | Reg r -> lw r (8 + real_index * 4) ~$fp
       end
     in
     let aff, _ = List.fold_left
         (fun (acc, index) str_formal ->
-           (acc @@ (aux index str_formal), index + 1))
+           (acc @@ aux index str_formal, index + 1))
         (nop, 0) fct.formals
-    in aff
+      in aff
   in
 
-  let init_fct =
-    sw fp (-4) fp                 (* save $fp *)
-    @@ sw ra (-8) fp              (* old_ra <- $ra *)
-    @@ addi sp sp (-8)         (* new @ stack pointer *)
-    @@ move fp sp              (* fp pointe sur old_ra *)
+  let init_fct = (* ok *)
+    sw fp (-4) sp              (* save $fp *)
+    @@ sw ra (-8) sp           (* old_ra <- $ra *)
+    @@ addi sp sp (-8)         (* fp pointe sur old_ra *)
+    @@ move fp sp              (* new @ stack pointer *)
     @@ addi sp sp sp_off       (* allocation variable locale *)
     @@ affect_formals          (* affectation des paramètres formels *)
     (* passer params *)
@@ -160,11 +185,10 @@ let generate_function fct =
       @@ addi sp sp sp_off*)
   in
 
-  let close_fct =
+  let close_fct = (* ok *)
     lw ra 0 fp
-    @@ addi fp fp 4
-    @@ lw fp 0 fp
-    @@ addi sp sp (-sp_off + 4)
+    @@ lw fp 4 fp
+    @@ addi sp sp (-sp_off + 8)
     @@ jr ra
   in
 
@@ -174,7 +198,7 @@ let generate_function fct =
     fct nop
     in
     { text = init @@ asm @@ close @@ built_ins; data = nop }*)
-  init_fct @@ (generate_block fct.code) @@ close_fct
+  init_fct @@ generate_block fct.code @@ close_fct
 
 let init_prog =
   move fp sp
@@ -214,7 +238,7 @@ let built_ins =
 
 let generate_prog p =
   let prog = Symb_Tbl.fold
-      (fun id info acc -> acc @@ (label id) @@ (generate_function info))
+      (fun id info acc -> acc @@ label id @@ generate_function info)
       p nop
   in
   { text = init_prog @@ close_prog @@ prog @@ built_ins; data = nop}

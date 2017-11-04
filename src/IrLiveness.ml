@@ -103,9 +103,13 @@ let mk_lv p =
     | Binop(_, _, v1, v2) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
     | Value(_, v) | Print(v) | CondGoto(v, _) -> value_to_var_set v
+    | FunCall(_, _, v) | ProcCall(_, v) ->
+      List.fold_left
+        (fun acc elt -> VarSet.union acc (value_to_var_set elt))
+        VarSet.empty v
     | _ -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
-    | Binop(id, _, _, _) | Value(id, _) -> VarSet.singleton id
+    | Binop(id, _, _, _) | Value(id, _) | FunCall(_, id, _) -> VarSet.singleton id
     | _ -> VarSet.empty
   in
 

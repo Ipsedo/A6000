@@ -1,95 +1,102 @@
 .text
 	move $fp, $sp
-	addi $fp, $fp, -4
 	lw $a0, 0($a1)
 	jal atoi
-	sw $v0, 0($fp)
+	move $a0, $v0
+	jal main
+	li $v0, 10
+	syscall
+main:
+	sw $fp, 0($sp)
+	sw $ra, -4($sp)
+	addi $sp, $sp, -8
+	addi $fp, $sp, 4
 	addi $sp, $sp, 0
-#_main_0
+	move $t2, $a0
+#_0
 	li $t0, 1
 	move $t5, $t0
-#_main_1
+#_1
 	li $t0, 0
 	move $t4, $t0
-#_main_2
-	b _label_main_1
-#_label_main_2
-_label_main_2:
-#_main_4
+#_2
+	b _label_1
+#_label_2
+_label_2:
+#_4
 	li $t0, 0
 	move $t5, $t0
-#_main_5
+#_5
 	li $t0, 0
 	move $t3, $t0
-#_main_6
-	b _label_main_3
-#_label_main_4
-_label_main_4:
-#_main_8
+#_6
+	b _label_3
+#_label_4
+_label_4:
+#_8
 	mul $t7, $t4, $t4
-#_main_9
+#_9
 	mul $t6, $t3, $t3
-#_main_10
+#_10
 	add $t7, $t7, $t6
-#_main_11
-	lw $t0, 0($fp)
-	lw $t1, 0($fp)
-	mul $t6, $t0, $t1
-#_main_12
+#_11
+	mul $t6, $t2, $t2
+#_12
 	slt $t7, $t7, $t6
-#_main_13
-	bnez $t7, _label_main_5
-#_main_14
+#_13
+	bnez $t7, _label_5
+#_14
 	li $a0, 35
 	li $v0, 11
 	syscall
-#_main_15
-	b _label_main_6
-#_label_main_5
-_label_main_5:
-#_main_17
+#_15
+	b _label_6
+#_label_5
+_label_5:
+#_17
 	li $a0, 46
 	li $v0, 11
 	syscall
-#_main_18
+#_18
 	li $t0, 1
 	move $t5, $t0
-#_label_main_6
-_label_main_6:
-#_main_20
+#_label_6
+_label_6:
+#_20
 	li $a0, 32
 	li $v0, 11
 	syscall
-#_main_21
+#_21
 	li $t1, 1
 	add $t7, $t3, $t1
-#_main_22
+#_22
 	move $t3, $t7
-#_label_main_3
-_label_main_3:
-#_main_24
-	lw $t0, 0($fp)
+#_label_3
+_label_3:
+#_24
 	li $t1, 1
-	add $t6, $t0, $t1
-#_main_25
+	add $t6, $t2, $t1
+#_25
 	slt $t7, $t3, $t6
-#_main_26
-	bnez $t7, _label_main_4
-#_main_27
+#_26
+	bnez $t7, _label_4
+#_27
 	li $a0, 10
 	li $v0, 11
 	syscall
-#_main_28
+#_28
 	li $t1, 1
 	add $t7, $t4, $t1
-#_main_29
+#_29
 	move $t4, $t7
-#_label_main_1
-_label_main_1:
-#_main_31
-	bnez $t5, _label_main_2
-	li $v0, 10
-	syscall
+#_label_1
+_label_1:
+#_31
+	bnez $t5, _label_2
+	lw $ra, 0($fp)
+	lw $fp, 4($fp)
+	addi $sp, $sp, 8
+	jr $ra
 atoi:
 	move $t0, $a0
 	li $t1, 0
