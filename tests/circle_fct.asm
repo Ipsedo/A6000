@@ -203,8 +203,8 @@ _label_7:
 #_40
 	bnez $t6, _label_8
 #_41
-	move $t5, $t3
-	move $v0, $t5
+	move $t3, $t3
+	move $v0, $t3
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8

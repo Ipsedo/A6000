@@ -158,8 +158,8 @@ let generate_function fct =
     for i=0 to (nb - 1) do
       (*let reg = Printf.sprintf "$t%d" (nb - 1 - i + 2) in
         acc := !acc @@ lw reg (i * 4) sp*)
-        let reg = Printf.sprintf "$t%d" (i + 2) in
-        acc := !acc @@ lw reg (-i * 4 - 4) sp
+      let reg = Printf.sprintf "$t%d" (i + 2) in
+      acc := !acc @@ lw reg (-i * 4 - 4) sp
     done;
     addi sp sp (nb * 4) @@ !acc
   in
@@ -195,13 +195,6 @@ let generate_function fct =
     @@ move fp sp              (* new @ stack pointer *)
     @@ addi sp sp sp_off       (* allocation variable locale *)
     @@ affect_formals          (* affectation des paramètres formels *)
-    (* passer params *)
-    (*move fp sp
-      @@ addi fp fp (-4)
-      @@ lw a0 0 a1
-      @@ jal "atoi"
-      @@ sw v0 0 fp
-      @@ addi sp sp sp_off*)
   in
 
   let result =

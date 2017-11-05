@@ -5,7 +5,7 @@ main(integer x) (
 loop(integer i, integer r) (
   if line(point(i, r), r) then (
     loop(i+1, r);
-  ) else ( );
+  );
 )
 
 integer point(integer i, integer r) (

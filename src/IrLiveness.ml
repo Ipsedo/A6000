@@ -115,14 +115,19 @@ let mk_lv p =
 
   let formal_set =
     let tmp = List.fold_left
-      (fun acc elt -> VarSet.union acc (VarSet.singleton elt))
-      VarSet.empty p.formals
+        (fun acc elt -> VarSet.union acc (VarSet.singleton elt))
+        VarSet.empty p.formals
     in
     if Symb_Tbl.mem "result" p.locals then
       VarSet.union tmp (VarSet.singleton "result")
     else
       tmp
   in
+
+  (*let _ = match p.code with
+    | (lab,_)::_ -> Hashtbl.replace lv_in lab formal_set
+    | _ -> ()
+    in*)
 
   (* Booléen qu'on met à [true] lorsque les tables [lv_in] et [lv_out] sont
      encore en train de changer. Il est initialisé à [true] car à l'origine il
@@ -148,7 +153,7 @@ let mk_lv p =
     (* Out[lab] *)
     let tmp_out = List.fold_left
         (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
-        (if b then formal_set else VarSet.empty)
+        (*if b then formal_set else VarSet.empty*) VarSet.empty
         succs
     in
     let change_1 = tmp_out <> (Hashtbl.find lv_out lab) in
@@ -161,6 +166,7 @@ let mk_lv p =
         tmp_kill (Hashtbl.find lv_out lab)
     in
     let tmp_in = VarSet.union tmp_out_in (lv_gen instr) in
+    (*let tmp_in = if b then VarSet.union formal_set tmp_in else tmp_in in*)
     let change_2 = tmp_in <> (Hashtbl.find lv_in lab) in
     Hashtbl.replace lv_in lab tmp_in;
 

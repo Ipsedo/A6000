@@ -7,10 +7,10 @@
 	li $v0, 10
 	syscall
 main:
-	sw $fp, 0($sp)
-	sw $ra, -4($sp)
+	sw $fp, -4($sp)
+	sw $ra, -8($sp)
 	addi $sp, $sp, -8
-	addi $fp, $sp, 4
+	move $fp, $sp
 	addi $sp, $sp, 0
 	move $t2, $a0
 #_0

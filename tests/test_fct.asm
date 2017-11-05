@@ -16,19 +16,19 @@ main:
 #_0
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	addi $sp, $sp, -12
+	addi $sp, $sp, -8
 	move $a0, $t2
+	move $a1, $t2
+	li $a2, 9
 	addi $sp, $sp, 0
-	jal plus_vingt
+	jal rec_mul
 	addi $sp, $sp, 0
-	addi $sp, $sp, 12
+	addi $sp, $sp, 8
 	lw $t2, -4($sp)
 	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	move $t3, $v0
+	move $t2, $v0
 #_1
-	move $a0, $t3
+	move $a0, $t2
 	li $v0, 11
 	syscall
 	lw $ra, 0($fp)
@@ -44,9 +44,9 @@ plus_deux:
 	move $t3, $a0
 #_2
 	li $t1, 2
-	add $t4, $t3, $t1
+	add $t2, $t3, $t1
 #_3
-	move $t2, $t4
+	move $t2, $t2
 	move $v0, $t2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
@@ -98,6 +98,60 @@ _label_1:
 	slt $t3, $t4, $t1
 #_14
 	bnez $t3, _label_2
+	move $v0, $t2
+	lw $ra, 0($fp)
+	lw $fp, 4($fp)
+	addi $sp, $sp, 8
+	jr $ra
+rec_mul:
+	sw $fp, -4($sp)
+	sw $ra, -8($sp)
+	addi $sp, $sp, -8
+	move $fp, $sp
+	addi $sp, $sp, 0
+	move $t3, $a0
+	move $t5, $a1
+	move $t4, $a2
+#_15
+	li $t1, 0
+	sgt $t2, $t4, $t1
+#_16
+	bnez $t2, _label_3
+#_17
+	move $t2, $t3
+#_18
+	b _label_4
+#_label_3
+_label_3:
+#_20
+	add $t2, $t3, $t5
+#_21
+	li $t1, 1
+	sub $t3, $t4, $t1
+#_22
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	addi $sp, $sp, -20
+	move $a0, $t2
+	move $a1, $t5
+	move $a2, $t3
+	addi $sp, $sp, 0
+	jal rec_mul
+	addi $sp, $sp, 0
+	addi $sp, $sp, 20
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
+	move $t2, $v0
+#_23
+	move $t2, $t2
+#_label_4
+_label_4:
 	move $v0, $t2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)

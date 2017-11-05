@@ -1,5 +1,5 @@
 main(integer x) (
-  print(plus_vingt(x));
+  print(rec_mul(x, x, 9));
 )
 
 integer plus_deux(integer i) (
@@ -13,5 +13,13 @@ integer plus_vingt(integer i) (
   while (cpt < 10) (
     result := plus_deux(result);
     cpt++;
+  );
+)
+
+integer rec_mul(integer i, integer a, integer cpt) (
+  if cpt > 0 then (
+    result := rec_mul(i + a, a, cpt - 1);
+  ) else (
+    result := i;
   );
 )

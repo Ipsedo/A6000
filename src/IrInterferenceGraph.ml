@@ -68,8 +68,8 @@ let interference_graph p : Graph.t =
   in
   let formals = if Symb_Tbl.mem "result" p.locals then
       Identifier("result")::formals
-  else
-    formals
+    else
+      formals
   in
   let g = add_interference_formals formals g in
 
