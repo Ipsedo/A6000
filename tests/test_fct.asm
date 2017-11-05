@@ -14,87 +14,91 @@ main:
 	addi $sp, $sp, 0
 	move $t2, $a0
 #_0
-	li $t0, 51
-	move $t4, $t0
-#_1
-	li $t0, 0
-	move $t3, $t0
-#_2
-	b _label_1
-#_label_2
-_label_2:
-#_4
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	sw $t6, -20($sp)
-	addi $sp, $sp, -20
+	addi $sp, $sp, -12
 	move $a0, $t2
-	move $a1, $t4
 	addi $sp, $sp, 0
-	jal print_ixe
+	jal plus_vingt
 	addi $sp, $sp, 0
-	addi $sp, $sp, 20
+	addi $sp, $sp, 12
 	lw $t2, -4($sp)
 	lw $t3, -8($sp)
 	lw $t4, -12($sp)
-	lw $t5, -16($sp)
-	lw $t6, -20($sp)
-#_5
-	li $a0, 10
+	move $t3, $v0
+#_1
+	move $a0, $t3
 	li $v0, 11
 	syscall
-#_6
-	li $t1, 1
-	add $t5, $t3, $t1
-#_7
-	move $t3, $t5
-#_label_1
-_label_1:
-#_9
-	li $t1, 10
-	slt $t5, $t3, $t1
-#_10
-	bnez $t5, _label_2
-#_11
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	sw $t6, -20($sp)
-	addi $sp, $sp, -20
-	move $a0, $t2
-	move $a1, $t4
-	addi $sp, $sp, 0
-	jal print_ixe
-	addi $sp, $sp, 0
-	addi $sp, $sp, 20
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
-	lw $t6, -20($sp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
 	jr $ra
-print_ixe:
+plus_deux:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-	move $t2, $a0
-	move $t3, $a1
-#_12
+	move $t3, $a0
+#_2
+	li $t1, 2
+	add $t4, $t3, $t1
+#_3
+	move $t2, $t4
+	move $v0, $t2
+	lw $ra, 0($fp)
+	lw $fp, 4($fp)
+	addi $sp, $sp, 8
+	jr $ra
+plus_vingt:
+	sw $fp, -4($sp)
+	sw $ra, -8($sp)
+	addi $sp, $sp, -8
+	move $fp, $sp
+	addi $sp, $sp, 0
+	move $t3, $a0
+#_4
+	li $t0, 0
+	move $t4, $t0
+#_5
+	move $t2, $t3
+#_6
+	b _label_1
+#_label_2
+_label_2:
+#_8
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	addi $sp, $sp, -16
 	move $a0, $t2
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal plus_deux
+	addi $sp, $sp, 0
+	addi $sp, $sp, 16
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	move $t3, $v0
+#_9
+	move $t2, $t3
+#_10
+	li $t1, 1
+	add $t3, $t4, $t1
+#_11
+	move $t4, $t3
+#_label_1
+_label_1:
 #_13
-	move $a0, $t3
-	li $v0, 11
-	syscall
+	li $t1, 10
+	slt $t3, $t4, $t1
+#_14
+	bnez $t3, _label_2
+	move $v0, $t2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8

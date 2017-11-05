@@ -1,6 +1,6 @@
 main(integer x) (
-        loop(0, x);
-      )
+  loop(0, x);
+)
 
 loop(integer i, integer r) (
   if line(point(i, r), r) then (

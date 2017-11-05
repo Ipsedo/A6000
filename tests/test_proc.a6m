@@ -1,9 +1,11 @@
 main(integer x) (
   var integer i;
-  i := 51;
-  print_ixe(x, i);
-  i := i + 1;
-  print_ixe(x, i);
+  i := 0;
+  while (i < 10) (
+  print_ixe(x, 51);
+  print(10);
+  i++;
+  );
 )
 
 print_ixe(integer x, integer i) (

@@ -98,37 +98,46 @@ let generate_function fct =
                                Some r -> bnez r l
                              | _ -> bnez tmp1 l)
     | Comment(str) -> comment str
-    | FunCall(_) -> failwith "unimplemented funcall allocatedToMips"
+    | FunCall(str, res, v_list) -> generate_funcall str v_list res
     | ProcCall(str, v_list) -> generate_proccall str v_list
 
+  and allocate_reg_formal index value =
+    load_value (Printf.sprintf "$a%d" index) value
+
+  and allocate_stack_formal index value = (* index ne pas comprenant a0-a3 ! *)
+    load_value ~$t0 value
+    @@ sw ~$t0 (-index * 4) ~$sp (* -4 pour @ suivante de sp *)
+
+  and alloc_formal index value =
+    if index < 4 then
+      allocate_reg_formal index value
+    else
+      allocate_stack_formal (index - 4) value
+
+  and gen_arg_and_nb v_list =
+    List.fold_left
+      (fun (acc, index) elt -> (acc @@ alloc_formal index elt, index + 1))
+      (nop, 0) v_list
+
+  and nb_reg = Symb_Tbl.fold
+      (fun id alloc_info acc ->
+         match alloc_info with
+           Reg s -> let index = int_of_string (String.sub s 2 1) in
+           if index > acc then index else acc
+         | _ -> acc)
+      fct.locals 0
+
+  and set_result res =
+    match find_alloc res with
+      Stack o -> sw ~$v0 o ~$fp
+    | Reg r -> move r ~$v0
+
+  and generate_funcall str v_list res =
+    generate_proccall str v_list @@ set_result res
+
   and generate_proccall str v_list = (* ok *)
-    let allocate_reg_formal index value =
-      load_value (Printf.sprintf "$a%d" index) value
-    in
-    let allocate_stack_formal index value = (* index ne pas comprenant a0-a3 ! *)
-      load_value ~$t0 value
-      @@ sw ~$t0 (-index * 4 - 4) ~$sp (* -4 pour @ suivante de sp *)
-    in
-    let alloc_formal index value =
-      if index < 4 then
-        allocate_reg_formal index value
-      else
-        allocate_stack_formal (index - 4) value
-    in
-    let arg, nb = List.fold_left
-        (fun (acc, index) elt -> (acc @@ alloc_formal index elt, index + 1))
-        (nop, 0) v_list
-    in
-    let stack_args = if nb < 4 then 0 else (nb - 4) * 4 (* -4 pour a0-a3 *)
-    in
-    let nb_reg = Symb_Tbl.fold
-        (fun id alloc_info acc ->
-           match alloc_info with
-             Reg s -> let index = int_of_string (String.sub s 2 1) in
-             if index > acc then index else acc
-           | _ -> acc)
-        fct.locals 0
-    in
+    let arg, nb = gen_arg_and_nb v_list in
+    let stack_args = if nb < 4 then 0 else (nb - 4) * 4 in (* -4 pour a0-a3 *)
     save_t_reg nb_reg
     @@ arg
     @@ addi sp sp (-stack_args)
@@ -147,10 +156,12 @@ let generate_function fct =
   and load_t_reg nb =
     let acc = ref nop in
     for i=0 to (nb - 1) do
-      let reg = Printf.sprintf "$t%d" (7 - i + 2) in
-      acc := !acc @@ lw reg (i * 4 + 4) sp
+      (*let reg = Printf.sprintf "$t%d" (nb - 1 - i + 2) in
+        acc := !acc @@ lw reg (i * 4) sp*)
+        let reg = Printf.sprintf "$t%d" (i + 2) in
+        acc := !acc @@ lw reg (-i * 4 - 4) sp
     done;
-    !acc @@ addi sp sp (nb * 4)
+    addi sp sp (nb * 4) @@ !acc
   in
 
   let affect_formals = (* ok *)
@@ -174,7 +185,7 @@ let generate_function fct =
         (fun (acc, index) str_formal ->
            (acc @@ aux index str_formal, index + 1))
         (nop, 0) fct.formals
-      in aff
+    in aff
   in
 
   let init_fct = (* ok *)
@@ -193,8 +204,20 @@ let generate_function fct =
       @@ addi sp sp sp_off*)
   in
 
+  let result =
+    let res = try Some (AllocatedAst.Symb_Tbl.find "result" symb_tbl)
+      with Not_found -> None
+    in
+    match res with
+      Some s -> (match s with
+          Reg r -> move ~$v0 r
+        | Stack o -> lw ~$v0 o ~$fp)
+    | None -> nop
+  in
+
   let close_fct = (* ok *)
-    lw ra 0 fp
+    result
+    @@ lw ra 0 fp
     @@ lw fp 4 fp
     @@ addi sp sp (-sp_off + 8)
     @@ jr ra

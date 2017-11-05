@@ -14,41 +14,44 @@ main:
 	addi $sp, $sp, 0
 	move $t2, $a0
 #_0
-	li $t0, 51
+	li $t0, 0
 	move $t3, $t0
 #_1
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	addi $sp, $sp, -12
-	move $a0, $t2
-	move $a1, $t3
-	addi $sp, $sp, 0
-	jal print_ixe
-	addi $sp, $sp, 0
-	lw $t9, 4($sp)
-	lw $t8, 8($sp)
-	lw $t7, 12($sp)
-	addi $sp, $sp, 12
-#_2
-	li $t1, 1
-	add $t3, $t3, $t1
+	b _label_1
+#_label_2
+_label_2:
 #_3
-	move $t3, $t3
-#_4
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
-	addi $sp, $sp, -12
+	sw $t5, -16($sp)
+	addi $sp, $sp, -16
 	move $a0, $t2
-	move $a1, $t3
+	li $a1, 51
 	addi $sp, $sp, 0
 	jal print_ixe
 	addi $sp, $sp, 0
-	lw $t9, 4($sp)
-	lw $t8, 8($sp)
-	lw $t7, 12($sp)
-	addi $sp, $sp, 12
+	addi $sp, $sp, 16
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+#_4
+	li $a0, 10
+	li $v0, 11
+	syscall
+#_5
+	li $t1, 1
+	add $t4, $t3, $t1
+#_6
+	move $t3, $t4
+#_label_1
+_label_1:
+#_8
+	li $t1, 10
+	slt $t4, $t3, $t1
+#_9
+	bnez $t4, _label_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
@@ -61,7 +64,7 @@ print_ixe:
 	addi $sp, $sp, 0
 	move $t2, $a0
 	move $t3, $a1
-#_5
+#_10
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -71,20 +74,20 @@ print_ixe:
 	li $a2, 52
 	li $a3, 53
 	li $t0, 54
-	sw $t0, -4($sp)
+	sw $t0, 0($sp)
 	li $t0, 55
-	sw $t0, -8($sp)
+	sw $t0, -4($sp)
 	li $t0, 56
-	sw $t0, -12($sp)
+	sw $t0, -8($sp)
 	li $t0, 57
-	sw $t0, -16($sp)
+	sw $t0, -12($sp)
 	addi $sp, $sp, -16
 	jal print_ixeprime
 	addi $sp, $sp, 16
-	lw $t9, 4($sp)
-	lw $t8, 8($sp)
-	lw $t7, 12($sp)
 	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
@@ -103,35 +106,35 @@ print_ixeprime:
 	lw $t4, 20($fp)
 	lw $t3, 16($fp)
 	lw $t2, 12($fp)
-#_6
+#_11
 	move $a0, $t9
 	li $v0, 11
 	syscall
-#_7
+#_12
 	move $a0, $t8
 	li $v0, 11
 	syscall
-#_8
+#_13
 	move $a0, $t7
 	li $v0, 11
 	syscall
-#_9
+#_14
 	move $a0, $t6
 	li $v0, 11
 	syscall
-#_10
+#_15
 	move $a0, $t5
 	li $v0, 11
 	syscall
-#_11
+#_16
 	move $a0, $t4
 	li $v0, 11
 	syscall
-#_12
+#_17
 	move $a0, $t3
 	li $v0, 11
 	syscall
-#_13
+#_18
 	move $a0, $t2
 	li $v0, 11
 	syscall

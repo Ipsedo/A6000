@@ -113,6 +113,17 @@ let mk_lv p =
     | _ -> VarSet.empty
   in
 
+  let formal_set =
+    let tmp = List.fold_left
+      (fun acc elt -> VarSet.union acc (VarSet.singleton elt))
+      VarSet.empty p.formals
+    in
+    if Symb_Tbl.mem "result" p.locals then
+      VarSet.union tmp (VarSet.singleton "result")
+    else
+      tmp
+  in
+
   (* Booléen qu'on met à [true] lorsque les tables [lv_in] et [lv_out] sont
      encore en train de changer. Il est initialisé à [true] car à l'origine il
      y a bien du calcul à faire, mais il sera repassé à [false] avant chaque
@@ -130,14 +141,14 @@ let mk_lv p =
      Cette fonction doit aussi faire passer le booléen [change] à [true] si
      les valeurs In[lab] et Out[lab] ont été modifiées.
   *)
-  let lv_step_instruction (lab, instr) =
+  let lv_step_instruction b (lab, instr) =
     (* Récupération de la liste des successeurs *)
     let succs = Hashtbl.find_all succ lab in
 
     (* Out[lab] *)
     let tmp_out = List.fold_left
         (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
-        VarSet.empty
+        (if b then formal_set else VarSet.empty)
         succs
     in
     let change_1 = tmp_out <> (Hashtbl.find lv_out lab) in
@@ -168,7 +179,9 @@ let mk_lv p =
      n) Out[0] puis In[0] *)
   let rev_code = List.rev code in
   let lv_step_main () =
-    List.iter lv_step_instruction rev_code
+    List.iteri
+      (fun i a -> lv_step_instruction (i = (List.length code) - 1) a)
+      rev_code
   in
   let nb_it = ref 0 in
   (* Répéter tant qu'il reste des changements *)
