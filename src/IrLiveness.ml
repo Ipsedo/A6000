@@ -113,7 +113,7 @@ let mk_lv p =
     | _ -> VarSet.empty
   in
 
-  let formal_set =
+  (*let formal_set =
     let tmp = List.fold_left
         (fun acc elt -> VarSet.union acc (VarSet.singleton elt))
         VarSet.empty p.formals
@@ -122,7 +122,7 @@ let mk_lv p =
       VarSet.union tmp (VarSet.singleton "result")
     else
       tmp
-  in
+    in*)
 
   (*let _ = match p.code with
     | (lab,_)::_ -> Hashtbl.replace lv_in lab formal_set
@@ -146,14 +146,14 @@ let mk_lv p =
      Cette fonction doit aussi faire passer le booléen [change] à [true] si
      les valeurs In[lab] et Out[lab] ont été modifiées.
   *)
-  let lv_step_instruction b (lab, instr) =
+  let lv_step_instruction (lab, instr) =
     (* Récupération de la liste des successeurs *)
     let succs = Hashtbl.find_all succ lab in
 
     (* Out[lab] *)
     let tmp_out = List.fold_left
         (fun acc r -> VarSet.union acc (Hashtbl.find lv_in r))
-        (*if b then formal_set else VarSet.empty*) VarSet.empty
+        VarSet.empty
         succs
     in
     let change_1 = tmp_out <> (Hashtbl.find lv_out lab) in
@@ -166,7 +166,6 @@ let mk_lv p =
         tmp_kill (Hashtbl.find lv_out lab)
     in
     let tmp_in = VarSet.union tmp_out_in (lv_gen instr) in
-    (*let tmp_in = if b then VarSet.union formal_set tmp_in else tmp_in in*)
     let change_2 = tmp_in <> (Hashtbl.find lv_in lab) in
     Hashtbl.replace lv_in lab tmp_in;
 
@@ -185,10 +184,13 @@ let mk_lv p =
      n) Out[0] puis In[0] *)
   let rev_code = List.rev code in
   let lv_step_main () =
-    List.iteri
-      (fun i a -> lv_step_instruction (i = (List.length code) - 1) a)
+    List.iter lv_step_instruction
       rev_code
   in
+  (*let _ = match code with
+      [] -> ()
+    | (lab, _)::_ -> Hashtbl.replace lv_out lab formal_set
+    in*)
   let nb_it = ref 0 in
   (* Répéter tant qu'il reste des changements *)
   while !change do

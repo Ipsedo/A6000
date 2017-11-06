@@ -32,12 +32,10 @@ let generate_function fct =
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
-  and ad_hoc dest_ref id =
-    (*if id <> "result" then*)
+  and ad_hoc dest_ref id = false (*
     match find_alloc id with
     | Reg reg -> dest_ref := reg; true
-    | _ -> false
-  (*else false*)
+    | _ -> false*)
 
   and load_value_ad_hoc r : AllocatedAst.value ->
     'a Mips.asm * Mips.register option = function
@@ -170,7 +168,7 @@ let generate_function fct =
     addi sp sp (nb * 4) @@ !acc
   in
 
-  let affect_formals = (* ok *)
+  (*let affect_formals = (* ok *)
     let nb = List.length fct.formals in
     let aux index str =
       if index < 4 then begin
@@ -192,7 +190,7 @@ let generate_function fct =
            (acc @@ aux index str_formal, index + 1))
         (nop, 0) fct.formals
     in aff
-  in
+    in*)
 
   let init_fct = (* ok *)
     sw fp (-4) sp              (* save $fp *)
@@ -200,7 +198,7 @@ let generate_function fct =
     @@ addi sp sp (-8)         (* fp pointe sur old_ra *)
     @@ move fp sp              (* new @ stack pointer *)
     @@ addi sp sp sp_off       (* allocation variable locale *)
-    @@ affect_formals          (* affectation des paramètres formels *)
+    (*@@ affect_formals *)         (* affectation des paramètres formels *)
   in
 
   let result =
