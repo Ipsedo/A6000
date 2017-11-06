@@ -102,6 +102,7 @@ let mk_lv p =
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Binop(_, _, v1, v2) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
+    | Value(id, v) when id = "result" -> VarSet.union (value_to_var_set v) (VarSet.singleton id)
     | Value(_, v) | Print(v) | CondGoto(v, _) -> value_to_var_set v
     | FunCall(_, _, v) | ProcCall(_, v) ->
       List.fold_left
