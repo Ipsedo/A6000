@@ -1,6 +1,7 @@
 main(integer x) (
   var integer i;
   var integer j;
+  var integer k;
   i := 51;
   j := 0;
   while (j < 10) (
@@ -8,12 +9,7 @@ main(integer x) (
     print(10);
     j++;
   );
-  j := 0;
-  while (j < 10) (
     print_ixe(x, i);
-    print(10);
-    j++;
-  );
 )
 
 print_ixe(integer x, integer i) (

@@ -32,6 +32,13 @@ let generate_function fct =
         | Int i  -> li r i
         | Bool b -> li r (bool_to_int b))
 
+  and ad_hoc dest_ref id =
+    (*if id <> "result" then*)
+    match find_alloc id with
+    | Reg reg -> dest_ref := reg; true
+    | _ -> false
+  (*else false*)
+
   and load_value_ad_hoc r : AllocatedAst.value ->
     'a Mips.asm * Mips.register option = function
     | Identifier id -> (match find_alloc id with
@@ -43,29 +50,27 @@ let generate_function fct =
 
   and generate_binop id (b : IrAst.binop) v1 v2 : 'a Mips.asm  =
     let dest = ref "" in
-    let will_ad_hoc = match find_alloc id with
-      | Reg reg -> dest := reg; true
-      | Stack _ -> false
-    in
+    let will_ad_hoc = ad_hoc dest id in
     let instr1, o1 = load_value_ad_hoc ~$t0 v1 in
     let instr2, o2 = load_value_ad_hoc ~$t1 v2 in
     let r1 = match o1 with Some r -> r | _ -> ~$t0 in
     let r2 = match o2 with Some r -> r | _ -> ~$t1 in
     let res = if will_ad_hoc then !dest else ~$t0 in
-    let op = ((match b with
-        | Add -> add
-        | Mult -> mul
-        | Div  -> div
-        | Sub -> sub
-        | Eq -> seq
-        | Neq -> sne
-        | Lt -> slt
-        | Le -> sle
-        | Mt -> sgt
-        | Me -> sge
-        | And -> and_
-        | Or -> or_)
-         res r1 r2)
+    let op =
+      (match b with
+       | Add -> add
+       | Mult -> mul
+       | Div  -> div
+       | Sub -> sub
+       | Eq -> seq
+       | Neq -> sne
+       | Lt -> slt
+       | Le -> sle
+       | Mt -> sgt
+       | Me -> sge
+       | And -> and_
+       | Or -> or_)
+        res r1 r2
     in
     instr1
     @@ instr2
@@ -74,29 +79,30 @@ let generate_function fct =
 
   and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
-    | Value(id, v) -> (let dest = ref ~$t0 in
-                       let instr, o = load_value_ad_hoc ~$t0 v in
-                       let will_ad_hoc = match find_alloc id with
-                         | Reg r -> dest := r; true
-                         | Stack _ -> false
-                       in
-                       let r1 = match o with
-                         | Some r -> r
-                         | _ -> ~$t0
-                       in
-                       instr
-                       @@ if will_ad_hoc then
-                         move !dest r1
-                       else store_identifier r1 id)
+    | Value(id, v) ->
+      begin
+        let dest = ref ~$t0 in
+        let instr, o = load_value_ad_hoc ~$t0 v in
+        let will_ad_hoc = ad_hoc dest id in
+        let r1 = match o with
+          | Some r -> r
+          | _ -> ~$t0
+        in
+        instr
+        @@ if will_ad_hoc then move !dest r1 else store_identifier r1 id
+      end
     | Binop(id, b, v1, v2) -> generate_binop id b v1 v2
     | Label(l) -> label l
     | Goto(l) -> b l
-    | CondGoto(value, l) -> (let tmp1 = ~$t0 in
-                             let instr, o = load_value_ad_hoc tmp1 value in
-                             instr
-                             @@ match o with
-                               Some r -> bnez r l
-                             | _ -> bnez tmp1 l)
+    | CondGoto(value, l) ->
+      begin
+        let tmp1 = ~$t0 in
+        let instr, o = load_value_ad_hoc tmp1 value in
+        instr
+        @@ match o with
+          Some r -> bnez r l
+        | _ -> bnez tmp1 l
+      end
     | Comment(str) -> comment str
     | FunCall(str, res, v_list) -> generate_funcall str v_list res
     | ProcCall(str, v_list) -> generate_proccall str v_list
