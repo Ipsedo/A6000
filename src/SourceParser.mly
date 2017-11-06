@@ -7,12 +7,12 @@
     List.fold_left
       (fun acc (t, ident) -> incr index;
       Symb_Tbl.add
-        (Printf.sprintf "%s@formal" ident)
+        (Printf.sprintf "%s" ident)
         {typ=t; kind=Formal(!index)}
         acc)
       Symb_Tbl.empty f_list
 
-  let generate_locals_of_formals f_list =
+  (*let generate_locals_of_formals f_list =
     List.fold_left
       (fun acc (t, ident) ->
       Symb_Tbl.add
@@ -26,7 +26,7 @@
         (fun acc (_, ident) ->
           acc@[Set(Identifier(ident, Lexing.dummy_pos),
             Location(Identifier(Printf.sprintf "%s@formal" ident, Lexing.dummy_pos)))])
-        [] f_list
+        [] f_list*)
 
 %}
 
@@ -268,14 +268,14 @@ fun_delc:
   BEGIN; vds=var_decls; is=instructions; END
   {
     let params = generate_formals_symb_tbl p in
-    let local_params = generate_locals_of_formals p in
+    (*let local_params = generate_locals_of_formals p in*)
 
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
     let local = Symb_Tbl.add "result" {typ=t; kind=Return} local in
-    let local = Symb_Tbl.union union_vars local local_params in
+    (*let local = Symb_Tbl.union union_vars local local_params in*)
 
-    let is = (generate_set_formal_instr p)@is in
+    (*let is = (generate_set_formal_instr p)@is in*)
 
     (*let formal = Symb_Tbl.fold
       (fun _ v acc -> acc@[v.typ]) params [] in*)
@@ -291,13 +291,13 @@ fun_delc:
     BEGIN; vds=var_decls; is=instructions; END
   {
     let params = generate_formals_symb_tbl p in
-    let local_params = generate_locals_of_formals p in
+    (*let local_params = generate_locals_of_formals p in*)
 
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
-    let local = Symb_Tbl.union union_vars local local_params in
+    (*let local = Symb_Tbl.union union_vars local local_params in*)
 
-    let is = (generate_set_formal_instr p)@is in
+    (*let is = (generate_set_formal_instr p)@is in*)
     (*let formal = Symb_Tbl.fold
       (fun _ v acc -> acc@[v.typ]) params [] in*)
 

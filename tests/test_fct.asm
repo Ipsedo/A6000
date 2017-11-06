@@ -44,7 +44,8 @@ plus_deux:
 	move $t3, $a0
 #_2
 	li $t1, 2
-	add $t2, $t3, $t1
+	add $t0, $t3, $t1
+	move $t2, $t0
 #_3
 	move $t2, $t2
 	move $v0, $t2
@@ -88,14 +89,16 @@ _label_2:
 	move $t2, $t3
 #_10
 	li $t1, 1
-	add $t3, $t4, $t1
+	add $t0, $t4, $t1
+	move $t3, $t0
 #_11
 	move $t4, $t3
 #_label_1
 _label_1:
 #_13
 	li $t1, 10
-	slt $t3, $t4, $t1
+	slt $t0, $t4, $t1
+	move $t3, $t0
 #_14
 	bnez $t3, _label_2
 	move $v0, $t2
@@ -114,7 +117,8 @@ rec_mul:
 	move $t4, $a2
 #_15
 	li $t1, 0
-	sgt $t2, $t4, $t1
+	sgt $t0, $t4, $t1
+	move $t2, $t0
 #_16
 	bnez $t2, _label_3
 #_17
@@ -124,10 +128,12 @@ rec_mul:
 #_label_3
 _label_3:
 #_20
-	add $t2, $t3, $t5
+	add $t0, $t3, $t5
+	move $t2, $t0
 #_21
 	li $t1, 1
-	sub $t3, $t4, $t1
+	sub $t0, $t4, $t1
+	move $t3, $t0
 #_22
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)

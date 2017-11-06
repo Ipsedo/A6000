@@ -60,6 +60,19 @@ let interference_graph p : Graph.t =
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
 
+  (* add interference formals *)
+  let formals = Symb_Tbl.fold
+      (fun id (id_info : IrAst.identifier_info) acc ->
+         match id_info with Formal _ -> acc@[Identifier id] | _ -> acc)
+      p.locals []
+  in
+  (*let formals = if Symb_Tbl.mem "result" p.locals then
+      Identifier("result")::formals
+    else
+      formals
+    in*)
+    let g = add_interference_formals formals g in
+
   List.fold_left
     (fun acc (lab, instr) ->
        add_interferences p acc (Hashtbl.find lv_out lab) instr)

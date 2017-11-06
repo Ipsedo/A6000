@@ -11,72 +11,70 @@ line:
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, 0
-#_0
+	addi $sp, $sp, -4
 	move $t4, $a0
-#_1
 	move $t3, $a1
-#_2
+#_0
 	li $t0, 0
-	move $t2, $t0
-#_3
+	sw $t0, -4($fp)
+#_1
 	li $t0, 0
 	move $t5, $t0
-#_4
+#_2
 	b _label_1
 #_label_2
 _label_2:
-#_6
+#_4
 	slt $t0, $t5, $t4
 	move $t2, $t0
-#_7
+#_5
 	bnez $t2, _label_3
-#_8
+#_6
 	li $a0, 35
 	li $v0, 11
 	syscall
-#_9
+#_7
 	b _label_4
 #_label_3
 _label_3:
-#_11
+#_9
 	li $a0, 46
 	li $v0, 11
 	syscall
-#_12
+#_10
 	li $t0, 1
-	move $t2, $t0
+	sw $t0, -4($fp)
 #_label_4
 _label_4:
-#_14
+#_12
 	li $a0, 32
 	li $v0, 11
 	syscall
-#_15
+#_13
 	li $t1, 1
 	add $t0, $t5, $t1
 	move $t2, $t0
-#_16
+#_14
 	move $t5, $t2
 #_label_1
 _label_1:
-#_18
+#_16
 	li $t1, 1
 	add $t0, $t3, $t1
 	move $t2, $t0
-#_19
+#_17
 	slt $t0, $t5, $t2
 	move $t2, $t0
-#_20
+#_18
 	bnez $t2, _label_2
-#_21
+#_19
 	li $a0, 10
 	li $v0, 11
 	syscall
-	move $v0, $t2
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 8
+	addi $sp, $sp, 12
 	jr $ra
 loop:
 	sw $fp, -4($sp)
@@ -84,11 +82,9 @@ loop:
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-#_22
 	move $t3, $a0
-#_23
 	move $t2, $a1
-#_24
+#_20
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -105,7 +101,7 @@ loop:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	move $t4, $v0
-#_25
+#_21
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -122,17 +118,17 @@ loop:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	move $t4, $v0
-#_26
+#_22
 	bnez $t4, _label_5
-#_27
+#_23
 	b _label_6
 #_label_5
 _label_5:
-#_29
+#_25
 	li $t1, 1
 	add $t0, $t3, $t1
 	move $t4, $t0
-#_30
+#_26
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -160,9 +156,8 @@ main:
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-#_32
 	move $t2, $a0
-#_33
+#_28
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	addi $sp, $sp, -8
@@ -183,49 +178,47 @@ point:
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, 0
-#_34
+	addi $sp, $sp, -4
 	move $t4, $a0
-#_35
 	move $t2, $a1
-#_36
+#_29
 	li $t0, 0
 	move $t3, $t0
-#_37
+#_30
 	b _label_7
 #_label_8
 _label_8:
-#_39
+#_32
 	li $t1, 1
 	add $t0, $t3, $t1
 	move $t6, $t0
-#_40
+#_33
 	move $t3, $t6
 #_label_7
 _label_7:
-#_42
+#_35
 	mul $t0, $t4, $t4
 	move $t6, $t0
-#_43
+#_36
 	mul $t0, $t3, $t3
 	move $t5, $t0
-#_44
+#_37
 	add $t0, $t6, $t5
 	move $t6, $t0
-#_45
+#_38
 	mul $t0, $t2, $t2
 	move $t5, $t0
-#_46
+#_39
 	slt $t0, $t6, $t5
 	move $t6, $t0
-#_47
+#_40
 	bnez $t6, _label_8
-#_48
-	move $t2, $t3
-	move $v0, $t2
+#_41
+	sw $t3, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 8
+	addi $sp, $sp, 12
 	jr $ra
 atoi:
 	move $t0, $a0

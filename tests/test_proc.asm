@@ -12,16 +12,15 @@ main:
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-#_0
 	move $t2, $a0
-#_1
+#_0
 	li $t0, 0
 	move $t3, $t0
-#_2
+#_1
 	b _label_1
 #_label_2
 _label_2:
-#_4
+#_3
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -37,23 +36,23 @@ _label_2:
 	lw $t3, -8($sp)
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
-#_5
+#_4
 	li $a0, 10
 	li $v0, 11
 	syscall
-#_6
+#_5
 	li $t1, 1
 	add $t0, $t3, $t1
 	move $t4, $t0
-#_7
+#_6
 	move $t3, $t4
 #_label_1
 _label_1:
-#_9
+#_8
 	li $t1, 10
 	slt $t0, $t3, $t1
 	move $t4, $t0
-#_10
+#_9
 	bnez $t4, _label_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
@@ -65,11 +64,9 @@ print_ixe:
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-#_11
 	move $t2, $a0
-#_12
 	move $t3, $a1
-#_13
+#_10
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -103,55 +100,43 @@ print_ixeprime:
 	addi $sp, $sp, -8
 	move $fp, $sp
 	addi $sp, $sp, 0
-#_14
 	move $t9, $a0
-#_15
 	move $t8, $a1
-#_16
 	move $t7, $a2
-#_17
 	move $t6, $a3
-#_18
-	lw $t0, 24($fp)
-	move $t5, $t0
-#_19
-	lw $t0, 20($fp)
-	move $t4, $t0
-#_20
-	lw $t0, 16($fp)
-	move $t3, $t0
-#_21
-	lw $t0, 12($fp)
-	move $t2, $t0
-#_22
+	lw $t5, 24($fp)
+	lw $t4, 20($fp)
+	lw $t3, 16($fp)
+	lw $t2, 12($fp)
+#_11
 	move $a0, $t9
 	li $v0, 11
 	syscall
-#_23
+#_12
 	move $a0, $t8
 	li $v0, 11
 	syscall
-#_24
+#_13
 	move $a0, $t7
 	li $v0, 11
 	syscall
-#_25
+#_14
 	move $a0, $t6
 	li $v0, 11
 	syscall
-#_26
+#_15
 	move $a0, $t5
 	li $v0, 11
 	syscall
-#_27
+#_16
 	move $a0, $t4
 	li $v0, 11
 	syscall
-#_28
+#_17
 	move $a0, $t3
 	li $v0, 11
 	syscall
-#_29
+#_18
 	move $a0, $t2
 	li $v0, 11
 	syscall

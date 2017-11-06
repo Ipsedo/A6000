@@ -168,7 +168,7 @@ let generate_function fct =
     addi sp sp (nb * 4) @@ !acc
   in
 
-  (*let affect_formals = (* ok *)
+  let affect_formals = (* ok *)
     let nb = List.length fct.formals in
     let aux index str =
       if index < 4 then begin
@@ -190,7 +190,7 @@ let generate_function fct =
            (acc @@ aux index str_formal, index + 1))
         (nop, 0) fct.formals
     in aff
-    in*)
+    in
 
   let init_fct = (* ok *)
     sw fp (-4) sp              (* save $fp *)
@@ -198,11 +198,11 @@ let generate_function fct =
     @@ addi sp sp (-8)         (* fp pointe sur old_ra *)
     @@ move fp sp              (* new @ stack pointer *)
     @@ addi sp sp sp_off       (* allocation variable locale *)
-    (*@@ affect_formals *)         (* affectation des paramètres formels *)
+    @@ affect_formals          (* affectation des paramètres formels *)
   in
 
   let result =
-    let res = try Some (AllocatedAst.Symb_Tbl.find "result" symb_tbl)
+    let res = try Some (Symb_Tbl.find "result" symb_tbl)
       with Not_found -> None
     in
     match res with
