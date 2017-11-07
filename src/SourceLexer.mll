@@ -45,6 +45,10 @@ let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
               { BEGIN }
           | ")"
               { END }
+          | "["
+              { O_BRACKETS }
+          | "]"
+              { C_BRACKETS }
           | ";"
               { SEMI }
           | ","

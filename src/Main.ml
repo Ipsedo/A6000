@@ -36,14 +36,13 @@ let file =
 
 
 let raise_token_excpetion lb = let start_p = Lexing.lexeme_start_p lb in
-  raise (UnexpectedToken ("Unexpected token \""
-                          ^ (Lexing.lexeme lb)
-                          ^ "\" in "
-                          ^ start_p.pos_fname
-                          ^ " at line "
-                          ^ (string_of_int start_p.pos_lnum)
-                          ^ ", col "
-                          ^ (string_of_int (start_p.pos_cnum - start_p.pos_bol))))
+  let msg = Printf.sprintf "Unexpected token \"%s\" in %s at line %d, col %d"
+      (Lexing.lexeme lb)
+      start_p.pos_fname
+      start_p.pos_lnum
+      (start_p.pos_cnum - start_p.pos_bol)
+  in
+  raise (UnexpectedToken (msg))
 
 let preprocess f =
   let c = open_in file in
@@ -86,7 +85,7 @@ let () =
     in
     Printf.printf "%s" (IrAst.print_prog p);
     let p = IrtoAllocated.allocate_prog !reg_allocation p in
-    let asm = AllocatedtoMips0.generate_prog p in
+    let asm = AllocatedtoMips.generate_prog p in
     let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
     let out = open_out output_file in
     let outf = formatter_of_out_channel out in

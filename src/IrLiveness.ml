@@ -102,7 +102,8 @@ let mk_lv p =
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Binop(_, _, v1, v2) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
-    | Value(id, v) when id = "result" -> VarSet.union (value_to_var_set v) (VarSet.singleton id)
+    | Value(id, v) when id = "result" ->
+      VarSet.union (value_to_var_set v) (VarSet.singleton id)
     | Value(_, v) | Print(v) | CondGoto(v, _) -> value_to_var_set v
     | FunCall(_, _, v) | ProcCall(_, v) ->
       List.fold_left
@@ -111,7 +112,7 @@ let mk_lv p =
     | _ -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
     | Binop(id, _, _, _) | Value(id, _) | FunCall(_, id, _) ->
-      (*if id <> "result" then*) VarSet.singleton id (*else VarSet.empty*)
+      VarSet.singleton id
     | _ -> VarSet.empty
   in
 
@@ -189,10 +190,6 @@ let mk_lv p =
     List.iter lv_step_instruction
       rev_code
   in
-  (*let _ = match code with
-      [] -> ()
-    | (lab, _)::_ -> Hashtbl.replace lv_out lab formal_set
-    in*)
   let nb_it = ref 0 in
   (* Répéter tant qu'il reste des changements *)
   while !change do

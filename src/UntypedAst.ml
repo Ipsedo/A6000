@@ -19,9 +19,11 @@ and expression =
   | Literal   of literal      (* Valeur immédiate   *)
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
-  | FunCall of call
+  | FunCall   of call
+  | NewArray  of expression
 and location =
   | Identifier of string
+  | ArrayAccess of string * expression
 and literal =
   | Int  of int  (* Constante entière   *)
   | Bool of bool

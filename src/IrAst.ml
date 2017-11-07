@@ -30,12 +30,17 @@ and instruction =
   | Comment  of string                             (* Commentaire             *)
   | FunCall  of string * identifier * value list
   | ProcCall of string * value list
+  | Load     of identifier * access
+  | Store    of access * value
+  | New      of identifier * value
 
 and identifier = string (* Identifiant d'un registre virtuel *)
 
 and value =
   | Literal    of literal    (* Valeur immédiate *)
   | Identifier of identifier (* Registre virtuel *)
+
+and access = value * value
 
 
 open Printf

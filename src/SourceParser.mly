@@ -32,6 +32,7 @@
 
 %token <string> IDENT
 %token BEGIN END
+%token O_BRACKETS C_BRACKETS
 %token SEMI
 %token COMMA
 
@@ -100,6 +101,7 @@ var_decls:
 typ:
   INT  { TypInteger }
 | BOOL { TypBoolean }
+| O_BRACKETS; C_BRACKETS; t=typ { TypArray(t) }
 ;
 
 instructions:
@@ -173,6 +175,7 @@ expression:
   | loc=location                            { Location(loc)    }
   | lit=literal                             { Literal(lit)     }
   | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
+  | O_BRACKETS; e=expression; C_BRACKETS; t=typ { NewArray(e, t) }
   ;
 
 (*expression:
@@ -260,7 +263,9 @@ literal:
 
 
 location:
-  id=IDENT  { Identifier (id, $startpos(id)) }
+    id=IDENT  { Identifier (id, $startpos(id)) }
+  | id=IDENT; O_BRACKETS; e=expression; C_BRACKETS
+    { ArrayAccess(id, e, $startpos(id))  }
 ;
 
 fun_delc:

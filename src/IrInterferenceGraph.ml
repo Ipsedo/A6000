@@ -1,7 +1,7 @@
 open IrAst
 open IrLiveness
 
-let add_interference_formals v_list g =
+let add_interference_args v_list g =
   let add_edge id1 id2 g =
     match id1, id2 with
       Identifier i1, Identifier i2 ->
@@ -14,6 +14,15 @@ let add_interference_formals v_list g =
     | elt::tl -> aux tl (List.fold_left (fun a e -> add_edge elt e a) acc tl)
   in aux v_list g
 
+let add_interference_formals id_list g =
+  let rec aux id_list acc =
+    match id_list with
+      [] -> acc
+    | elt::tl -> let new_acc = List.fold_left
+                     (fun a e -> Graph.add_edge a elt e)
+                     acc tl
+      in aux tl new_acc
+  in aux id_list g
 
 (**
    Construction du graphe d'interférence :
@@ -41,8 +50,8 @@ let add_interferences p g lv_out_at_node = function
                             (fun elt acc -> Graph.add_edge acc a elt)
                             lv_out_at_node g
     in
-    add_interference_formals v tmp
-  | ProcCall(_, v) -> add_interference_formals v g
+    add_interference_args v tmp
+  | ProcCall(_, v) -> add_interference_args v g
   | Binop(a, _, _, _) | Value(a, _) ->
     VarSet.fold (fun elt acc -> Graph.add_edge acc a elt) lv_out_at_node g
   | _ -> g
@@ -61,17 +70,8 @@ let interference_graph p : Graph.t =
   (* À compléter *)
 
   (* add interference formals *)
-  let formals = Symb_Tbl.fold
-      (fun id (id_info : IrAst.identifier_info) acc ->
-         match id_info with Formal _ -> acc@[Identifier id] | _ -> acc)
-      p.locals []
-  in
-  (*let formals = if Symb_Tbl.mem "result" p.locals then
-      Identifier("result")::formals
-    else
-      formals
-    in*)
-    let g = add_interference_formals formals g in
+
+  let g = add_interference_formals p.formals g in
 
   List.fold_left
     (fun acc (lab, instr) ->

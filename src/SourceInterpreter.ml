@@ -27,6 +27,7 @@ and eval_instruction env = function
     else eval_block env b2
   | Print(e) -> Printf.printf "%c" (char_of_int (eval_expression env e)); env
   | ProcCall(c) -> failwith "unimplemented proc interpreteur"
+  | _ -> failwith "unimplemented source interpreteur 1"
 
 (* [eval_expression: state -> expression -> int] *)
 and eval_expression env = function
@@ -50,6 +51,7 @@ and eval_expression env = function
       | Or   -> max
     in
     op v1 v2
+  | NewArray(e, t) -> failwith "unimplemented new array interpreteur"
 
 and eval_bool b = if b then 1 else 0
 and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
@@ -60,3 +62,4 @@ and eval_literal env = function
 
 and eval_location env = function
   | Identifier(id, _) -> State.find id env
+  | ArrayAccess(str, e, _) -> failwith "unimplemented array access interpreteur"

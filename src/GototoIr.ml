@@ -44,10 +44,16 @@ let flatten_prog p =
       let ce, ve = flatten_expression 0 c in
       ce @ [ T.CondGoto(ve, l) ]
     | S.Label(l) -> [ T.Label(l) ]
-    | S.Set(loc, e) -> (match loc with
+    | S.Set(loc, e) ->
+      begin
+        match loc with
           Identifier(id) ->
           let ce, ve = flatten_expression 0 e in
-          ce @ [ T.Value(id, ve) ])
+          ce @ [ T.Value(id, ve) ]
+        | ArrayAccess(str, index) -> let ce1, ve1 = flatten_expression 0 index in
+          let ce2, ve2 = flatten_expression 0 e in
+          ce2 @ ce1 @ [ T.Store((Identifier str, ve1), ve2)]
+      end
     | S.Comment(str) -> [ T.Comment(str) ]
     | S.ProcCall(c) -> let (str, args) = c in
       let tmp_cpt = ref 0 in
@@ -71,6 +77,14 @@ let flatten_prog p =
   *)
   and flatten_expression nb : S.expression -> T.instruction list * T.value =
     function
+    | NewArray e ->
+      let ce, ve = flatten_expression nb e in
+      let id_tmp = new_tmp nb in
+      ce @ [ T.New(id_tmp, ve) ], T.Identifier(id_tmp)
+    | Location(ArrayAccess(str, e)) ->
+      let ce, ve = flatten_expression nb e in
+      let id_tmp = new_tmp nb in
+      ce @ [ T.Load(id_tmp, (T.Identifier str, ve)) ], T.Identifier(id_tmp)
     | Location(Identifier id) -> [], T.Identifier(id)
     | Literal (l) -> [], T.Literal(l)
     | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression nb e1 in

@@ -25,8 +25,7 @@ line:
 #_label_2
 _label_2:
 #_4
-	slt $t0, $t5, $t4
-	move $t6, $t0
+	slt $t6, $t5, $t4
 #_5
 	bnez $t6, _label_3
 #_6
@@ -52,19 +51,16 @@ _label_4:
 	syscall
 #_13
 	li $t1, 1
-	add $t0, $t5, $t1
-	move $t6, $t0
+	add $t6, $t5, $t1
 #_14
 	move $t5, $t6
 #_label_1
 _label_1:
 #_16
 	li $t1, 1
-	add $t0, $t3, $t1
-	move $t6, $t0
+	add $t6, $t3, $t1
 #_17
-	slt $t0, $t5, $t6
-	move $t6, $t0
+	slt $t6, $t5, $t6
 #_18
 	bnez $t6, _label_2
 #_19
@@ -126,8 +122,7 @@ loop:
 _label_5:
 #_25
 	li $t1, 1
-	add $t0, $t3, $t1
-	move $t4, $t0
+	add $t4, $t3, $t1
 #_26
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
@@ -190,27 +185,21 @@ point:
 _label_8:
 #_32
 	li $t1, 1
-	add $t0, $t3, $t1
-	move $t6, $t0
+	add $t6, $t3, $t1
 #_33
 	move $t3, $t6
 #_label_7
 _label_7:
 #_35
-	mul $t0, $t4, $t4
-	move $t6, $t0
+	mul $t6, $t4, $t4
 #_36
-	mul $t0, $t3, $t3
-	move $t5, $t0
+	mul $t5, $t3, $t3
 #_37
-	add $t0, $t6, $t5
-	move $t6, $t0
+	add $t6, $t6, $t5
 #_38
-	mul $t0, $t2, $t2
-	move $t5, $t0
+	mul $t5, $t2, $t2
 #_39
-	slt $t0, $t6, $t5
-	move $t6, $t0
+	slt $t6, $t6, $t5
 #_40
 	bnez $t6, _label_8
 #_41

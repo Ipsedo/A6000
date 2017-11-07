@@ -5,9 +5,10 @@ exception Type_error of string
 
 let current_pos = ref Lexing.dummy_pos
 
-let string_of_typ t = match t with
+let rec string_of_typ t = match t with
   | SourceAst.TypInteger -> "integer"
   | SourceAst.TypBoolean -> "boolean"
+  | SourceAst.TypArray(t) -> Printf.sprintf "array of %s" (string_of_typ t)
 
 let raise_type_exception t1 t2 = let needed = string_of_typ t1 in
   let actual = string_of_typ t2 in
@@ -66,10 +67,9 @@ let typecheck_prog p =
      expressions et renvoient leur type. *)
   (* type_expression: expression -> typ *)
   and type_expression = function
+    | NewArray(e, t) -> TypArray t
     | Literal lit  ->  type_literal lit
-
     | Location loc -> type_location loc
-
     | Binop(op, e1, e2) ->
       let ty_op, ty_r = type_binop op in
       comparetype ty_op (type_expression e1);
@@ -95,7 +95,12 @@ let typecheck_prog p =
   and type_location = function
     | Identifier(id, pos) -> current_pos := pos;
       (Symb_Tbl.find id !symb_tbl).typ
-
+    | ArrayAccess(id, e, pos) -> current_pos := pos;
+      let rec aux t =
+        match t with
+          TypArray t -> aux t
+        | _ as a -> a
+      in aux (Symb_Tbl.find id !symb_tbl).typ
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)
   (* type_binop: binop -> typ * typ *)

@@ -24,6 +24,7 @@ and identifier_info = { typ: typ; kind: identifier_kind }
 and typ =
   | TypInteger
   | TypBoolean
+  | TypArray of typ
 
 (* Un bloc de code est une liste d'instructions *)
 and block = instruction list
@@ -39,6 +40,7 @@ and expression =
   | Location  of location   (* Valeur en mémoire  *)
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
+  | NewArray of expression * typ
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -48,6 +50,7 @@ and literal =
 
 and location =
   | Identifier of string * Lexing.position (* Variable en mémoire *)
+  | ArrayAccess of string * expression * Lexing.position
 
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
@@ -60,22 +63,24 @@ and binop =
 *)
 open Printf
 
-let print_typ = function
+let rec print_typ = function
   | TypInteger -> "integer"
   | TypBoolean -> "boolean"
-let print_identifier_info i = print_typ i.typ
+  | TypArray(t) -> sprintf "[]%s" (print_typ t)
+and print_identifier_info i = print_typ i.typ
 
-let print_symb_tbl tbl =
+and print_symb_tbl tbl =
   Symb_Tbl.fold (fun v i s ->
       (sprintf "  var %s %s;\n" (print_identifier_info i) v) ^ s
     ) tbl ""
 
-let print_literal = function
+and print_literal = function
   | Int (i,_) -> sprintf "%d" i
   | Bool (b,_) -> if b then "true" else "false"
-let print_location = function
+and print_location = function
   | Identifier (x,_) -> x
-let print_binop = function
+  | ArrayAccess(id, e, _) -> sprintf "%s[%s]" id (print_expression e)
+and print_binop = function
   | Add  -> "+"
   | Mult -> "*"
   | Sub  -> "-"
@@ -89,7 +94,7 @@ let print_binop = function
   | And  -> "&&"
   | Or   -> "||"
 
-let rec print_call c =
+and print_call c =
   match c with
     (str, e) ->
     (sprintf "%s(" str)
@@ -107,6 +112,7 @@ and print_expression = function
       (print_binop op)
       (print_expression e2)
   | FunCall(c) -> print_call c
+  | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function
