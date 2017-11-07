@@ -46,7 +46,7 @@ let add_interferences p g lv_out_at_node = function
         lv_out_at_node g
     in
     Graph.add_edge tmp c1 c2
-  | FunCall(_, a, v) -> let tmp = VarSet.fold
+  | FunCall(a, _, v) -> let tmp = VarSet.fold
                             (fun elt acc -> Graph.add_edge acc a elt)
                             lv_out_at_node g
     in

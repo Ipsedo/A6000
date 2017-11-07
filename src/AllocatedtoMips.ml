@@ -102,8 +102,20 @@ let generate_function fct =
         | _ -> bnez tmp1 l
       end
     | Comment(str) -> comment str
-    | FunCall(str, res, v_list) -> generate_funcall str v_list res
+    | FunCall(res, str, v_list) -> generate_funcall str v_list res
     | ProcCall(str, v_list) -> generate_proccall str v_list
+    | Load(id, (arr, index)) -> load_array_elt id arr index
+    | Store((arr, index), v) -> store_in_array arr index v
+    | New(id, v) -> new_array id v
+
+  (* array stuff *)
+  and new_array pt nb_elt =
+    nop
+  and load_array_elt dest arr index =
+    nop
+  and store_in_array arr dest value =
+    nop
+  (* proc & fun call stuff *)
 
   and allocate_reg_formal index value =
     load_value (Printf.sprintf "$a%d" index) value

@@ -100,7 +100,7 @@ let flatten_prog p =
              ce_acc@ce, ve_acc@[ve])
           ([], []) args in
       let id_tmp = new_tmp nb in
-      es @ [ T.FunCall(str, id_tmp, vs) ], T.Identifier(id_tmp)
+      es @ [ T.FunCall(id_tmp, str, vs) ], T.Identifier(id_tmp)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)

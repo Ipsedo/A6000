@@ -28,7 +28,7 @@ and instruction =
   | Goto     of label                              (* Saut                    *)
   | CondGoto of value * label                      (* Saut conditionnel       *)
   | Comment  of string                             (* Commentaire             *)
-  | FunCall  of string * identifier * value list
+  | FunCall  of identifier * string * value list
   | ProcCall of string * value list
   | Load     of identifier * access
   | Store    of access * value
@@ -61,16 +61,17 @@ and print_instruction = function
   | Goto(lab)        -> sprintf "goto %s" lab
   | CondGoto(v, lab) -> sprintf "goto %s when %s" lab (print_value v)
   | Comment(c)       -> sprintf "# %s" c
-  | FunCall(str, dest, v) -> (sprintf "%s <- %s(" dest str)
-                             ^(List.fold_left
-                                 (fun acc elt -> acc^(print_value elt)^", ")
-                                 "" v)
-                             ^")"
-  | ProcCall(str, v) -> (sprintf "%s(" str)
-                        ^(List.fold_left
-                            (fun acc elt -> acc^(print_value elt)^", ")
-                            "" v)
-                        ^")"
+  | FunCall(dest, str, v) -> sprintf "%s <- %s(%s)" dest str
+                               (List.fold_left
+                                  (fun acc elt -> acc^(print_value elt)^", ")
+                                  "" v)
+  | ProcCall(str, v) -> sprintf "%s(%s)" str
+                          (List.fold_left
+                             (fun acc elt -> acc^(print_value elt)^", ")
+                             "" v)
+  | Load(id, (arr, index)) -> ""
+  | Store((arr, index), v) -> ""
+  | New(id, v) -> ""
 
 and print_value = function
   | Literal(lit)   ->
