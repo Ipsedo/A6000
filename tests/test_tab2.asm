@@ -119,10 +119,6 @@ atoi_end:
 	move $v0, $t1
 	jr $ra
 check_array_bounds:
-	sw $fp, -4($sp)
-	sw $ra, -8($sp)
-	addi $sp, $sp, -8
-	move $fp, $sp
 	bgez $a0, _ckeck_bound_1
 	li $v0, 10
 	syscall
@@ -132,7 +128,5 @@ _ckeck_bound_1:
 	li $v0, 10
 	syscall
 _ckeck_bound_2:
-	lw $ra, 0($fp)
-	lw $fp, 4($fp)
 	jr $ra
 .data

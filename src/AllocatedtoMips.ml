@@ -321,11 +321,6 @@ let built_ins =
 
 let check_array_bounds =
   label "check_array_bounds"
-  @@ sw fp (-4) sp              (* save $fp *)
-  @@ sw ra (-8) sp           (* old_ra <- $ra *)
-  @@ addi sp sp (-8)         (* fp pointe sur old_ra *)
-  @@ move fp sp              (* new @ stack pointer *)
-
   @@ bgez ~$a0 "_ckeck_bound_1"
   @@ li v0 10 @@ syscall
   @@ label "_ckeck_bound_1"
@@ -333,9 +328,6 @@ let check_array_bounds =
   @@ blt ~$a0 ~$a1 "_ckeck_bound_2"
   @@ li v0 10 @@ syscall
   @@ label "_ckeck_bound_2"
-
-  @@ lw ra 0 fp
-  @@ lw fp 4 fp
   @@ jr ra
 
 let generate_prog p =
