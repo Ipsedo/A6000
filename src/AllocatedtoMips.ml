@@ -108,13 +108,52 @@ let generate_function fct =
     | Store((arr, index), v) -> store_in_array arr index v
     | New(id, v) -> new_array id v
 
-  (* array stuff *)
+  (* array stuff -> faire ad_hoc *)
   and new_array pt nb_elt =
-    nop
+    (* calcul de la taille en mot de 32 bits *)
+    load_value ~$t0 nb_elt
+    @@ li ~$t1 4
+    @@ mul ~$t0 ~$t0 ~$t1
+    @@ addi ~$t0 ~$t0 4
+    (* appelle system sbrk *)
+    @@ li ~$v0 9
+    @@ move ~$a0 ~$t0
+    @@ syscall
+    @@ match find_alloc pt with
+      Stack o -> sw ~$v0 o ~$fp
+    | Reg r -> move r ~$v0
+
   and load_array_elt dest arr index =
-    nop
-  and store_in_array arr dest value =
-    nop
+    match arr with
+      Identifier id -> begin
+        load_value ~$t0 index
+        @@ li ~$t1 4
+        @@ mul ~$t0 ~$t0 ~$t1
+        @@ addi ~$t0 ~$t0 4
+        (* $t1 <- decalage + addr depart *)
+        @@ load_value ~$t1 arr
+        @@ add ~$t0 ~$t0 ~$t1
+        @@  match find_alloc dest with
+          Stack o -> lw ~$t1 0 ~$t0 @@ sw ~$t1 o ~$fp
+        | Reg r -> lw r  0 ~$t0
+      end
+    | _ -> failwith "tab pointer can't be a Literal"
+
+  and store_in_array arr index value =
+    match arr with
+      Identifier id -> begin
+        load_value ~$t0 index
+        @@ li ~$t1 4
+        @@ mul ~$t0 ~$t0 ~$t1
+        @@ addi ~$t0 ~$t0 4
+        (* $t1 <- decalage + addr depart *)
+        @@ load_value ~$t1 arr
+        @@ add ~$t0 ~$t0 ~$t1
+        (*chargement + affectation dans arr *)
+        @@ load_value ~$t1 value
+        @@ sw ~$t1 0 ~$t0
+      end
+    | _ -> failwith "tab pointer can't be a Literal"
   (* proc & fun call stuff *)
 
   and allocate_reg_formal index value =

@@ -69,9 +69,9 @@ and print_instruction = function
                           (List.fold_left
                              (fun acc elt -> acc^(print_value elt)^", ")
                              "" v)
-  | Load(id, (arr, index)) -> ""
-  | Store((arr, index), v) -> ""
-  | New(id, v) -> ""
+  | Load(id, (arr, index)) -> sprintf "%s <- %s[%s]" id (print_value arr) (print_value index)
+  | Store((arr, index), v) -> sprintf "%s[%s] <- %s" (print_value arr) (print_value index) (print_value v)
+  | New(id, v) -> sprintf "%s <- %s" id (print_value v)
 
 and print_value = function
   | Literal(lit)   ->
