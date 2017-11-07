@@ -9,6 +9,9 @@ let generate_function fct =
   let sp_off   = fct.offset in
   let symb_tbl = fct.locals in
 
+  (* compteur label pour verification borne array *)
+  let label_cpt = ref 0 in
+
   let find_alloc id =
     try  AllocatedAst.Symb_Tbl.find id symb_tbl
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
@@ -108,7 +111,7 @@ let generate_function fct =
     | Store((arr, index), v) -> store_in_array arr index v
     | New(id, v) -> new_array id v
 
-  (* array stuff -> faire ad_hoc *)
+  (* array stuff -> faire ad_hoc + arret prgm si dépassement capacité *)
   and new_array pt nb_elt =
     (* calcul de la taille en mot de 32 bits *)
     load_value ~$t0 nb_elt
@@ -119,6 +122,8 @@ let generate_function fct =
     @@ li ~$v0 9
     @@ move ~$a0 ~$t0
     @@ syscall
+    @@ load_value ~$t0 nb_elt
+    @@ sw ~$t0 0 ~$v0
     @@ match find_alloc pt with
       Stack o -> sw ~$v0 o ~$fp
     | Reg r -> move r ~$v0
@@ -126,7 +131,8 @@ let generate_function fct =
   and load_array_elt dest arr index =
     match arr with
       Identifier id -> begin
-        load_value ~$t0 index
+        check_array_bound arr index
+        @@ load_value ~$t0 index
         @@ li ~$t1 4
         @@ mul ~$t0 ~$t0 ~$t1
         @@ addi ~$t0 ~$t0 4
@@ -142,7 +148,8 @@ let generate_function fct =
   and store_in_array arr index value =
     match arr with
       Identifier id -> begin
-        load_value ~$t0 index
+        check_array_bound arr index
+        @@ load_value ~$t0 index
         @@ li ~$t1 4
         @@ mul ~$t0 ~$t0 ~$t1
         @@ addi ~$t0 ~$t0 4
@@ -155,6 +162,25 @@ let generate_function fct =
       end
     | _ -> failwith "tab pointer can't be a Literal"
   (* proc & fun call stuff *)
+
+  and check_array_bound arr index =
+    match arr with
+      Identifier id -> begin
+        let code =
+          load_value ~$t0 index
+          @@ load_value ~$t1 arr
+          @@ bgez ~$t0 (Printf.sprintf "_ckeck_bound_%d" !label_cpt)
+          @@ li v0 10 @@ syscall
+          @@ label (Printf.sprintf "_ckeck_bound_%d" !label_cpt)
+          @@ lw ~$t1 0 ~$t1
+          @@ blt ~$t0 ~$t1 (Printf.sprintf "_ckeck_bound_%d" (!label_cpt + 1))
+          @@ li v0 10 @@ syscall
+          @@ label (Printf.sprintf "_ckeck_bound_%d" (!label_cpt + 1))
+        in
+        label_cpt := !label_cpt + 2;
+        code
+      end
+    | _ -> failwith "tab pointer can't be a Literal"
 
   and allocate_reg_formal index value =
     load_value (Printf.sprintf "$a%d" index) value

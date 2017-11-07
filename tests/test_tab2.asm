@@ -24,6 +24,8 @@ main:
 	li $v0, 9
 	move $a0, $t0
 	syscall
+	move $t0, $t2
+	sw $t0, 0($v0)
 	move $t5, $v0
 #_2
 	move $t3, $t5
@@ -35,6 +37,17 @@ _label_4:
 	li $t1, 49
 	add $t5, $t4, $t1
 #_6
+	move $t0, $t4
+	move $t1, $t3
+	bgez $t0, _ckeck_bound_2
+	li $v0, 10
+	syscall
+_ckeck_bound_2:
+	lw $t1, 0($t1)
+	blt $t0, $t1, _ckeck_bound_3
+	li $v0, 10
+	syscall
+_ckeck_bound_3:
 	move $t0, $t4
 	li $t1, 4
 	mul $t0, $t0, $t1
@@ -62,6 +75,17 @@ _label_3:
 #_label_2
 _label_2:
 #_15
+	move $t0, $t4
+	move $t1, $t3
+	bgez $t0, _ckeck_bound_0
+	li $v0, 10
+	syscall
+_ckeck_bound_0:
+	lw $t1, 0($t1)
+	blt $t0, $t1, _ckeck_bound_1
+	li $v0, 10
+	syscall
+_ckeck_bound_1:
 	move $t0, $t4
 	li $t1, 4
 	mul $t0, $t0, $t1
