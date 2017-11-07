@@ -9,9 +9,6 @@ let generate_function fct =
   let sp_off   = fct.offset in
   let symb_tbl = fct.locals in
 
-  (* compteur label pour verification borne array *)
-  let label_cpt = ref 0 in
-
   let find_alloc id =
     try  AllocatedAst.Symb_Tbl.find id symb_tbl
     with Not_found -> failwith (Printf.sprintf "Node %s not found" id)
@@ -161,26 +158,17 @@ let generate_function fct =
         @@ sw ~$t1 0 ~$t0
       end
     | _ -> failwith "tab pointer can't be a Literal"
-  (* proc & fun call stuff *)
 
   and check_array_bound arr index =
     match arr with
       Identifier id -> begin
-        let code =
-          load_value ~$t0 index
-          @@ load_value ~$t1 arr
-          @@ bgez ~$t0 (Printf.sprintf "_ckeck_bound_%d" !label_cpt)
-          @@ li v0 10 @@ syscall
-          @@ label (Printf.sprintf "_ckeck_bound_%d" !label_cpt)
-          @@ lw ~$t1 0 ~$t1
-          @@ blt ~$t0 ~$t1 (Printf.sprintf "_ckeck_bound_%d" (!label_cpt + 1))
-          @@ li v0 10 @@ syscall
-          @@ label (Printf.sprintf "_ckeck_bound_%d" (!label_cpt + 1))
-        in
-        label_cpt := !label_cpt + 2;
-        code
+           load_value ~$a0 index
+        @@ load_value ~$a1 arr
+        @@ jal "check_array_bounds"
       end
     | _ -> failwith "tab pointer can't be a Literal"
+
+  (* proc & fun call stuff *)
 
   and allocate_reg_formal index value =
     load_value (Printf.sprintf "$a%d" index) value
@@ -331,9 +319,28 @@ let built_ins =
   @@ move v0 t1
   @@ jr   ra
 
+let check_array_bounds =
+  label "check_array_bounds"
+  @@ sw fp (-4) sp              (* save $fp *)
+  @@ sw ra (-8) sp           (* old_ra <- $ra *)
+  @@ addi sp sp (-8)         (* fp pointe sur old_ra *)
+  @@ move fp sp              (* new @ stack pointer *)
+
+  @@ bgez ~$a0 "_ckeck_bound_1"
+  @@ li v0 10 @@ syscall
+  @@ label "_ckeck_bound_1"
+  @@ lw ~$a1 0 ~$a1
+  @@ blt ~$a0 ~$a1 "_ckeck_bound_2"
+  @@ li v0 10 @@ syscall
+  @@ label "_ckeck_bound_2"
+
+  @@ lw ra 0 fp
+  @@ lw fp 4 fp
+  @@ jr ra
+
 let generate_prog p =
   let prog = Symb_Tbl.fold
       (fun id info acc -> acc @@ label id @@ generate_function info)
       p nop
   in
-  { text = init_prog @@ close_prog @@ prog @@ built_ins; data = nop}
+  { text = init_prog @@ close_prog @@ prog @@ built_ins @@ check_array_bounds; data = nop}
