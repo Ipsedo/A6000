@@ -2,31 +2,15 @@
 
   open SourceAst
 
-  let generate_formals_symb_tbl f_list =
+  (*let generate_formals_symb_tbl f_list =
     let index = ref 0 in
     List.fold_left
       (fun acc (t, ident) -> incr index;
       Symb_Tbl.add
-        (Printf.sprintf "%s" ident)
+        ident
         {typ=t; kind=Formal(!index)}
         acc)
-      Symb_Tbl.empty f_list
-
-  (*let generate_locals_of_formals f_list =
-    List.fold_left
-      (fun acc (t, ident) ->
-      Symb_Tbl.add
-        (Printf.sprintf "%s" ident)
-        {typ=t; kind=Local}
-        acc)
-      Symb_Tbl.empty f_list
-
-  let generate_set_formal_instr f_list =
-      List.fold_left
-        (fun acc (_, ident) ->
-          acc@[Set(Identifier(ident, Lexing.dummy_pos),
-            Location(Identifier(Printf.sprintf "%s@formal" ident, Lexing.dummy_pos)))])
-        [] f_list*)
+      Symb_Tbl.empty f_list*)
 
 %}
 
@@ -90,6 +74,24 @@ prog:
       Symb_Tbl.add id infos m
     }
 ;
+
+(*fun_set:
+EOF
+{
+  Symb_Tbl.singleton "print"
+    {
+      return = None;
+      formals = (TypInteger, "x")::[];
+      locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+      code = []
+    }
+}
+| fct=fun_delc; m=prog; EOF
+  {
+    let (id, infos) = fct in
+    Symb_Tbl.add id infos m
+  }
+;*)
 
 var_decls:
  (* empty *) { Symb_Tbl.empty }

@@ -8,6 +8,10 @@ module Symb_Tbl = Map.Make(String)
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
+(*type prog = {
+  global : string Symb_Tbl.t;
+  fcts : function_info Symb_Tbl.t
+  }*)
 type prog = function_info Symb_Tbl.t
 and function_info = {
   return:  typ option;
@@ -57,6 +61,16 @@ and binop =
   | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
   | And (* && *) | Or   (* || *)
 
+let generate_formals_symb_tbl f_list =
+    let index = ref 0 in
+    List.fold_left
+      (fun acc (t, ident) -> incr index;
+      Symb_Tbl.add
+        ident
+        {typ=t; kind=Formal(!index)}
+        acc)
+      Symb_Tbl.empty f_list
+
 (* Cadeau pour le débogage : un afficheur.
    [print_main m] produit une chaîne de caractère représentant le programme
 *)
@@ -97,9 +111,9 @@ and print_call c =
   match c with
     (str, e) ->
     sprintf "%s(%s)" str
-    (List.fold_left
-      (fun acc elt -> acc^(print_expression elt)^", ")
-      "" e)
+      (List.fold_left
+         (fun acc elt -> acc^(print_expression elt)^", ")
+         "" e)
 
 and print_expression = function
   | Literal lit -> print_literal lit

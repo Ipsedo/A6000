@@ -54,7 +54,7 @@ and print_block = function
 and print_instruction = function
   | Value(dest, v)   -> sprintf "%s <- %s" dest (print_value v)
   | Binop(dest, op, v1, v2) -> sprintf "%s <- %s %s %s"
-      dest (print_value v1) (SourceAst.print_binop op) (print_value v2)
+                                 dest (print_value v1) (SourceAst.print_binop op) (print_value v2)
   | Label(lab)       -> lab
   | Goto(lab)        -> sprintf "goto %s" lab
   | CondGoto(v, lab) -> sprintf "goto %s when %s" lab (print_value v)

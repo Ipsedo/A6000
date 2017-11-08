@@ -56,17 +56,20 @@ _label_4:
 #_label_3
 _label_3:
 #_10
-	slt $t5, $t4, $t2
+	li $t1, 1
+	add $t5, $t2, $t1
 #_11
-	bnez $t5, _label_4
+	slt $t5, $t4, $t5
 #_12
+	bnez $t5, _label_4
+#_13
 	li $t0, 0
 	move $t4, $t0
-#_13
+#_14
 	b _label_1
 #_label_2
 _label_2:
-#_15
+#_16
 	move $a0, $t4
 	move $a1, $t3
 	jal _check_array_bounds
@@ -77,7 +80,7 @@ _label_2:
 	move $t1, $t3
 	add $t0, $t0, $t1
 	lw $t5, 0($t0)
-#_16
+#_17
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -94,16 +97,16 @@ _label_2:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	lw $t6, -20($sp)
-#_17
+#_18
 	li $t1, 1
 	add $t5, $t4, $t1
-#_18
+#_19
 	move $t4, $t5
 #_label_1
 _label_1:
-#_20
-	slt $t5, $t4, $t2
 #_21
+	slt $t5, $t4, $t2
+#_22
 	bnez $t5, _label_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
@@ -133,11 +136,30 @@ atoi_end:
 	jr $ra
 _check_array_bounds:
 	bgez $a0, _ckeck_bound_1
+	move $t0, $a0
+	li $v0, 4
+	la $a0, _array_out_of_bounds_string
+	syscall
+	li $a0, 45
+	jal print
+	neg $t0, $t0
+	addi $a0, $t0, 48
+	jal print
+	li $a0, 10
+	jal print
 	li $v0, 10
 	syscall
 _ckeck_bound_1:
 	lw $a1, 0($a1)
 	blt $a0, $a1, _ckeck_bound_2
+	move $t0, $a0
+	li $v0, 4
+	la $a0, _array_out_of_bounds_string
+	syscall
+	addi $a0, $t0, 48
+	jal print
+	li $a0, 10
+	jal print
 	li $v0, 10
 	syscall
 _ckeck_bound_2:
@@ -147,3 +169,5 @@ print:
 	syscall
 	jr $ra
 .data
+_array_out_of_bounds_string:
+	.asciiz "Array out of Bounds : "

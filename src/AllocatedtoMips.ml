@@ -75,8 +75,7 @@ let generate_function fct =
     @@ op
     @@ if will_ad_hoc then nop else store_identifier res id
 
-  and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function (*
-    | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall*)
+  and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
     | Value(id, v) ->
       begin
         let dest = ref ~$t0 in
@@ -162,7 +161,7 @@ let generate_function fct =
   and check_array_bound arr index =
     match arr with
       Identifier id -> begin
-           load_value ~$a0 index
+        load_value ~$a0 index
         @@ load_value ~$a1 arr
         @@ jal "_check_array_bounds"
       end
@@ -321,12 +320,37 @@ let built_ins =
 
 let check_array_bounds =
   label "_check_array_bounds"
-  @@ bgez ~$a0 "_ckeck_bound_1"
-  @@ li v0 10 @@ syscall
+  (* test borne inferieure *)
+  @@ bgez a0 "_ckeck_bound_1"
+  @@ move t0 a0
+  @@ li v0 4
+  @@ la a0 "_array_out_of_bounds_string"
+  @@ syscall
+  @@ li a0 45
+  @@ jal "print"
+  @@ neg t0 t0
+  @@ addi a0 t0 48
+  @@ jal "print"
+  @@ li a0 10
+  @@ jal "print"
+  @@ li v0 10
+  @@ syscall
+  (* borne inf ok *)
   @@ label "_ckeck_bound_1"
-  @@ lw ~$a1 0 ~$a1
-  @@ blt ~$a0 ~$a1 "_ckeck_bound_2"
-  @@ li v0 10 @@ syscall
+  @@ lw a1 0 a1
+  (* test borne superieure *)
+  @@ blt a0 a1 "_ckeck_bound_2"
+  @@ move t0 a0
+  @@ li v0 4
+  @@ la a0 "_array_out_of_bounds_string"
+  @@ syscall
+  @@ addi a0 t0 48
+  @@ jal "print"
+  @@ li a0 10
+  @@ jal "print"
+  @@ li v0 10
+  @@ syscall
+  (*borne sup ok *)
   @@ label "_ckeck_bound_2"
   @@ jr ra
 
@@ -335,6 +359,9 @@ let print =
   @@ li ~$v0 11
   @@ syscall
   @@ jr ra
+
+let arr_bounds_error_asciiz =
+  label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
 
 let generate_prog p =
   (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
@@ -348,5 +375,6 @@ let generate_prog p =
       @@ prog
       @@ built_ins
       @@ check_array_bounds
-      @@ print;
-    data = nop}
+      @@ print
+  (*@@ MipsMisc.log10*);
+    data = arr_bounds_error_asciiz}

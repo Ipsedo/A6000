@@ -3,7 +3,7 @@ main(integer x) (
   var integer i;
   i := 0;
   tab := [x]integer;
-  while (i < x) (
+  while (i < x + 1) (
     tab[i] := i + 49;
     i++;
   );
