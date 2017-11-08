@@ -10,7 +10,6 @@ let id_or_keyword =
   let h = Hashtbl.create 17 in
   List.iter (fun (s, k) -> Hashtbl.add h s k)
     [	"integer",  INT;
-      "print",    PRINT;
       "var",      VAR;
       "boolean",  BOOL;
       "true",     LITBOOL(true);

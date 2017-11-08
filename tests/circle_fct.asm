@@ -29,26 +29,71 @@ _label_2:
 #_5
 	bnez $t6, _label_3
 #_6
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	sw $t7, -24($sp)
+	addi $sp, $sp, -24
 	li $a0, 35
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+	addi $sp, $sp, 24
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
+	lw $t7, -24($sp)
 #_7
 	b _label_4
 #_label_3
 _label_3:
 #_9
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	sw $t7, -24($sp)
+	addi $sp, $sp, -24
 	li $a0, 46
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+	addi $sp, $sp, 24
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
+	lw $t7, -24($sp)
 #_10
 	li $t0, 1
 	move $t2, $t0
 #_label_4
 _label_4:
 #_12
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	sw $t7, -24($sp)
+	addi $sp, $sp, -24
 	li $a0, 32
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+	addi $sp, $sp, 24
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
+	lw $t7, -24($sp)
 #_13
 	li $t1, 1
 	add $t6, $t5, $t1
@@ -64,9 +109,24 @@ _label_1:
 #_18
 	bnez $t6, _label_2
 #_19
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	sw $t7, -24($sp)
+	addi $sp, $sp, -24
 	li $a0, 10
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+	addi $sp, $sp, 24
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
+	lw $t7, -24($sp)
 	move $v0, $t2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
@@ -230,5 +290,20 @@ atoi_error:
 	syscall
 atoi_end:
 	move $v0, $t1
+	jr $ra
+_check_array_bounds:
+	bgez $a0, _ckeck_bound_1
+	li $v0, 10
+	syscall
+_ckeck_bound_1:
+	lw $a1, 0($a1)
+	blt $a0, $a1, _ckeck_bound_2
+	li $v0, 10
+	syscall
+_ckeck_bound_2:
+	jr $ra
+print:
+	li $v0, 11
+	syscall
 	jr $ra
 .data

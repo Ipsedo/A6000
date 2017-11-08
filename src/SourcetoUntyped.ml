@@ -31,7 +31,6 @@ and erase_instruction i = match i with
   | S.Set(loc, e) -> T.Set(erase_location loc, erase_expression e)
   | S.While(e, b) -> T.While(erase_expression e, erase_code b)
   | S.If(e, b1, b2) -> T.If(erase_expression e, erase_code b1, erase_code b2)
-  | S.Print(e) -> T.Print(erase_expression e)
   | S.ProcCall(c) -> let str, e = c in
     let ne = List.fold_left
         (fun acc elt -> acc@[(erase_expression elt)]) [] e in

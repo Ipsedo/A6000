@@ -47,7 +47,6 @@
 %token THEN
 %token ELSE
 
-%token PRINT
 %token EOF
 
 %token SET
@@ -74,14 +73,17 @@
 %%
 
 prog:
-  (*MAIN; BEGIN; INT; x=IDENT; END;
-  BEGIN; vds=var_decls; is=instructions; END; EOF  {
-	let infox = { typ=TypInteger; kind=FormalX } in
-    let init  = Symb_Tbl.singleton x infox in
-    let union_vars = fun _ _ v -> Some v in
-    let locals = Symb_Tbl.union union_vars init vds in
-    {locals = locals; code=is} }*)
-    EOF { Symb_Tbl.empty }
+    EOF
+    {
+      (* On ajoute une fausse fonction print -> besoin pour typechecker et Ir-stuff *)
+      Symb_Tbl.singleton "print"
+        {
+          return = None;
+          formals = (TypInteger, "x")::[];
+          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+          code = []
+        }
+    }
   | fct=fun_delc; m=prog; EOF
     {
       let (id, infos) = fct in
@@ -118,8 +120,6 @@ instructions:
 *)
 instruction:
   c=call { [ProcCall(c)] }
-| PRINT; BEGIN; e=expression; END
-  { [Print(e)] }
 | s=set { [s] }
 | IF; e=expression; THEN;
  BEGIN; is1=instructions; END;

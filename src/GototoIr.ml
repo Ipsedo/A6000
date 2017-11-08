@@ -36,9 +36,6 @@ let flatten_prog p =
 
   (* flatten_instruction: S.instruction -> T.instruction list *)
   and flatten_instruction = function
-    | S.Print(e) ->
-      let ce, ve = flatten_expression 0 e in
-      ce @ [ T.Print(ve) ]
     | S.Goto(l) -> [ T.Goto(l) ]
     | S.CondGoto(c, l) ->
       let ce, ve = flatten_expression 0 c in

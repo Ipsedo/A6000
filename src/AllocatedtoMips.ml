@@ -75,8 +75,8 @@ let generate_function fct =
     @@ op
     @@ if will_ad_hoc then nop else store_identifier res id
 
-  and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function
-    | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall
+  and generate_instr : AllocatedAst.instruction -> 'a Mips.asm = function (*
+    | Print(v) -> load_value ~$a0 v @@ li ~$v0 11 @@ syscall*)
     | Value(id, v) ->
       begin
         let dest = ref ~$t0 in
@@ -164,7 +164,7 @@ let generate_function fct =
       Identifier id -> begin
            load_value ~$a0 index
         @@ load_value ~$a1 arr
-        @@ jal "check_array_bounds"
+        @@ jal "_check_array_bounds"
       end
     | _ -> failwith "tab pointer can't be a Literal"
 
@@ -320,7 +320,7 @@ let built_ins =
   @@ jr   ra
 
 let check_array_bounds =
-  label "check_array_bounds"
+  label "_check_array_bounds"
   @@ bgez ~$a0 "_ckeck_bound_1"
   @@ li v0 10 @@ syscall
   @@ label "_ckeck_bound_1"
@@ -330,9 +330,23 @@ let check_array_bounds =
   @@ label "_ckeck_bound_2"
   @@ jr ra
 
+let print =
+  label "print"
+  @@ li ~$v0 11
+  @@ syscall
+  @@ jr ra
+
 let generate_prog p =
+  (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
+  let p = Symb_Tbl.filter (fun k _ -> k <> "print") p in
   let prog = Symb_Tbl.fold
       (fun id info acc -> acc @@ label id @@ generate_function info)
       p nop
   in
-  { text = init_prog @@ close_prog @@ prog @@ built_ins @@ check_array_bounds; data = nop}
+  { text = init_prog
+      @@ close_prog
+      @@ prog
+      @@ built_ins
+      @@ check_array_bounds
+      @@ print;
+    data = nop}

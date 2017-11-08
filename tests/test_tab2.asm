@@ -39,7 +39,7 @@ _label_4:
 #_6
 	move $a0, $t4
 	move $a1, $t3
-	jal check_array_bounds
+	jal _check_array_bounds
 	move $t0, $t4
 	li $t1, 4
 	mul $t0, $t0, $t1
@@ -69,7 +69,7 @@ _label_2:
 #_15
 	move $a0, $t4
 	move $a1, $t3
-	jal check_array_bounds
+	jal _check_array_bounds
 	move $t0, $t4
 	li $t1, 4
 	mul $t0, $t0, $t1
@@ -78,9 +78,22 @@ _label_2:
 	add $t0, $t0, $t1
 	lw $t5, 0($t0)
 #_16
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	sw $t5, -16($sp)
+	sw $t6, -20($sp)
+	addi $sp, $sp, -20
 	move $a0, $t5
-	li $v0, 11
-	syscall
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+	addi $sp, $sp, 20
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	lw $t5, -16($sp)
+	lw $t6, -20($sp)
 #_17
 	li $t1, 1
 	add $t5, $t4, $t1
@@ -118,7 +131,7 @@ atoi_error:
 atoi_end:
 	move $v0, $t1
 	jr $ra
-check_array_bounds:
+_check_array_bounds:
 	bgez $a0, _ckeck_bound_1
 	li $v0, 10
 	syscall
@@ -128,5 +141,9 @@ _ckeck_bound_1:
 	li $v0, 10
 	syscall
 _ckeck_bound_2:
+	jr $ra
+print:
+	li $v0, 11
+	syscall
 	jr $ra
 .data

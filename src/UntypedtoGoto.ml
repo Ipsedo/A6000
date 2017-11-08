@@ -24,7 +24,6 @@ let destructure_prog p =
 
   (* destructure_instruction: S.instruction -> T.block *)
   and destructure_instruction : S.instruction -> T.block = function
-    | S.Print(e) -> [ T.Print(e)  ]
     | S.ProcCall(c) -> [ T.ProcCall(c) ]
     | S.While(c, b) -> let loop_text = new_label () in
       let loop_code = new_label () in

@@ -32,7 +32,6 @@ and instruction =
   | Set   of location   * expression    (* Affectation *)
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
-  | Print of expression                 (* Affichage   *)
   | ProcCall of call
 
 and expression =
@@ -97,11 +96,10 @@ and print_binop = function
 and print_call c =
   match c with
     (str, e) ->
-    (sprintf "%s(" str)
-    ^List.fold_left
+    sprintf "%s(%s)" str
+    (List.fold_left
       (fun acc elt -> acc^(print_expression elt)^", ")
-      "" e
-    ^")"
+      "" e)
 
 and print_expression = function
   | Literal lit -> print_literal lit
@@ -129,7 +127,6 @@ and print_instruction o = function
       (print_expression e)
       (print_block (o+1) b1) (offset o)
       (print_block (o+1) b2) (offset o)
-  | Print(e) -> sprintf "print(%s)" (print_expression e)
   | ProcCall(c) -> print_call c
 
 let print_main m =

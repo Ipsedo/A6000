@@ -25,7 +25,6 @@ and eval_instruction env = function
     if eval_expression env c <> 0
     then eval_block env b1
     else eval_block env b2
-  | Print(e) -> Printf.printf "%c" (char_of_int (eval_expression env e)); env
   | ProcCall(c) -> failwith "unimplemented proc interpreteur"
   | _ -> failwith "unimplemented source interpreteur 1"
 

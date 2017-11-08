@@ -44,18 +44,13 @@ let typecheck_prog p =
   and typecheck_instruction = function
     | Set(l, e) ->
       comparetype (type_location l) (type_expression e)
-
     | While(e, b) ->
       comparetype TypBoolean (type_expression e);
       typecheck_block b
-
     | If(e, b1, b2) ->
       comparetype TypBoolean (type_expression e);
       typecheck_block b1;
       typecheck_block b2;
-
-    | Print(e) ->
-      comparetype TypInteger (type_expression e)
     | ProcCall(c) ->
       let str, e = c in
       let infos = Symb_Tbl.find str p in

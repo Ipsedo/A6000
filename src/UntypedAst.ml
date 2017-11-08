@@ -12,7 +12,6 @@ and instruction =
   | Set   of location   * expression    (* Affectation *)
   | While of expression * block         (* Boucle      *)
   | If    of expression * block * block (* Branchement *)
-  | Print of expression                 (* Affichage   *)
   | ProcCall of call
 
 and expression =

@@ -15,7 +15,6 @@ type label = string
 type block = instruction list
 and instruction =
   | Set      of location * expression (* Affectation       *)
-  | Print    of expression            (* Affichage         *)
   | Label    of label                 (* Point de saut     *)
   | Goto     of label                 (* Saut              *)
   | CondGoto of expression * label    (* Saut conditionnel *)

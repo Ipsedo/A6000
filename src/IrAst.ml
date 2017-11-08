@@ -23,7 +23,6 @@ and block = (label * instruction) list
 and instruction =
   | Value    of identifier * value                 (* Chargement d'une valeur *)
   | Binop    of identifier * binop * value * value (* Opération binaire       *)
-  | Print    of value                              (* Affichage               *)
   | Label    of label                              (* Point de saut           *)
   | Goto     of label                              (* Saut                    *)
   | CondGoto of value * label                      (* Saut conditionnel       *)
@@ -55,8 +54,7 @@ and print_block = function
 and print_instruction = function
   | Value(dest, v)   -> sprintf "%s <- %s" dest (print_value v)
   | Binop(dest, op, v1, v2) -> sprintf "%s <- %s %s %s"
-                                 dest (print_value v1) (SourceAst.print_binop op) (print_value v2)
-  | Print(v)         -> sprintf "print(%s)" (print_value v)
+      dest (print_value v1) (SourceAst.print_binop op) (print_value v2)
   | Label(lab)       -> lab
   | Goto(lab)        -> sprintf "goto %s" lab
   | CondGoto(v, lab) -> sprintf "goto %s when %s" lab (print_value v)
