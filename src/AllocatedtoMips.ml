@@ -171,12 +171,16 @@ let generate_function fct =
   and generate_proccall str v_list = (* ok *)
     let arg, nb = gen_arg_and_nb v_list in
     let stack_args = if nb < 4 then 0 else (nb - 4) * 4 in (* -4 pour a0-a3 *)
-    save_t_reg nb_reg
+    let save_reg = str <> "print" && str <> "arr_length" in
+    begin
+      if save_reg then
+        save_t_reg nb_reg else nop
+    end
     @@ arg
     @@ addi sp sp (-stack_args)
     @@ jal str
     @@ addi sp sp stack_args
-    @@ load_t_reg nb_reg
+    @@ if save_reg then load_t_reg nb_reg else nop
 
   and save_t_reg nb =
     let acc = ref nop in

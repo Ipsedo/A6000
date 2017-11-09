@@ -45,20 +45,10 @@ _label_4:
 #_label_3
 _label_3:
 #_10
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
 	move $a0, $t2
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
 	move $t4, $v0
 #_11
 	slt $t4, $t3, $t4
@@ -80,20 +70,10 @@ _label_2:
 	jal _load_array_elt
 	move $t4, $v0
 #_17
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
 	move $a0, $t4
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
 #_18
 	li $t1, 1
 	add $t4, $t3, $t1
@@ -102,20 +82,10 @@ _label_2:
 #_label_1
 _label_1:
 #_21
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
 	move $a0, $t2
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
 	move $t4, $v0
 #_22
 	slt $t4, $t3, $t4
