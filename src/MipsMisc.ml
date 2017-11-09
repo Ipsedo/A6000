@@ -1,5 +1,7 @@
 open Mips
 
+    (* log10 function integer -> integer *)
+
 let log10 : 'a Mips.asm =
   let p = label "log10"
     @@ sw fp (-4) sp
@@ -66,6 +68,8 @@ let log10 : 'a Mips.asm =
   in let _ = { text = p;
                data = nop}
   in p
+
+(* String (ascii int tab) of int *)
 
 let string_of_int : 'a Mips.asm =
   let p = label "string_of_int"
@@ -151,51 +155,7 @@ let string_of_int : 'a Mips.asm =
                data = nop}
   in p
 
-
-let arr_bounds_error_asciiz =
-  let d = label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
-  in let _ = { text = nop;
-               data = d}
-  in d
-
-let check_array_bounds : 'a Mips.asm =
-  let p = label "_check_array_bounds"
-    (* test borne inferieure *)
-    @@ bgez a0 "_ckeck_bound_1"
-    @@ move t0 a0
-    @@ li v0 4
-    @@ la a0 "_array_out_of_bounds_string"
-    @@ syscall
-    @@ li a0 45
-    @@ jal "print"
-    @@ neg t0 t0
-    @@ addi a0 t0 48
-    @@ jal "print"
-    @@ li a0 10
-    @@ jal "print"
-    @@ li v0 10
-    @@ syscall
-    (* borne inf ok *)
-    @@ label "_ckeck_bound_1"
-    @@ lw a1 0 a1
-    (* test borne superieure *)
-    @@ blt a0 a1 "_ckeck_bound_2"
-    @@ move t0 a0
-    @@ li v0 4
-    @@ la a0 "_array_out_of_bounds_string"
-    @@ syscall
-    @@ addi a0 t0 48
-    @@ jal "print"
-    @@ li a0 10
-    @@ jal "print"
-    @@ li v0 10
-    @@ syscall
-    (*borne sup ok *)
-    @@ label "_ckeck_bound_2"
-    @@ jr ra
-  in let _ = { text = p;
-               data = nop}
-  in p
+(* Atoi function *)
 
 let built_ins =
   let p = label "atoi"
@@ -224,6 +184,8 @@ let built_ins =
                data = nop}
   in p
 
+(* Print procedure *)
+
 let print =
   let p = label "print"
     @@ li v0 11
@@ -232,6 +194,8 @@ let print =
   in let _ = { text = p;
                data = nop}
   in p
+
+(* Array function & procedure *)
 
 let arr_length =
   let p = label "arr_length"
@@ -284,6 +248,51 @@ let load_array_elt =
     @@ move t1 a0
     @@ add ~$t0 ~$t0 ~$t1
     @@ lw v0 0 t0
+    @@ jr ra
+  in let _ = { text = p;
+               data = nop}
+  in p
+
+let arr_bounds_error_asciiz =
+  let d = label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
+  in let _ = { text = nop;
+               data = d}
+  in d
+
+let check_array_bounds : 'a Mips.asm =
+  let p = label "_check_array_bounds"
+    (* test borne inferieure *)
+    @@ bgez a0 "_ckeck_bound_1"
+    @@ move t0 a0
+    @@ li v0 4
+    @@ la a0 "_array_out_of_bounds_string"
+    @@ syscall
+    @@ li a0 45
+    @@ jal "print"
+    @@ neg t0 t0
+    @@ addi a0 t0 48
+    @@ jal "print"
+    @@ li a0 10
+    @@ jal "print"
+    @@ li v0 10
+    @@ syscall
+    (* borne inf ok *)
+    @@ label "_ckeck_bound_1"
+    @@ lw a1 0 a1
+    (* test borne superieure *)
+    @@ blt a0 a1 "_ckeck_bound_2"
+    @@ move t0 a0
+    @@ li v0 4
+    @@ la a0 "_array_out_of_bounds_string"
+    @@ syscall
+    @@ addi a0 t0 48
+    @@ jal "print"
+    @@ li a0 10
+    @@ jal "print"
+    @@ li v0 10
+    @@ syscall
+    (*borne sup ok *)
+    @@ label "_ckeck_bound_2"
     @@ jr ra
   in let _ = { text = p;
                data = nop}
