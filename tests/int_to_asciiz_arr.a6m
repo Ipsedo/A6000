@@ -6,11 +6,11 @@
 
   n := log10(x) + 1;
   res := [n]integer;
-  for (i := 0; i < n; i++) (
+  for (i := n - 1; i >= 0; i--) (
     tmp := x / 10;
     tmp *= 10;
     tmp := x - tmp;
-    res[i] := tmp;
+    res[i] := tmp + 48;
     x /= 10;
   );
   result := res;

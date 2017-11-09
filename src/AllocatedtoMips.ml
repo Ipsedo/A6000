@@ -356,8 +356,13 @@ let check_array_bounds =
 
 let print =
   label "print"
-  @@ li ~$v0 11
+  @@ li v0 11
   @@ syscall
+  @@ jr ra
+
+let arr_length =
+  label "arr_length"
+  @@ lw v0 0 a0
   @@ jr ra
 
 let arr_bounds_error_asciiz =
@@ -365,7 +370,13 @@ let arr_bounds_error_asciiz =
 
 let generate_prog p =
   (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
-  let p = Symb_Tbl.filter (fun k _ -> k <> "print") p in
+  let p = Symb_Tbl.filter
+      (fun k _ ->
+         k <> "print"
+         && k <> "log10"
+         && k <> "string_of_int"
+         && k <> "arr_length"
+      ) p in
   let prog = Symb_Tbl.fold
       (fun id info acc -> acc @@ label id @@ generate_function info)
       p nop
@@ -376,5 +387,7 @@ let generate_prog p =
       @@ built_ins
       @@ check_array_bounds
       @@ print
-  (*@@ MipsMisc.log10*);
+      @@ MipsMisc.log10
+      @@ MipsMisc.string_of_int
+      @@ arr_length;
     data = arr_bounds_error_asciiz}

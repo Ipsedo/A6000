@@ -60,13 +60,41 @@ prog:
     EOF
     {
       (* On ajoute une fausse fonction print -> besoin pour typechecker et Ir-stuff *)
-      Symb_Tbl.singleton "print"
+      let print =
         {
           return = None;
           formals = (TypInteger, "x")::[];
           locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
           code = []
         }
+        in
+        let log10 =
+        {
+          return = Some TypInteger;
+          formals = (TypInteger, "x")::[];
+          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+          code = []
+        }
+        in
+        let string_of_int = {
+          return = Some(TypArray(TypInteger));
+          formals = (TypInteger, "x")::[];
+          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+          code = []
+        }
+        in
+        let arr_length = {
+          return = Some TypInteger;
+          formals = (TypArray(TypInteger), "x")::[];
+          locals = Symb_Tbl.singleton "x" { typ=TypArray(TypInteger); kind=Formal(1) };
+          code = []
+        }
+        in
+        let tbl = Symb_Tbl.singleton "print" print in
+        let tbl = Symb_Tbl.add "log10" log10 tbl in
+        let tbl = Symb_Tbl.add "string_of_int" string_of_int tbl in
+        let tbl = Symb_Tbl.add "arr_length" arr_length tbl in
+        tbl
     }
   | fct=fun_delc; m=prog; EOF
     {
