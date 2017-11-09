@@ -103,60 +103,25 @@ let generate_function fct =
     | Comment(str) -> comment str
     | FunCall(res, str, v_list) -> generate_funcall str v_list res
     | ProcCall(str, v_list) -> generate_proccall str v_list
-    | Load(id, (arr, index)) -> load_array_elt id arr index
-    | Store((arr, index), v) -> store_in_array arr index v
-    | New(id, v) -> new_array id v
+    | Load(id, (arr, index)) -> check_array_bound arr index
+      @@ load_value a0 arr
+      @@ load_value a1 index
+      @@ jal "_load_array_elt"
+      @@ store_identifier v0 id(*load_array_elt id arr index*)
+
+    | Store((arr, index), v) -> check_array_bound arr index
+      @@ load_value a0 arr
+      @@ load_value a1 index
+      @@ load_value a2 v
+      @@ (*store_in_array arr index v*)jal "_store_in_array"
+    | New(id, v) ->
+      load_value a0 v
+      @@ jal "_new_array_"
+      @@ match find_alloc id with
+        Stack o -> sw ~$v0 o ~$fp
+      | Reg r -> move r ~$v0
 
   (* array stuff -> faire ad_hoc + arret prgm si dépassement capacité *)
-  and new_array pt nb_elt =
-    (* calcul de la taille en mot de 32 bits *)
-    load_value ~$t0 nb_elt
-    @@ li ~$t1 4
-    @@ mul ~$t0 ~$t0 ~$t1
-    @@ addi ~$t0 ~$t0 4
-    (* appelle system sbrk *)
-    @@ li ~$v0 9
-    @@ move ~$a0 ~$t0
-    @@ syscall
-    @@ load_value ~$t0 nb_elt
-    @@ sw ~$t0 0 ~$v0
-    @@ match find_alloc pt with
-      Stack o -> sw ~$v0 o ~$fp
-    | Reg r -> move r ~$v0
-
-  and load_array_elt dest arr index =
-    match arr with
-      Identifier id -> begin
-        check_array_bound arr index
-        @@ load_value ~$t0 index
-        @@ li ~$t1 4
-        @@ mul ~$t0 ~$t0 ~$t1
-        @@ addi ~$t0 ~$t0 4
-        (* $t1 <- decalage + addr depart *)
-        @@ load_value ~$t1 arr
-        @@ add ~$t0 ~$t0 ~$t1
-        @@  match find_alloc dest with
-          Stack o -> lw ~$t1 0 ~$t0 @@ sw ~$t1 o ~$fp
-        | Reg r -> lw r  0 ~$t0
-      end
-    | _ -> failwith "tab pointer can't be a Literal"
-
-  and store_in_array arr index value =
-    match arr with
-      Identifier id -> begin
-        check_array_bound arr index
-        @@ load_value ~$t0 index
-        @@ li ~$t1 4
-        @@ mul ~$t0 ~$t0 ~$t1
-        @@ addi ~$t0 ~$t0 4
-        (* $t1 <- decalage + addr depart *)
-        @@ load_value ~$t1 arr
-        @@ add ~$t0 ~$t0 ~$t1
-        (*chargement + affectation dans arr *)
-        @@ load_value ~$t1 value
-        @@ sw ~$t1 0 ~$t0
-      end
-    | _ -> failwith "tab pointer can't be a Literal"
 
   and check_array_bound arr index =
     match arr with
@@ -294,80 +259,6 @@ let init_prog =
 
 let close_prog = li v0 10 @@ syscall
 
-let built_ins =
-  label "atoi"
-  @@ move t0 a0
-  @@ li   t1 0
-  @@ li   t2 10
-  @@ label "atoi_loop"
-  @@ lbu  t3 0 t0
-  @@ beq  t3 zero "atoi_end"
-  @@ li   t4 48
-  @@ blt  t3 t4 "atoi_error"
-  @@ li   t4 57
-  @@ bgt  t3 t4 "atoi_error"
-  @@ addi t3 t3 (-48)
-  @@ mul  t1 t1 t2
-  @@ add  t1 t1 t3
-  @@ addi t0 t0 1
-  @@ b "atoi_loop"
-  @@ label "atoi_error"
-  @@ li   v0 10
-  @@ syscall
-  @@ label "atoi_end"
-  @@ move v0 t1
-  @@ jr   ra
-
-let check_array_bounds =
-  label "_check_array_bounds"
-  (* test borne inferieure *)
-  @@ bgez a0 "_ckeck_bound_1"
-  @@ move t0 a0
-  @@ li v0 4
-  @@ la a0 "_array_out_of_bounds_string"
-  @@ syscall
-  @@ li a0 45
-  @@ jal "print"
-  @@ neg t0 t0
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
-  @@ li v0 10
-  @@ syscall
-  (* borne inf ok *)
-  @@ label "_ckeck_bound_1"
-  @@ lw a1 0 a1
-  (* test borne superieure *)
-  @@ blt a0 a1 "_ckeck_bound_2"
-  @@ move t0 a0
-  @@ li v0 4
-  @@ la a0 "_array_out_of_bounds_string"
-  @@ syscall
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
-  @@ li v0 10
-  @@ syscall
-  (*borne sup ok *)
-  @@ label "_ckeck_bound_2"
-  @@ jr ra
-
-let print =
-  label "print"
-  @@ li v0 11
-  @@ syscall
-  @@ jr ra
-
-let arr_length =
-  label "arr_length"
-  @@ lw v0 0 a0
-  @@ jr ra
-
-let arr_bounds_error_asciiz =
-  label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
-
 let generate_prog p =
   (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
   let p = Symb_Tbl.filter
@@ -384,10 +275,13 @@ let generate_prog p =
   { text = init_prog
       @@ close_prog
       @@ prog
-      @@ built_ins
-      @@ check_array_bounds
-      @@ print
+      @@ MipsMisc.new_array
+      @@ MipsMisc.load_array_elt
+      @@ MipsMisc.store_in_array
+      @@ MipsMisc.built_ins
+      @@ MipsMisc.check_array_bounds
+      @@ MipsMisc.print
       @@ MipsMisc.log10
       @@ MipsMisc.string_of_int
-      @@ arr_length;
-    data = arr_bounds_error_asciiz}
+      @@ MipsMisc.arr_length;
+    data = MipsMisc.arr_bounds_error_asciiz}

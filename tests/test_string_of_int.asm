@@ -42,13 +42,10 @@ _label_2:
 	move $a0, $t2
 	move $a1, $t3
 	jal _check_array_bounds
-	move $t0, $t2
-	li $t1, 4
-	mul $t0, $t0, $t1
-	addi $t0, $t0, 4
-	move $t1, $t3
-	add $t0, $t0, $t1
-	lw $t4, 0($t0)
+	move $a0, $t3
+	move $a1, $t2
+	jal _load_array_elt
+	move $t4, $v0
 #_6
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
@@ -109,6 +106,36 @@ _label_1:
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
+	jr $ra
+_new_array_:
+	move $t0, $a0
+	li $t1, 4
+	mul $t0, $t0, $t1
+	addi $t0, $t0, 4
+	li $v0, 9
+	move $t1, $a0
+	move $a0, $t0
+	syscall
+	sw $t1, 0($v0)
+	jr $ra
+_load_array_elt:
+	move $t0, $a1
+	li $t1, 4
+	mul $t0, $t0, $t1
+	addi $t0, $t0, 4
+	move $t1, $a0
+	add $t0, $t0, $t1
+	lw $v0, 0($t0)
+	jr $ra
+_store_in_array:
+	move $t0, $a1
+	li $t1, 4
+	mul $t0, $t0, $t1
+	addi $t0, $t0, 4
+	move $t1, $a0
+	add $t0, $t0, $t1
+	move $t1, $a2
+	sw $t1, 0($t0)
 	jr $ra
 atoi:
 	move $t0, $a0
@@ -275,12 +302,9 @@ string_of_int:
 _label_string_of_int_14:
 	li $t1, 10
 	div $t3, $t2, $t1
-	move $t3, $t3
 	li $t1, 10
 	mul $t3, $t3, $t1
-	move $t3, $t3
 	sub $t3, $t2, $t3
-	move $t3, $t3
 	li $t1, 48
 	add $t3, $t3, $t1
 	move $a0, $t6

@@ -1,16 +1,14 @@
 main(integer x) (
   var []integer tab;
   var integer i;
-  i := 0;
+
   tab := [x]integer;
-  while (i < x + 1) (
+
+  for (i := 0; i < arr_length(tab); i++ ) (
     tab[i] := i + 49;
-    i++;
   );
 
-  i := 0;
-  while (i < x) (
+  for (i := 0; i < arr_length(tab); i++ ) (
     print(tab[i]);
-    i++;
   );
 )
