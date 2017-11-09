@@ -261,51 +261,30 @@ let new_array =
   in p
 
 let store_in_array =
-  (*match arr with
-    Identifier id -> begin*)
   let p = label "_store_in_array"
-    (*@@ check_array_bound arr index*)
-    (*@@ load_value ~$t0 index*)
     @@ move t0 a1
     @@ li ~$t1 4
     @@ mul ~$t0 ~$t0 ~$t1
     @@ addi ~$t0 ~$t0 4
-    (* $t1 <- decalage + addr depart *)
-    (*@@ load_value ~$t1 arr*)
     @@ move t1 a0
     @@ add ~$t0 ~$t0 ~$t1
-    (*chargement + affectation dans arr *)
-    (*@@ load_value ~$t1 value*)
     @@ move t1 a2
     @@ sw ~$t1 0 ~$t0
     @@ jr ra
   in let _ = { text = p;
                data = nop}
   in p
-(*end
-  | _ -> failwith "tab pointer can't be a Literal"*)
 
 let load_array_elt =
-  (*match arr with
-    Identifier id -> begin*)
-  (*check_array_bound arr index*)
   let p = label "_load_array_elt"
-    (*@@ load_value ~$t0 index*)
     @@ move t0 a1
     @@ li ~$t1 4
     @@ mul ~$t0 ~$t0 ~$t1
     @@ addi ~$t0 ~$t0 4
-    (* $t1 <- decalage + addr depart *)
-    (*@@ load_value ~$t1 arr*)
     @@ move t1 a0
     @@ add ~$t0 ~$t0 ~$t1
-    (*@@  match find_alloc dest with
-      Stack o -> lw ~$t1 0 ~$t0 @@ sw ~$t1 o ~$fp
-      | Reg r -> lw r  0 ~$t0*)
     @@ lw v0 0 t0
     @@ jr ra
   in let _ = { text = p;
                data = nop}
   in p
-(*end
-  | _ -> failwith "tab pointer can't be a Literal"*)
