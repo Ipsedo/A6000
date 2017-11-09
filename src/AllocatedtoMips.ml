@@ -107,13 +107,12 @@ let generate_function fct =
       @@ load_value a0 arr
       @@ load_value a1 index
       @@ jal "_load_array_elt"
-      @@ store_identifier v0 id(*load_array_elt id arr index*)
-
+      @@ store_identifier v0 id
     | Store((arr, index), v) -> check_array_bound arr index
       @@ load_value a0 arr
       @@ load_value a1 index
       @@ load_value a2 v
-      @@ (*store_in_array arr index v*)jal "_store_in_array"
+      @@ jal "_store_in_array"
     | New(id, v) ->
       load_value a0 v
       @@ jal "_new_array_"
