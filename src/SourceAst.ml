@@ -44,6 +44,7 @@ and expression =
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
   | NewArray of expression * typ
+  | NewDirectArray of expression * expression list
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -62,14 +63,14 @@ and binop =
   | And (* && *) | Or   (* || *)
 
 let generate_formals_symb_tbl f_list =
-    let index = ref 0 in
-    List.fold_left
-      (fun acc (t, ident) -> incr index;
+  let index = ref 0 in
+  List.fold_left
+    (fun acc (t, ident) -> incr index;
       Symb_Tbl.add
         ident
         {typ=t; kind=Formal(!index)}
         acc)
-      Symb_Tbl.empty f_list
+    Symb_Tbl.empty f_list
 
 (* Cadeau pour le débogage : un afficheur.
    [print_main m] produit une chaîne de caractère représentant le programme
@@ -125,6 +126,11 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
+  | NewDirectArray(e, es) ->
+    sprintf "{%s}"
+      (List.fold_left
+         (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
+      "" es)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function

@@ -26,6 +26,10 @@ and erase_expression e = match e with
         (fun acc elt -> acc@[(erase_expression elt)]) [] e in
     T.FunCall((str, ne))
   | S.NewArray(e, _) -> T.NewArray(erase_expression e)
+  | S.NewDirectArray(e, es) ->
+    T.NewDirectArray(erase_expression e, List.fold_left
+                       (fun acc elt -> acc@[(erase_expression elt)])
+                       [] es)
 
 and erase_instruction i = match i with
   | S.Set(loc, e) -> T.Set(erase_location loc, erase_expression e)

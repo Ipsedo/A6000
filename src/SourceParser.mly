@@ -16,7 +16,7 @@
 
 %token <string> IDENT
 %token BEGIN END
-%token O_BRACKETS C_BRACKETS
+%token O_BRACKETS C_BRACKETS O_BRACE C_BRACE
 %token SEMI
 %token COMMA
 
@@ -201,11 +201,13 @@ set:
 ;
 
 expression:
-    c=call                                  { FunCall(c)       }
-  | loc=location                            { Location(loc)    }
-  | lit=literal                             { Literal(lit)     }
-  | e1=expression; b=binop; e2=expression   { Binop(b, e1, e2) }
-  | O_BRACKETS; e=expression; C_BRACKETS; t=typ { NewArray(e, t) }
+    c=call                                       { FunCall(c)       }
+  | loc=location                                 { Location(loc)    }
+  | lit=literal                                  { Literal(lit)     }
+  | e1=expression; b=binop; e2=expression        { Binop(b, e1, e2) }
+  | O_BRACKETS; e=expression; C_BRACKETS; t=typ  { NewArray(e, t)   }
+  | O_BRACE; es=separated_list(SEMI, expression); C_BRACE
+    { NewDirectArray(Literal(Int(List.length es, $startpos(es))), es)}
   ;
 
 (*expression:

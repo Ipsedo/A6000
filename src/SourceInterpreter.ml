@@ -50,7 +50,7 @@ and eval_expression env = function
       | Or   -> max
     in
     op v1 v2
-  | NewArray(e, t) -> failwith "unimplemented new array interpreteur"
+  | NewArray(_) | NewDirectArray(_) -> failwith "unimplemented new array interpreteur"
 
 and eval_bool b = if b then 1 else 0
 and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)

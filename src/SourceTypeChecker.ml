@@ -71,14 +71,29 @@ let typecheck_prog p =
       comparetype ty_op (type_expression e2);
       ty_r
     | FunCall(c) ->
-      let str, e = c in
-      let infos = Symb_Tbl.find str p in
-      List.iter2
-        (fun (a, _) b -> comparetype a (type_expression b))
-        infos.formals e;
-      match infos.return with
-        Some t -> t
-      | None -> failwith "No return type for function"
+      begin
+        let str, e = c in
+        let infos = Symb_Tbl.find str p in
+        List.iter2
+          (fun (a, _) b -> comparetype a (type_expression b))
+          infos.formals e;
+        match infos.return with
+          Some t -> t
+        | None -> failwith "No return type for function"
+      end
+    | NewDirectArray(e, es) ->
+      let typ_arr = ref TypInteger in
+      let rec aux l =
+        match l with
+          [] -> TypArray !typ_arr
+        | x::tl ->
+          List.iter
+            (fun elt -> comparetype (type_expression elt) (type_expression x))
+            tl;
+          typ_arr := (type_expression x);
+          aux tl
+      in aux es
+
 
 
   (* type_literal: literal -> typ *)

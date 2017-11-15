@@ -11,4 +11,12 @@ main(integer x) (
   for (i := 0; i < arr_length(tab); i++ ) (
     print(tab[i]);
   );
+
+  print(10);
+
+  tab := {48; 49; 50; 51; 52; 53; 54; 55; 56; 57};
+
+  for (i := 0; i < arr_length(tab); i++ ) (
+    print(tab[i]);
+  );
 )

@@ -31,78 +31,83 @@ let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
 let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
 
-    rule token = parse
-          | [' ' '\t' '\r']+
-              { token lexbuf }
-          | '\n'
-              { new_line lexbuf; token lexbuf }
-          | ident
-              { id_or_keyword (lexeme lexbuf) }
-          | digit+
-              { LITINT (int_of_string (lexeme lexbuf))}
-          | "("
-              { BEGIN }
-          | ")"
-              { END }
-          | "["
-              { O_BRACKETS }
-          | "]"
-              { C_BRACKETS }
-          | ";"
-              { SEMI }
-          | ","
-              { COMMA }
-          | "+"
-              { PLUS }
-          | "*"
-              { MULT }
-          | "-"
-              { SUB }
-          | "=="
-              { EQ }
-          | "!="
-              { NEQ }
-          | "<"
-              { LT }
-          | "<="
-              { LE }
-          | ">"
-              { MT }
-          | ">="
-              { ME }
-          | "&&"
-              { AND }
-          | "||"
-              { OR }
-          | ":="
-              { SET }
-          | "++"
-              { INCR }
-          | "--"
-              { DECR }
-          | "/"
-              { DIV }
-          | "+="
-              { ADDSET }
-          | "-="
-              { SUBSET }
-          | "*="
-              { MULTSET }
-          | "/="
-              { DIVSET }
-          | eof
-              { EOF }
-          | _
-              {
-                let start_p = lexeme_start_p lexbuf in
-                let msg = Printf.sprintf
-                  "Unknow char(s) \"%s\" in %s at line %d, col %d"
-                  (lexeme lexbuf)
-                  start_p.pos_fname
-                  start_p.pos_lnum
-                  (start_p.pos_cnum - start_p.pos_bol)
-                  in
-                raise (UnknowChar (msg))}
+rule token = parse
+  | [' ' '\t' '\r']+
+    { token lexbuf }
+  | '\n'
+    { new_line lexbuf; token lexbuf }
+  | ident
+    { id_or_keyword (lexeme lexbuf) }
+  | digit+
+    { LITINT (int_of_string (lexeme lexbuf))}
+  | "("
+    { BEGIN }
+  | ")"
+    { END }
+  | "["
+    { O_BRACKETS }
+  | "]"
+    { C_BRACKETS }
+  | "{"
+    { O_BRACE }
+  | "}"
+    { C_BRACE }
+  | ";"
+    { SEMI }
+  | ","
+    { COMMA }
+  | "+"
+    { PLUS }
+  | "*"
+    { MULT }
+  | "-"
+    { SUB }
+  | "=="
+    { EQ }
+  | "!="
+    { NEQ }
+  | "<"
+    { LT }
+  | "<="
+    { LE }
+  | ">"
+    { MT }
+  | ">="
+    { ME }
+  | "&&"
+    { AND }
+  | "||"
+    { OR }
+  | ":="
+    { SET }
+  | "++"
+    { INCR }
+  | "--"
+    { DECR }
+  | "/"
+    { DIV }
+  | "+="
+    { ADDSET }
+  | "-="
+    { SUBSET }
+  | "*="
+    { MULTSET }
+  | "/="
+    { DIVSET }
+  | eof
+    { EOF }
+  | _
+    {
+      let start_p = lexeme_start_p lexbuf in
+      let msg = Printf.sprintf
+        "Unknow char(s) \"%s\" in %s at line %d, col %d"
+        (lexeme lexbuf)
+        start_p.pos_fname
+        start_p.pos_lnum
+        (start_p.pos_cnum - start_p.pos_bol)
+      in
+      raise (UnknowChar (msg))
+    }
 
 and comment = parse
             | "(*"

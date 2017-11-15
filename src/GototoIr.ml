@@ -94,10 +94,27 @@ let flatten_prog p =
           (fun (ce_acc, ve_acc) expr ->
              let (ce, ve) = flatten_expression !tmp_cpt expr in
              incr tmp_cpt;
-             ce_acc@ce, ve_acc@[ve])
+             ce_acc @ ce, ve_acc @ [ve])
           ([], []) args in
       let id_tmp = new_tmp nb in
       es @ [ T.FunCall(id_tmp, str, vs) ], T.Identifier(id_tmp)
+    | NewDirectArray(e, es) ->
+      let ce, ve = flatten_expression nb e in
+      let id_tmp = new_tmp nb in
+      let tmp_nb = ref nb in
+      let es, vs = List.fold_left
+          (fun (es_acc, vs_acc) elt ->
+             incr tmp_nb;
+             let tmp_ce, tmp_ve = flatten_expression !tmp_nb elt in
+             (es_acc @ tmp_ce, vs_acc @ [tmp_ve]))
+          ([], []) es
+      in
+      let _, sets = List.fold_left
+          (fun (index, acc) v ->
+             (index + 1, T.Store((T.Identifier id_tmp, T.Literal(Int(index))), v)::acc))
+          (0, []) vs
+      in
+      ce @ [ T.New(id_tmp, ve) ] @ es @ sets, T.Identifier(id_tmp)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)
@@ -111,7 +128,7 @@ let flatten_prog p =
       incr cpt_label;
       match i with
       (* On force une correspondance entre étiquette de saut
-         		  et étiquette d'analyse. *)
+         et étiquette d'analyse. *)
       | T.Label l -> l, i
       | _         -> lab, i
   in
