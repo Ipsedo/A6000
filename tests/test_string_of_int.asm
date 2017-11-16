@@ -13,7 +13,7 @@ main:
 	move $fp, $sp
 	addi $sp, $sp, 0
 	move $t2, $a0
-#_0
+#_main_0
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -29,16 +29,16 @@ main:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	move $t4, $v0
-#_1
+#_main_1
 	move $t3, $t4
-#_2
+#_main_2
 	li $t0, 0
 	move $t2, $t0
-#_3
-	b _label_1
-#_label_2
-_label_2:
-#_5
+#_main_3
+	b _label_main_1
+#_label_main_2
+_label_main_2:
+#_main_5
 	move $a0, $t2
 	move $a1, $t3
 	jal _check_array_bounds
@@ -46,63 +46,33 @@ _label_2:
 	move $a1, $t2
 	jal _load_array_elt
 	move $t4, $v0
-#_6
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
+#_main_6
 	move $a0, $t4
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
-#_7
+#_main_7
 	li $t1, 1
 	add $t4, $t2, $t1
-#_8
+#_main_8
 	move $t2, $t4
-#_label_1
-_label_1:
-#_10
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
+#_label_main_1
+_label_main_1:
+#_main_10
 	move $a0, $t3
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
 	move $t4, $v0
-#_11
+#_main_11
 	slt $t4, $t2, $t4
-#_12
-	bnez $t4, _label_2
-#_13
-	sw $t2, -4($sp)
-	sw $t3, -8($sp)
-	sw $t4, -12($sp)
-	sw $t5, -16($sp)
-	addi $sp, $sp, -16
+#_main_12
+	bnez $t4, _label_main_2
+#_main_13
 	li $a0, 10
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-	addi $sp, $sp, 16
-	lw $t2, -4($sp)
-	lw $t3, -8($sp)
-	lw $t4, -12($sp)
-	lw $t5, -16($sp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
@@ -284,15 +254,8 @@ string_of_int:
 	li $t1, 1
 	add $t3, $t3, $t1
 	move $t6, $t3
-	move $t0, $t6
-	li $t1, 4
-	mul $t0, $t0, $t1
-	addi $t0, $t0, 4
-	li $v0, 9
-	move $a0, $t0
-	syscall
-	move $t0, $t6
-	sw $t0, 0($v0)
+	move $a0, $t6
+	jal _new_array_
 	move $t3, $v0
 	move $t5, $t3
 	li $t1, 1
@@ -310,14 +273,10 @@ _label_string_of_int_14:
 	move $a0, $t6
 	move $a1, $t5
 	jal _check_array_bounds
-	move $t0, $t6
-	li $t1, 4
-	mul $t0, $t0, $t1
-	addi $t0, $t0, 4
-	move $t1, $t5
-	add $t0, $t0, $t1
-	move $t1, $t3
-	sw $t1, 0($t0)
+	move $a0, $t5
+	move $a1, $t6
+	move $a2, $t3
+	jal _store_in_array
 	li $t1, 10
 	div $t3, $t2, $t1
 	move $t2, $t3

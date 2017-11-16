@@ -12,9 +12,11 @@ let destructure_prog p =
       [] -> acc
     | (str, fct)::tl -> *)
 
+  let fct_name = ref "" in
+
   let new_label =
     let cpt = ref 0 in
-    fun () -> incr cpt; Printf.sprintf "_label_%i" !cpt
+    fun () -> incr cpt; Printf.sprintf "_label_%s_%i" !fct_name !cpt
   in
 
   (* destructure_block: S.block -> T.block *)
@@ -45,6 +47,7 @@ let destructure_prog p =
 
   S.Symb_Tbl.fold
     (fun id infos acc ->
+       fct_name := id;
        T.Symb_Tbl.add id
          { T.formals = infos.S.formals;
            T.locals = infos.S.locals;
