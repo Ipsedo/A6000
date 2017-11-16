@@ -93,9 +93,14 @@ _label_3:
 	bnez $t4, _label_4
 #_24
 	li $a0, 10
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
+#_25
+	li $a0, 10
 	jal _new_array_
 	move $t4, $v0
-#_25
+#_26
 	li $a0, 9
 	move $a1, $t4
 	jal _check_array_bounds
@@ -103,7 +108,7 @@ _label_3:
 	li $a1, 9
 	li $a2, 57
 	jal _store_in_array
-#_26
+#_27
 	li $a0, 8
 	move $a1, $t4
 	jal _check_array_bounds
@@ -111,7 +116,7 @@ _label_3:
 	li $a1, 8
 	li $a2, 56
 	jal _store_in_array
-#_27
+#_28
 	li $a0, 7
 	move $a1, $t4
 	jal _check_array_bounds
@@ -119,7 +124,7 @@ _label_3:
 	li $a1, 7
 	li $a2, 55
 	jal _store_in_array
-#_28
+#_29
 	li $a0, 6
 	move $a1, $t4
 	jal _check_array_bounds
@@ -127,7 +132,7 @@ _label_3:
 	li $a1, 6
 	li $a2, 54
 	jal _store_in_array
-#_29
+#_30
 	li $a0, 5
 	move $a1, $t4
 	jal _check_array_bounds
@@ -135,7 +140,7 @@ _label_3:
 	li $a1, 5
 	li $a2, 53
 	jal _store_in_array
-#_30
+#_31
 	li $a0, 4
 	move $a1, $t4
 	jal _check_array_bounds
@@ -143,7 +148,7 @@ _label_3:
 	li $a1, 4
 	li $a2, 52
 	jal _store_in_array
-#_31
+#_32
 	li $a0, 3
 	move $a1, $t4
 	jal _check_array_bounds
@@ -151,7 +156,7 @@ _label_3:
 	li $a1, 3
 	li $a2, 51
 	jal _store_in_array
-#_32
+#_33
 	li $a0, 2
 	move $a1, $t4
 	jal _check_array_bounds
@@ -159,7 +164,7 @@ _label_3:
 	li $a1, 2
 	li $a2, 50
 	jal _store_in_array
-#_33
+#_34
 	li $a0, 1
 	move $a1, $t4
 	jal _check_array_bounds
@@ -167,7 +172,7 @@ _label_3:
 	li $a1, 1
 	li $a2, 49
 	jal _store_in_array
-#_34
+#_35
 	li $a0, 0
 	move $a1, $t4
 	jal _check_array_bounds
@@ -175,16 +180,16 @@ _label_3:
 	li $a1, 0
 	li $a2, 48
 	jal _store_in_array
-#_35
-	move $t2, $t4
 #_36
+	move $t2, $t4
+#_37
 	li $t0, 0
 	move $t3, $t0
-#_37
+#_38
 	b _label_1
 #_label_2
 _label_2:
-#_39
+#_40
 	move $a0, $t3
 	move $a1, $t2
 	jal _check_array_bounds
@@ -192,27 +197,27 @@ _label_2:
 	move $a1, $t3
 	jal _load_array_elt
 	move $t4, $v0
-#_40
+#_41
 	move $a0, $t4
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_41
+#_42
 	li $t1, 1
 	add $t4, $t3, $t1
-#_42
+#_43
 	move $t3, $t4
 #_label_1
 _label_1:
-#_44
+#_45
 	move $a0, $t2
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
 	move $t4, $v0
-#_45
-	slt $t4, $t3, $t4
 #_46
+	slt $t4, $t3, $t4
+#_47
 	bnez $t4, _label_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)

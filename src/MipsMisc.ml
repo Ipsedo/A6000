@@ -1,6 +1,6 @@
 open Mips
 
-    (* log10 function integer -> integer *)
+(* log10 function integer -> integer *)
 
 let log10 : 'a Mips.asm =
   let p = label "log10"

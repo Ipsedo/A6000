@@ -130,7 +130,7 @@ and print_expression = function
     sprintf "{%s}"
       (List.fold_left
          (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
-      "" es)
+         "" es)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function

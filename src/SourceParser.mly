@@ -59,7 +59,7 @@
 prog:
     EOF
     {
-      (* On ajoute une fausse fonction print -> besoin pour typechecker et Ir-stuff *)
+  (* On ajoute des fausses fonctions -> besoin pour typechecker et Ir-stuff *)
       let print =
         {
           return = None;
@@ -96,7 +96,7 @@ prog:
         let tbl = Symb_Tbl.add "arr_length" arr_length tbl in
         tbl
     }
-  | fct=fun_delc; m=prog; EOF
+  | fct=fun_delc; m=prog
     {
       let (id, infos) = fct in
       Symb_Tbl.add id infos m
@@ -159,7 +159,9 @@ instruction:
 | IF; e=expression; THEN;
   BEGIN; is=instructions; END
   { [If(e, is, [])] }
-| WHILE; BEGIN; e=expression; END; BEGIN; is=instructions; END
+| WHILE;
+  BEGIN; e=expression; END;
+  BEGIN; is=instructions; END
   { [While(e, is)] }
 | FOR; BEGIN;
   id1=location; SET; e1=expression; SEMI;
@@ -279,13 +281,7 @@ call:
 ;
 
 arguments:
-  (* empty *) { [] }
-  | a=args    { a  }
-;
-
-args:
-  e=expression                { [e]  }
-| e=expression; COMMA; a=args { e::a }
+  a=separated_list(COMMA, expression) { a }
 ;
 
 literal:
@@ -305,17 +301,10 @@ fun_delc:
   BEGIN; vds=var_decls; is=instructions; END
   {
     let params = generate_formals_symb_tbl p in
-    (*let local_params = generate_locals_of_formals p in*)
 
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
     let local = Symb_Tbl.add "result" {typ=t; kind=Return} local in
-    (*let local = Symb_Tbl.union union_vars local local_params in*)
-
-    (*let is = (generate_set_formal_instr p)@is in*)
-
-    (*let formal = Symb_Tbl.fold
-      (fun _ v acc -> acc@[v.typ]) params [] in*)
 
     id, {
       return = Some t;
@@ -328,15 +317,9 @@ fun_delc:
     BEGIN; vds=var_decls; is=instructions; END
   {
     let params = generate_formals_symb_tbl p in
-    (*let local_params = generate_locals_of_formals p in*)
 
     let union_vars = fun _ _ v -> Some v in
     let local = Symb_Tbl.union union_vars params vds in
-    (*let local = Symb_Tbl.union union_vars local local_params in*)
-
-    (*let is = (generate_set_formal_instr p)@is in*)
-    (*let formal = Symb_Tbl.fold
-      (fun _ v acc -> acc@[v.typ]) params [] in*)
 
     id, {
       return = None;
@@ -348,11 +331,9 @@ fun_delc:
 ;
 
 parameters:
-| (* empty *) { [] }
-| p=params { p }
+  p=separated_list(COMMA, params) { p }
 ;
 
 params:
-| t=typ; id=IDENT { [(t, id)] }
-| t=typ; id=IDENT; COMMA; p=params { (t, id)::p }
+| t=typ; id=IDENT { t, id }
 ;
