@@ -14,59 +14,59 @@ line:
 	addi $sp, $sp, 0
 	move $t4, $a0
 	move $t3, $a1
-#_0
+#_line_0
 	li $t0, 0
 	move $t2, $t0
-#_1
+#_line_1
 	li $t0, 0
 	move $t5, $t0
-#_2
-	b _label_1
-#_label_2
-_label_2:
-#_4
+#_line_2
+	b _label_line_1
+#_label_line_2
+_label_line_2:
+#_line_4
 	slt $t6, $t5, $t4
-#_5
-	bnez $t6, _label_3
-#_6
+#_line_5
+	bnez $t6, _label_line_3
+#_line_6
 	li $a0, 35
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_7
-	b _label_4
-#_label_3
-_label_3:
-#_9
+#_line_7
+	b _label_line_4
+#_label_line_3
+_label_line_3:
+#_line_9
 	li $a0, 46
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_10
+#_line_10
 	li $t0, 1
 	move $t2, $t0
-#_label_4
-_label_4:
-#_12
+#_label_line_4
+_label_line_4:
+#_line_12
 	li $a0, 32
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_13
+#_line_13
 	li $t1, 1
 	add $t6, $t5, $t1
-#_14
+#_line_14
 	move $t5, $t6
-#_label_1
-_label_1:
-#_16
+#_label_line_1
+_label_line_1:
+#_line_16
 	li $t1, 1
 	add $t6, $t3, $t1
-#_17
+#_line_17
 	slt $t6, $t5, $t6
-#_18
-	bnez $t6, _label_2
-#_19
+#_line_18
+	bnez $t6, _label_line_2
+#_line_19
 	li $a0, 10
 	addi $sp, $sp, 0
 	jal print
@@ -84,7 +84,7 @@ loop:
 	addi $sp, $sp, 0
 	move $t3, $a0
 	move $t2, $a1
-#_20
+#_loop_0
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -101,7 +101,7 @@ loop:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	move $t4, $v0
-#_21
+#_loop_1
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -118,16 +118,16 @@ loop:
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
 	move $t4, $v0
-#_22
-	bnez $t4, _label_5
-#_23
-	b _label_6
-#_label_5
-_label_5:
-#_25
+#_loop_2
+	bnez $t4, _label_loop_1
+#_loop_3
+	b _label_loop_2
+#_label_loop_1
+_label_loop_1:
+#_loop_5
 	li $t1, 1
 	add $t4, $t3, $t1
-#_26
+#_loop_6
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	sw $t4, -12($sp)
@@ -143,8 +143,8 @@ _label_5:
 	lw $t3, -8($sp)
 	lw $t4, -12($sp)
 	lw $t5, -16($sp)
-#_label_6
-_label_6:
+#_label_loop_2
+_label_loop_2:
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8
@@ -156,7 +156,7 @@ main:
 	move $fp, $sp
 	addi $sp, $sp, 0
 	move $t2, $a0
-#_28
+#_main_0
 	sw $t2, -4($sp)
 	sw $t3, -8($sp)
 	addi $sp, $sp, -8
@@ -180,33 +180,33 @@ point:
 	addi $sp, $sp, 0
 	move $t4, $a0
 	move $t2, $a1
-#_29
+#_point_0
 	li $t0, 0
 	move $t3, $t0
-#_30
-	b _label_7
-#_label_8
-_label_8:
-#_32
+#_point_1
+	b _label_point_1
+#_label_point_2
+_label_point_2:
+#_point_3
 	li $t1, 1
 	add $t6, $t3, $t1
-#_33
+#_point_4
 	move $t3, $t6
-#_label_7
-_label_7:
-#_35
+#_label_point_1
+_label_point_1:
+#_point_6
 	mul $t6, $t4, $t4
-#_36
+#_point_7
 	mul $t5, $t3, $t3
-#_37
+#_point_8
 	add $t6, $t6, $t5
-#_38
+#_point_9
 	mul $t5, $t2, $t2
-#_39
+#_point_10
 	slt $t6, $t6, $t5
-#_40
-	bnez $t6, _label_8
-#_41
+#_point_11
+	bnez $t6, _label_point_2
+#_point_12
 	move $t2, $t3
 	move $v0, $t2
 	lw $ra, 0($fp)
@@ -390,15 +390,8 @@ string_of_int:
 	li $t1, 1
 	add $t3, $t3, $t1
 	move $t6, $t3
-	move $t0, $t6
-	li $t1, 4
-	mul $t0, $t0, $t1
-	addi $t0, $t0, 4
-	li $v0, 9
-	move $a0, $t0
-	syscall
-	move $t0, $t6
-	sw $t0, 0($v0)
+	move $a0, $t6
+	jal _new_array_
 	move $t3, $v0
 	move $t5, $t3
 	li $t1, 1
@@ -416,14 +409,10 @@ _label_string_of_int_14:
 	move $a0, $t6
 	move $a1, $t5
 	jal _check_array_bounds
-	move $t0, $t6
-	li $t1, 4
-	mul $t0, $t0, $t1
-	addi $t0, $t0, 4
-	move $t1, $t5
-	add $t0, $t0, $t1
-	move $t1, $t3
-	sw $t1, 0($t0)
+	move $a0, $t5
+	move $a1, $t6
+	move $a2, $t3
+	jal _store_in_array
 	li $t1, 10
 	div $t3, $t2, $t1
 	move $t2, $t3

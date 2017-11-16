@@ -123,8 +123,8 @@ let flatten_prog p =
      de saut. *)
 
   let fct_name = ref "" in
+  let cpt_label = ref 0 in
   let label_instruction =
-    let cpt_label = ref 0 in
     fun i -> let lab = Printf.sprintf "_%s_%d" !fct_name !cpt_label in
       incr cpt_label;
       match i with
@@ -137,6 +137,7 @@ let flatten_prog p =
     (fun id infos acc ->
        symb_tbl := infos.S.locals;
        fct_name := id;
+       cpt_label := 0;
        let flattened_code = flatten_block infos.S.code in
        T.Symb_Tbl.add id
          { T.formals = infos.S.formals;
