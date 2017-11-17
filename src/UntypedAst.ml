@@ -20,10 +20,10 @@ and expression =
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall   of call
   | NewArray  of expression
-  | NewDirectArray of expression * expression list
+  (*| NewDirectArray of expression * expression list*)
 and location =
   | Identifier of string
-  | ArrayAccess of string * expression
+  | ArrayAccess of expression * expression
 and literal =
   | Int  of int  (* Constante entière   *)
   | Bool of bool

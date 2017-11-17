@@ -44,7 +44,7 @@ and expression =
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
   | NewArray of expression * typ
-  | NewDirectArray of expression * expression list
+  (*| NewDirectArray of expression * expression list*)
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -54,7 +54,7 @@ and literal =
 
 and location =
   | Identifier of string * Lexing.position (* Variable en mémoire *)
-  | ArrayAccess of string * expression * Lexing.position
+  | ArrayAccess of expression * expression * Lexing.position
 
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
@@ -93,7 +93,7 @@ and print_literal = function
   | Bool (b,_) -> if b then "true" else "false"
 and print_location = function
   | Identifier (x,_) -> x
-  | ArrayAccess(id, e, _) -> sprintf "%s[%s]" id (print_expression e)
+  | ArrayAccess(e1, e2, _) -> sprintf "%s[%s]" (print_expression e1) (print_expression e2)
 and print_binop = function
   | Add  -> "+"
   | Mult -> "*"
@@ -126,11 +126,11 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
-  | NewDirectArray(e, es) ->
+                        (*| NewDirectArray(e, es) ->
     sprintf "{%s}"
       (List.fold_left
          (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
-         "" es)
+                          "" es)*)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function

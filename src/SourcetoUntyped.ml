@@ -9,7 +9,7 @@ let rec erase_identifier_info i = i.S.kind
 
 and erase_location l = match l with
     S.Identifier (str, _) -> T.Identifier str
-  | S.ArrayAccess(str, e, _) -> T.ArrayAccess(str, erase_expression e)
+  | S.ArrayAccess(e1, e2, _) -> T.ArrayAccess(erase_expression e1, erase_expression e2)
 
 and erase_literal l = match l with
     S.Int (i, _) -> T.Int i
@@ -26,10 +26,10 @@ and erase_expression e = match e with
         (fun acc elt -> acc@[(erase_expression elt)]) [] e in
     T.FunCall((str, ne))
   | S.NewArray(e, _) -> T.NewArray(erase_expression e)
-  | S.NewDirectArray(e, es) ->
+(*| S.NewDirectArray(e, es) ->
     T.NewDirectArray(erase_expression e, List.fold_left
                        (fun acc elt -> acc@[(erase_expression elt)])
-                       [] es)
+                            [] es)*)
 
 and erase_instruction i = match i with
   | S.Set(loc, e) -> T.Set(erase_location loc, erase_expression e)

@@ -81,7 +81,7 @@ let typecheck_prog p =
           Some t -> t
         | None -> failwith "No return type for function"
       end
-    | NewDirectArray(e, es) ->
+        (*| NewDirectArray(e, es) ->
       let typ_arr = ref TypInteger in
       let rec aux l =
         match l with
@@ -92,7 +92,7 @@ let typecheck_prog p =
             tl;
           typ_arr := (type_expression x);
           aux tl
-      in aux es
+          in aux es*)
 
 
 
@@ -105,12 +105,12 @@ let typecheck_prog p =
   and type_location = function
     | Identifier(id, pos) -> current_pos := pos;
       (Symb_Tbl.find id !symb_tbl).typ
-    | ArrayAccess(id, e, pos) -> current_pos := pos;
+    | ArrayAccess(e1, e2, pos) -> (*current_pos := pos;
       let rec aux t =
         match t with
           TypArray t -> aux t
         | _ as a -> a
-      in aux (Symb_Tbl.find id !symb_tbl).typ
+                                   in aux (Symb_Tbl.find id !symb_tbl).typ*)
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)
   (* type_binop: binop -> typ * typ *)

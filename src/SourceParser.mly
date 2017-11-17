@@ -50,6 +50,7 @@
 %nonassoc EQ NEQ LT LE MT ME
 %left PLUS SUB
 %left MULT DIV
+%nonassoc O_BRACKETS
 
 %start prog
 %type <SourceAst.prog> prog
@@ -208,8 +209,8 @@ expression:
   | lit=literal                                  { Literal(lit)     }
   | e1=expression; b=binop; e2=expression        { Binop(b, e1, e2) }
   | O_BRACKETS; e=expression; C_BRACKETS; t=typ  { NewArray(e, t)   }
-  | O_BRACE; es=separated_list(SEMI, expression); C_BRACE
-    { NewDirectArray(Literal(Int(List.length es, $startpos(es))), es)}
+  (*| O_BRACE; es=separated_list(SEMI, expression); C_BRACE
+    { NewDirectArray(Literal(Int(List.length es, $startpos(es))), es)}*)
   ;
 
 (*expression:
@@ -292,8 +293,8 @@ literal:
 
 location:
     id=IDENT  { Identifier (id, $startpos(id)) }
-  | id=IDENT; O_BRACKETS; e=expression; C_BRACKETS
-    { ArrayAccess(id, e, $startpos(id))  }
+  | e1=expression; O_BRACKETS; e2=expression; C_BRACKETS
+    { ArrayAccess(e1, e2, $startpos(e1))  }
 ;
 
 fun_delc:

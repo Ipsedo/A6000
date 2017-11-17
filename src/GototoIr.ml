@@ -41,16 +41,14 @@ let flatten_prog p =
       let ce, ve = flatten_expression 0 c in
       ce @ [ T.CondGoto(ve, l) ]
     | S.Label(l) -> [ T.Label(l) ]
-    | S.Set(loc, e) ->
-      begin
-        match loc with
-          Identifier(id) ->
-          let ce, ve = flatten_expression 0 e in
-          ce @ [ T.Value(id, ve) ]
-        | ArrayAccess(str, index) -> let ce1, ve1 = flatten_expression 0 index in
-          let ce2, ve2 = flatten_expression 0 e in
-          ce2 @ ce1 @ [ T.Store((Identifier str, ve1), ve2)]
-      end
+    | S.Set(Identifier(id), e) ->
+      let ce, ve = flatten_expression 0 e in
+      ce @ [ T.Value(id, ve) ]
+    | S.Set(ArrayAccess(e1, e2), e3) ->
+          let ce1, ve1 = flatten_expression 0 e1 in
+          let ce2, ve2 = flatten_expression 1 e2 in
+          let ce3, ve3 = flatten_expression 2 e3 in
+          ce1 @ ce2 @ ce3 @ [ T.Store((ve1, ve2), ve3) ]
     | S.Comment(str) -> [ T.Comment(str) ]
     | S.ProcCall(c) -> let (str, args) = c in
       let tmp_cpt = ref 0 in
@@ -78,10 +76,14 @@ let flatten_prog p =
       let ce, ve = flatten_expression nb e in
       let id_tmp = new_tmp nb in
       ce @ [ T.New(id_tmp, ve) ], T.Identifier(id_tmp)
-    | Location(ArrayAccess(str, e)) ->
-      let ce, ve = flatten_expression nb e in
-      let id_tmp = new_tmp nb in
-      ce @ [ T.Load(id_tmp, (T.Identifier str, ve)) ], T.Identifier(id_tmp)
+    | Location(ArrayAccess(e1, e2)) ->
+      (*let ce, ve = flatten_expression nb e in
+        let id_tmp = new_tmp nb in
+        ce @ [ T.Load(id_tmp, (T.Identifier str, ve)) ], T.Identifier(id_tmp)*)
+      let ce1, ve1 = flatten_expression nb e1 in
+      let ce2, ve2 = flatten_expression (nb + 1) e2 in
+      let curr_tab = new_tmp nb in
+      ce1 @ ce2 @ [ T.Load(curr_tab, (ve1, ve2))], T.Identifier(curr_tab)
     | Location(Identifier id) -> [], T.Identifier(id)
     | Literal (l) -> [], T.Literal(l)
     | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression nb e1 in
@@ -98,23 +100,23 @@ let flatten_prog p =
           ([], []) args in
       let id_tmp = new_tmp nb in
       es @ [ T.FunCall(id_tmp, str, vs) ], T.Identifier(id_tmp)
-    | NewDirectArray(e, es) ->
-      let ce, ve = flatten_expression nb e in
-      let id_tmp = new_tmp nb in
-      let tmp_nb = ref nb in
-      let es, vs = List.fold_left
+      (*| NewDirectArray(e, es) ->
+        let ce, ve = flatten_expression nb e in
+        let id_tmp = new_tmp nb in
+        let tmp_nb = ref nb in
+        let es, vs = List.fold_left
           (fun (es_acc, vs_acc) elt ->
              incr tmp_nb;
              let tmp_ce, tmp_ve = flatten_expression !tmp_nb elt in
              (es_acc @ tmp_ce, vs_acc @ [tmp_ve]))
           ([], []) es
-      in
-      let _, sets = List.fold_left
+        in
+        let _, sets = List.fold_left
           (fun (index, acc) v ->
              (index + 1, T.Store((T.Identifier id_tmp, T.Literal(Int(index))), v)::acc))
           (0, []) vs
-      in
-      ce @ [ T.New(id_tmp, ve) ] @ es @ sets, T.Identifier(id_tmp)
+        in
+          ce @ [ T.New(id_tmp, ve) ] @ es @ sets, T.Identifier(id_tmp)*)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)
