@@ -1,0 +1,99 @@
+main(integer x) (
+  play(westworld(), 40, 24);
+)
+
+[]integer bass() (
+  var []integer line;
+  line := [6]integer;
+  line[0] := 0;  line[1] := 2;  line[2] := 7;
+  line[3] := 14; line[4] := 15; line[5] := 15;
+  result := line;
+)
+
+[]integer theme() (
+  var []integer line;
+  line := [12]integer;
+  line[0] := 14; line[1]  := 14; line[2]  := 15;
+  line[3] := 14; line[4]  := 14; line[5]  := 15;
+  line[6] := 14; line[7]  := 12; line[8]  := 10;
+  line[9] := 10; line[10] := 10; line[11] := 10;
+  result := line;
+)
+
+[]integer repeat([]integer line, integer length) (
+  var []integer linetmp;
+  var integer pulse;
+  linetmp := [2*length]integer;
+  pulse := 0;
+  while (pulse < length) (
+    linetmp[pulse] := line[pulse];
+    linetmp[pulse+length] := line[pulse];
+    pulse := pulse + 1;
+  );
+  result := line;
+)
+
+burn([][]boolean cylinder, []integer line,
+     integer length, integer speed, integer transpose) (
+  var integer pulse;
+  var integer internal;
+  var integer pitch;
+  pulse := 0;
+  while (pulse < length) (
+    internal := 0;
+    pitch := line[pulse] + transpose;
+    while (internal < speed) (
+      cylinder[pulse*speed + internal][pitch] := true;
+      internal := internal + 1;
+    );
+    pulse := pulse + 1;
+  );
+)
+
+[][]boolean blank(integer width, integer duration) (
+  var [][]boolean cylinder;
+  var []boolean pulse;
+  var integer i;
+  var integer j;
+  cylinder := [duration][]boolean;
+  i := 0;
+  while (i < duration) (
+    pulse := [width]boolean;
+    j := 0;
+    while (j < width) (
+      pulse[j] := false;
+      j := j+1;
+    );
+    cylinder[i] := pulse;
+    i := i+1;
+  );
+  result := cylinder;
+)
+
+[][]boolean westworld() (
+  var [][]boolean cylinder;
+  cylinder := blank(40, 24);
+  burn(cylinder, theme(), 12, 2, 12);
+  burn(cylinder, theme(), 12, 2, 24);
+  burn(cylinder, repeat(repeat(bass(), 6), 12), 24, 1, 0);
+  result := cylinder;
+)
+
+play([][]boolean cylinder, integer width, integer height) (
+  var integer h;
+  var integer w;
+  h := height - 1;
+  while (0 <= h) (
+    w := width - 1;
+    while (0 <= w) (
+      if cylinder[h][w] then (
+        print(35); print(35);
+      ) else (
+	print(32); print(32);
+      );
+      w := w - 1;
+    );
+    print(10);
+    h := h - 1;
+  );
+)
