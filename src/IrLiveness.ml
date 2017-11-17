@@ -114,7 +114,7 @@ let mk_lv p =
         VarSet.empty v
     | _ -> VarSet.empty
   and lv_kill : IrAst.instruction -> VarSet.t = function
-    | Binop(id, _, _, _) | Value(id, _) | FunCall(id, _, _) | Load(id, _) ->
+    | Binop(id, _, _, _) | Value(id, _) | FunCall(id, _, _) | Load(id, _) | New(id, _) ->
       VarSet.singleton id
     | _ -> VarSet.empty
   in

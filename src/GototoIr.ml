@@ -82,11 +82,12 @@ let flatten_prog p =
         ce @ [ T.Load(id_tmp, (T.Identifier str, ve)) ], T.Identifier(id_tmp)*)
       let ce1, ve1 = flatten_expression nb e1 in
       let ce2, ve2 = flatten_expression (nb + 1) e2 in
-      let curr_tab = new_tmp nb in
-      ce1 @ ce2 @ [ T.Load(curr_tab, (ve1, ve2))], T.Identifier(curr_tab)
+      let id_tmp = new_tmp nb in
+      ce1 @ ce2 @ [ T.Load(id_tmp, (ve1, ve2)) ], T.Identifier(id_tmp)
     | Location(Identifier id) -> [], T.Identifier(id)
     | Literal (l) -> [], T.Literal(l)
-    | Binop(b, e1, e2) -> let ce1, ve1 = flatten_expression nb e1 in
+    | Binop(b, e1, e2) ->
+      let ce1, ve1 = flatten_expression nb e1 in
       let ce2, ve2 = flatten_expression (nb + 1) e2 in
       let id_tmp = new_tmp nb in
       ce1 @ ce2 @ [ T.Binop(id_tmp, b, ve1, ve2) ], T.Identifier(id_tmp)

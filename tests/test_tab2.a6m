@@ -1,14 +1,21 @@
 main(integer x) (
-  var []integer tab;
+  var [][]integer tab;
+  var integer j;
   var integer i;
 
-  tab := [x]integer;
+  tab := [5 + 1 + 1 + 1 + 1 + 1][]integer;
 
-  for (i := 0; i < arr_length(tab); i++ ) (
-    tab[i] := i + 49;
+  for (j := 0; j < arr_length(tab); j++) (
+    tab[j] := [x]integer;
+    for (i := 0; i < arr_length(tab[j]); i++ ) (
+      tab[j][i] := j + i + 49;
+    );
   );
 
-  for (i := 0; i < arr_length(tab); i++ ) (
-    print(tab[i]);
+  for(j:=0;j<arr_length(tab);j++) (
+    for (i := 0; i < arr_length(tab[j]); i++ ) (
+      print(tab[j][i]);
+    );
+    print(10);
   );
 )
