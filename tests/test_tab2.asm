@@ -14,39 +14,59 @@ main:
 	addi $sp, $sp, 0
 	move $t2, $a0
 #_main_0
-	li $t0, 5
-	li $t1, 1
-	add $t7, $t0, $t1
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	addi $sp, $sp, -8
+	move $a0, $t2
+	addi $sp, $sp, 0
+	jal make_tab
+	addi $sp, $sp, 0
+	addi $sp, $sp, 8
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	move $t2, $v0
 #_main_1
-	li $t1, 1
-	add $t7, $t7, $t1
+	move $t2, $t2
 #_main_2
-	li $t1, 1
-	add $t7, $t7, $t1
-#_main_3
-	li $t1, 1
-	add $t7, $t7, $t1
-#_main_4
-	li $t1, 1
-	add $t7, $t7, $t1
-#_main_5
-	move $a0, $t7
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	addi $sp, $sp, -8
+	move $a0, $t2
+	addi $sp, $sp, 0
+	jal print_tab
+	addi $sp, $sp, 0
+	addi $sp, $sp, 8
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $ra, 0($fp)
+	lw $fp, 4($fp)
+	addi $sp, $sp, 8
+	jr $ra
+make_tab:
+	sw $fp, -4($sp)
+	sw $ra, -8($sp)
+	addi $sp, $sp, -8
+	move $fp, $sp
+	addi $sp, $sp, -4
+	move $t2, $a0
+#_make_tab_0
+	li $a0, 10
 	jal _new_array_
 	move $t7, $v0
-#_main_6
+#_make_tab_1
 	move $t3, $t7
-#_main_7
+#_make_tab_2
 	li $t0, 0
 	move $t4, $t0
-#_main_8
-	b _label_main_5
-#_label_main_6
-_label_main_6:
-#_main_10
+#_make_tab_3
+	b _label_make_tab_1
+#_label_make_tab_2
+_label_make_tab_2:
+#_make_tab_5
 	move $a0, $t2
 	jal _new_array_
 	move $t6, $v0
-#_main_11
+#_make_tab_6
 	move $a0, $t4
 	move $a1, $t3
 	jal _check_array_bounds
@@ -54,14 +74,14 @@ _label_main_6:
 	move $a1, $t4
 	move $a2, $t6
 	jal _store_in_array
-#_main_12
+#_make_tab_7
 	li $t0, 0
 	move $t5, $t0
-#_main_13
-	b _label_main_7
-#_label_main_8
-_label_main_8:
-#_main_15
+#_make_tab_8
+	b _label_make_tab_3
+#_label_make_tab_4
+_label_make_tab_4:
+#_make_tab_10
 	move $a0, $t4
 	move $a1, $t3
 	jal _check_array_bounds
@@ -69,12 +89,12 @@ _label_main_8:
 	move $a1, $t4
 	jal _load_array_elt
 	move $t7, $v0
-#_main_16
+#_make_tab_11
 	add $t6, $t4, $t5
-#_main_17
+#_make_tab_12
 	li $t1, 49
 	add $t6, $t6, $t1
-#_main_18
+#_make_tab_13
 	move $a0, $t5
 	move $a1, $t7
 	jal _check_array_bounds
@@ -82,14 +102,14 @@ _label_main_8:
 	move $a1, $t5
 	move $a2, $t6
 	jal _store_in_array
-#_main_19
+#_make_tab_14
 	li $t1, 1
 	add $t7, $t5, $t1
-#_main_20
+#_make_tab_15
 	move $t5, $t7
-#_label_main_7
-_label_main_7:
-#_main_22
+#_label_make_tab_3
+_label_make_tab_3:
+#_make_tab_17
 	move $a0, $t4
 	move $a1, $t3
 	jal _check_array_bounds
@@ -97,115 +117,129 @@ _label_main_7:
 	move $a1, $t4
 	jal _load_array_elt
 	move $t6, $v0
-#_main_23
+#_make_tab_18
 	move $a0, $t6
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
 	move $t6, $v0
-#_main_24
+#_make_tab_19
 	slt $t7, $t5, $t6
-#_main_25
-	bnez $t7, _label_main_8
-#_main_26
+#_make_tab_20
+	bnez $t7, _label_make_tab_4
+#_make_tab_21
 	li $t1, 1
 	add $t7, $t4, $t1
-#_main_27
+#_make_tab_22
 	move $t4, $t7
-#_label_main_5
-_label_main_5:
-#_main_29
+#_label_make_tab_1
+_label_make_tab_1:
+#_make_tab_24
 	move $a0, $t3
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
 	move $t6, $v0
-#_main_30
+#_make_tab_25
 	slt $t7, $t4, $t6
-#_main_31
-	bnez $t7, _label_main_6
-#_main_32
+#_make_tab_26
+	bnez $t7, _label_make_tab_2
+#_make_tab_27
+	sw $t3, -4($fp)
+	lw $v0, -4($fp)
+	lw $ra, 0($fp)
+	lw $fp, 4($fp)
+	addi $sp, $sp, 12
+	jr $ra
+print_tab:
+	sw $fp, -4($sp)
+	sw $ra, -8($sp)
+	addi $sp, $sp, -8
+	move $fp, $sp
+	addi $sp, $sp, 0
+	move $t2, $a0
+#_print_tab_0
+	li $t0, 0
+	move $t3, $t0
+#_print_tab_1
+	b _label_print_tab_1
+#_label_print_tab_2
+_label_print_tab_2:
+#_print_tab_3
 	li $t0, 0
 	move $t4, $t0
-#_main_33
-	b _label_main_1
-#_label_main_2
-_label_main_2:
-#_main_35
-	li $t0, 0
-	move $t5, $t0
-#_main_36
-	b _label_main_3
-#_label_main_4
-_label_main_4:
-#_main_38
-	move $a0, $t4
-	move $a1, $t3
-	jal _check_array_bounds
+#_print_tab_4
+	b _label_print_tab_3
+#_label_print_tab_4
+_label_print_tab_4:
+#_print_tab_6
 	move $a0, $t3
+	move $a1, $t2
+	jal _check_array_bounds
+	move $a0, $t2
+	move $a1, $t3
+	jal _load_array_elt
+	move $t5, $v0
+#_print_tab_7
+	move $a0, $t4
+	move $a1, $t5
+	jal _check_array_bounds
+	move $a0, $t5
 	move $a1, $t4
 	jal _load_array_elt
-	move $t7, $v0
-#_main_39
+	move $t5, $v0
+#_print_tab_8
 	move $a0, $t5
-	move $a1, $t7
-	jal _check_array_bounds
-	move $a0, $t7
-	move $a1, $t5
-	jal _load_array_elt
-	move $t7, $v0
-#_main_40
-	move $a0, $t7
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_main_41
+#_print_tab_9
 	li $t1, 1
-	add $t7, $t5, $t1
-#_main_42
-	move $t5, $t7
-#_label_main_3
-_label_main_3:
-#_main_44
-	move $a0, $t4
-	move $a1, $t3
-	jal _check_array_bounds
+	add $t5, $t4, $t1
+#_print_tab_10
+	move $t4, $t5
+#_label_print_tab_3
+_label_print_tab_3:
+#_print_tab_12
 	move $a0, $t3
-	move $a1, $t4
+	move $a1, $t2
+	jal _check_array_bounds
+	move $a0, $t2
+	move $a1, $t3
 	jal _load_array_elt
-	move $t6, $v0
-#_main_45
-	move $a0, $t6
+	move $t5, $v0
+#_print_tab_13
+	move $a0, $t5
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
-	move $t6, $v0
-#_main_46
-	slt $t7, $t5, $t6
-#_main_47
-	bnez $t7, _label_main_4
-#_main_48
+	move $t5, $v0
+#_print_tab_14
+	slt $t5, $t4, $t5
+#_print_tab_15
+	bnez $t5, _label_print_tab_4
+#_print_tab_16
 	li $a0, 10
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-#_main_49
+#_print_tab_17
 	li $t1, 1
-	add $t7, $t4, $t1
-#_main_50
-	move $t4, $t7
-#_label_main_1
-_label_main_1:
-#_main_52
-	move $a0, $t3
+	add $t5, $t3, $t1
+#_print_tab_18
+	move $t3, $t5
+#_label_print_tab_1
+_label_print_tab_1:
+#_print_tab_20
+	move $a0, $t2
 	addi $sp, $sp, 0
 	jal arr_length
 	addi $sp, $sp, 0
-	move $t6, $v0
-#_main_53
-	slt $t7, $t4, $t6
-#_main_54
-	bnez $t7, _label_main_2
+	move $t5, $v0
+#_print_tab_21
+	slt $t5, $t3, $t5
+#_print_tab_22
+	bnez $t5, _label_print_tab_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8

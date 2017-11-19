@@ -89,7 +89,7 @@ play([][]boolean cylinder, integer width, integer height) (
       if cylinder[h][w] then (
         print(35); print(35);
       ) else (
-	print(32); print(32);
+	      print(32); print(32);
       );
       w := w - 1;
     );

@@ -34,6 +34,8 @@ let allocate_prog reg_flag prog =
               end
             | Return -> current_offset := !current_offset - 4;
               T.Stack (!current_offset)*)
+              Return -> current_offset := !current_offset - 4;
+              T.Stack (!current_offset)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in
               if elt <= 7 then
                 T.Reg (Printf.sprintf "$t%d" (elt + 2))

@@ -1,9 +1,17 @@
 main(integer x) (
   var [][]integer tab;
+
+  tab := make_tab(x);
+
+  print_tab(tab);
+)
+
+[][]integer make_tab(integer x) (
+  var [][]integer tab;
   var integer j;
   var integer i;
 
-  tab := [5 + 1 + 1 + 1 + 1 + 1][]integer;
+  tab := [10][]integer;
 
   for (j := 0; j < arr_length(tab); j++) (
     tab[j] := [x]integer;
@@ -12,6 +20,12 @@ main(integer x) (
     );
   );
 
+  result := tab;
+)
+
+print_tab([][]integer tab) (
+  var integer j;
+  var integer i;
   for(j:=0;j<arr_length(tab);j++) (
     for (i := 0; i < arr_length(tab[j]); i++ ) (
       print(tab[j][i]);

@@ -187,17 +187,17 @@ let generate_function fct =
       let reg = Printf.sprintf "$t%d" (i + 2) in
       acc := !acc @@ sw reg (-i * 4 - 4) sp
     done;
-    !acc @@ addi sp sp (-nb * 4)
+    !acc
+    @@ addi sp sp (-nb * 4)
 
   and load_t_reg nb =
     let acc = ref nop in
     for i=0 to (nb - 1) do
-      (*let reg = Printf.sprintf "$t%d" (nb - 1 - i + 2) in
-        acc := !acc @@ lw reg (i * 4) sp*)
       let reg = Printf.sprintf "$t%d" (i + 2) in
       acc := !acc @@ lw reg (-i * 4 - 4) sp
     done;
-    addi sp sp (nb * 4) @@ !acc
+    addi sp sp (nb * 4)
+    @@ !acc
   in
 
   let affect_formals = (* ok *)

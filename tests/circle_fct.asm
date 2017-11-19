@@ -11,12 +11,12 @@ line:
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, 0
+	addi $sp, $sp, -4
 	move $t4, $a0
 	move $t3, $a1
 #_line_0
 	li $t0, 0
-	move $t2, $t0
+	sw $t0, -4($fp)
 #_line_1
 	li $t0, 0
 	move $t5, $t0
@@ -25,9 +25,9 @@ line:
 #_label_line_2
 _label_line_2:
 #_line_4
-	slt $t6, $t5, $t4
+	slt $t2, $t5, $t4
 #_line_5
-	bnez $t6, _label_line_3
+	bnez $t2, _label_line_3
 #_line_6
 	li $a0, 35
 	addi $sp, $sp, 0
@@ -44,7 +44,7 @@ _label_line_3:
 	addi $sp, $sp, 0
 #_line_10
 	li $t0, 1
-	move $t2, $t0
+	sw $t0, -4($fp)
 #_label_line_4
 _label_line_4:
 #_line_12
@@ -54,27 +54,27 @@ _label_line_4:
 	addi $sp, $sp, 0
 #_line_13
 	li $t1, 1
-	add $t6, $t5, $t1
+	add $t2, $t5, $t1
 #_line_14
-	move $t5, $t6
+	move $t5, $t2
 #_label_line_1
 _label_line_1:
 #_line_16
 	li $t1, 1
-	add $t6, $t3, $t1
+	add $t2, $t3, $t1
 #_line_17
-	slt $t6, $t5, $t6
+	slt $t2, $t5, $t2
 #_line_18
-	bnez $t6, _label_line_2
+	bnez $t2, _label_line_2
 #_line_19
 	li $a0, 10
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
-	move $v0, $t2
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 8
+	addi $sp, $sp, 12
 	jr $ra
 loop:
 	sw $fp, -4($sp)
@@ -177,7 +177,7 @@ point:
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, 0
+	addi $sp, $sp, -4
 	move $t4, $a0
 	move $t2, $a1
 #_point_0
@@ -207,11 +207,11 @@ _label_point_1:
 #_point_11
 	bnez $t6, _label_point_2
 #_point_12
-	move $t2, $t3
-	move $v0, $t2
+	sw $t3, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 8
+	addi $sp, $sp, 12
 	jr $ra
 _new_array_:
 	move $t0, $a0
