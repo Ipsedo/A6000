@@ -16,7 +16,7 @@
 
 %token <string> IDENT
 %token BEGIN END
-%token O_BRACKETS C_BRACKETS O_BRACE C_BRACE
+%token O_BRACKETS C_BRACKETS
 %token SEMI
 %token COMMA
 

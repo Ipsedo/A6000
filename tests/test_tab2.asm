@@ -38,6 +38,33 @@ main:
 	addi $sp, $sp, 8
 	lw $t2, -4($sp)
 	lw $t3, -8($sp)
+#_main_3
+	li $a0, 1
+	jal _new_array_
+	move $t2, $v0
+#_main_4
+	move $t2, $t2
+#_main_5
+	li $a0, 0
+	move $a1, $t2
+	jal _check_array_bounds
+	move $a0, $t2
+	li $a1, 0
+	li $a2, 48
+	jal _store_in_array
+#_main_6
+	li $a0, 0
+	move $a1, $t2
+	jal _check_array_bounds
+	move $a0, $t2
+	li $a1, 0
+	jal _load_array_elt
+	move $t2, $v0
+#_main_7
+	move $a0, $t2
+	addi $sp, $sp, 0
+	jal print
+	addi $sp, $sp, 0
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
 	addi $sp, $sp, 8

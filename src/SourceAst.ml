@@ -44,7 +44,6 @@ and expression =
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
   | NewArray of expression * typ
-  (*| NewDirectArray of expression * expression list*)
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)

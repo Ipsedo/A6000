@@ -63,7 +63,7 @@ let typecheck_prog p =
   (* type_expression: expression -> typ *)
   and type_expression = function
     | NewArray(e, t) -> TypArray t
-    | Literal lit  ->  type_literal lit
+    | Literal lit  -> type_literal lit
     | Location loc -> type_location loc
     | Binop(op, e1, e2) ->
       let ty_op, ty_r = type_binop op in
@@ -74,27 +74,15 @@ let typecheck_prog p =
       begin
         let str, e = c in
         let infos = Symb_Tbl.find str p in
-        List.iter2
-          (fun (a, _) b -> comparetype a (type_expression b))
-          infos.formals e;
+        let _ = if str <> "arr_length" then
+            List.iter2
+              (fun (a, _) b -> comparetype a (type_expression b))
+              infos.formals e
+          else () in
         match infos.return with
           Some t -> t
         | None -> failwith "No return type for function"
       end
-        (*| NewDirectArray(e, es) ->
-      let typ_arr = ref TypInteger in
-      let rec aux l =
-        match l with
-          [] -> TypArray !typ_arr
-        | x::tl ->
-          List.iter
-            (fun elt -> comparetype (type_expression elt) (type_expression x))
-            tl;
-          typ_arr := (type_expression x);
-          aux tl
-          in aux es*)
-
-
 
   (* type_literal: literal -> typ *)
   and type_literal = function
@@ -105,12 +93,15 @@ let typecheck_prog p =
   and type_location = function
     | Identifier(id, pos) -> current_pos := pos;
       (Symb_Tbl.find id !symb_tbl).typ
-    | ArrayAccess(e1, e2, pos) -> (*current_pos := pos;
-      let rec aux t =
-        match t with
-          TypArray t -> aux t
-        | _ as a -> a
-                                   in aux (Symb_Tbl.find id !symb_tbl).typ*)
+    | ArrayAccess(e1, e2, pos) -> current_pos := pos;
+      comparetype TypInteger (type_expression e2);
+      (match e1 with
+       | Location i ->
+         (match type_location i with
+          | TypArray n -> n
+          | TypInteger -> TypArray TypInteger
+          | TypBoolean -> TypArray TypBoolean)
+       | _ -> failwith "loc[int] only (ArrayAccess)")
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)
   (* type_binop: binop -> typ * typ *)

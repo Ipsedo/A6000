@@ -1,9 +1,14 @@
 main(integer x) (
   var [][]integer tab;
+  var []integer tab2;
 
   tab := make_tab(x);
 
   print_tab(tab);
+
+  tab2 := [1]integer;
+  tab2[0] := 48;
+  print(tab2[0]);
 )
 
 [][]integer make_tab(integer x) (
