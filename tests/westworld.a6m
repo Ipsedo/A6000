@@ -30,7 +30,7 @@ main(integer x) (
     linetmp[pulse+length] := line[pulse];
     pulse := pulse + 1;
   );
-  result := line;
+  result := linetmp;
 )
 
 burn([][]boolean cylinder, []integer line,
