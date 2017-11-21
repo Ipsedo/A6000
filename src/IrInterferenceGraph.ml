@@ -41,8 +41,7 @@ let add_interference_formals id_list g =
    vivantes en sortie de cette instruction. *)
 let add_interferences p g lv_out_at_node = function
   | Binop(a, _, Identifier c1, Identifier c2)
-  | Load(a, (Identifier c1, Identifier c2))
-  | Store((Identifier c1, Identifier c2), Identifier a) ->
+  | Load(a, (Identifier c1, Identifier c2)) ->
     let tmp = VarSet.fold
         (fun elt acc -> Graph.add_edge acc a elt)
         lv_out_at_node g
