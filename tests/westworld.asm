@@ -11,353 +11,324 @@ bass:
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -12
+	addi $sp, $sp, -4
 #_bass_0
 	li $a0, 6
 	jal _new_array_
-	sw $v0, -4($fp)
+	move $t2, $v0
 #_bass_1
-	lw $t0, -4($fp)
-	sw $t0, -8($fp)
+	move $t2, $t2
 #_bass_2
 	li $a0, 0
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 0
 	li $a2, 0
 	jal _store_in_array
 #_bass_3
 	li $a0, 1
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 1
 	li $a2, 2
 	jal _store_in_array
 #_bass_4
 	li $a0, 2
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 2
 	li $a2, 7
 	jal _store_in_array
 #_bass_5
 	li $a0, 3
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 3
 	li $a2, 14
 	jal _store_in_array
 #_bass_6
 	li $a0, 4
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 4
 	li $a2, 15
 	jal _store_in_array
 #_bass_7
 	li $a0, 5
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 5
 	li $a2, 15
 	jal _store_in_array
 #_bass_8
-	lw $t0, -8($fp)
-	sw $t0, -12($fp)
-	lw $v0, -12($fp)
+	sw $t2, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 20
+	addi $sp, $sp, 12
 	jr $ra
 blank:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -32
-	sw $a0, -32($fp)
-	sw $a1, -12($fp)
+	addi $sp, $sp, -4
+	move $t2, $a0
+	move $t6, $a1
 #_blank_0
-	lw $a0, -12($fp)
+	move $a0, $t6
 	jal _new_array_
-	sw $v0, -4($fp)
+	move $t8, $v0
 #_blank_1
-	lw $t0, -4($fp)
-	sw $t0, -8($fp)
+	move $t7, $t8
 #_blank_2
 	li $t0, 0
-	sw $t0, -16($fp)
+	move $t5, $t0
 #_blank_3
 	b _label_blank_1
 #_label_blank_2
 _label_blank_2:
 #_blank_5
-	lw $a0, -32($fp)
+	move $a0, $t2
 	jal _new_array_
-	sw $v0, -4($fp)
+	move $t8, $v0
 #_blank_6
-	lw $t0, -4($fp)
-	sw $t0, -24($fp)
+	move $t3, $t8
 #_blank_7
 	li $t0, 0
-	sw $t0, -20($fp)
+	move $t4, $t0
 #_blank_8
 	b _label_blank_3
 #_label_blank_4
 _label_blank_4:
 #_blank_10
-	lw $a0, -20($fp)
-	lw $a1, -24($fp)
+	move $a0, $t4
+	move $a1, $t3
 	jal _check_array_bounds
-	lw $a0, -24($fp)
-	lw $a1, -20($fp)
+	move $a0, $t3
+	move $a1, $t4
 	li $a2, 0
 	jal _store_in_array
 #_blank_11
-	lw $t0, -20($fp)
 	li $t1, 1
-	add $t0, $t0, $t1
-	sw $t0, -4($fp)
+	add $t8, $t4, $t1
 #_blank_12
-	lw $t0, -4($fp)
-	sw $t0, -20($fp)
+	move $t4, $t8
 #_label_blank_3
 _label_blank_3:
 #_blank_14
-	lw $t0, -20($fp)
-	lw $t1, -32($fp)
-	slt $t0, $t0, $t1
-	sw $t0, -4($fp)
+	slt $t8, $t4, $t2
 #_blank_15
-	lw $t0, -4($fp)
-	bnez $t0, _label_blank_4
+	bnez $t8, _label_blank_4
 #_blank_16
-	lw $a0, -16($fp)
-	lw $a1, -8($fp)
+	move $a0, $t5
+	move $a1, $t7
 	jal _check_array_bounds
-	lw $a0, -8($fp)
-	lw $a1, -16($fp)
-	lw $a2, -24($fp)
+	move $a0, $t7
+	move $a1, $t5
+	move $a2, $t3
 	jal _store_in_array
 #_blank_17
-	lw $t0, -16($fp)
 	li $t1, 1
-	add $t0, $t0, $t1
-	sw $t0, -4($fp)
+	add $t8, $t5, $t1
 #_blank_18
-	lw $t0, -4($fp)
-	sw $t0, -16($fp)
+	move $t5, $t8
 #_label_blank_1
 _label_blank_1:
 #_blank_20
-	lw $t0, -16($fp)
-	lw $t1, -12($fp)
-	slt $t0, $t0, $t1
-	sw $t0, -4($fp)
+	slt $t8, $t5, $t6
 #_blank_21
-	lw $t0, -4($fp)
-	bnez $t0, _label_blank_2
+	bnez $t8, _label_blank_2
 #_blank_22
-	lw $t0, -8($fp)
-	sw $t0, -28($fp)
-	lw $v0, -28($fp)
+	sw $t7, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 40
+	addi $sp, $sp, 12
 	jr $ra
 burn:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -40
-	sw $a0, -12($fp)
-	sw $a1, -24($fp)
-	sw $a2, -20($fp)
-	sw $a3, -36($fp)
-	lw $t0, 12($fp)
-	sw $t0, -40($fp)
+	addi $sp, $sp, -8
+	move $t9, $a0
+	move $t6, $a1
+	move $t7, $a2
+	move $t3, $a3
+	lw $t2, 12($fp)
 #_burn_0
 	li $t0, 0
-	sw $t0, -32($fp)
+	move $t4, $t0
 #_burn_1
 	b _label_burn_1
 #_label_burn_2
 _label_burn_2:
 #_burn_3
 	li $t0, 0
-	sw $t0, -16($fp)
+	move $t8, $t0
 #_burn_4
-	lw $a0, -32($fp)
-	lw $a1, -24($fp)
+	move $a0, $t4
+	move $a1, $t6
 	jal _check_array_bounds
-	lw $a0, -24($fp)
-	lw $a1, -32($fp)
+	move $a0, $t6
+	move $a1, $t4
 	jal _load_array_elt
 	sw $v0, -4($fp)
 #_burn_5
 	lw $t0, -4($fp)
-	lw $t1, -40($fp)
-	add $t0, $t0, $t1
+	add $t0, $t0, $t2
 	sw $t0, -4($fp)
 #_burn_6
 	lw $t0, -4($fp)
-	sw $t0, -28($fp)
+	move $t5, $t0
 #_burn_7
 	b _label_burn_3
 #_label_burn_4
 _label_burn_4:
 #_burn_9
-	lw $t0, -32($fp)
-	lw $t1, -36($fp)
-	mul $t0, $t0, $t1
+	mul $t0, $t4, $t3
 	sw $t0, -8($fp)
 #_burn_10
 	lw $t0, -8($fp)
-	lw $t1, -16($fp)
-	add $t0, $t0, $t1
+	add $t0, $t0, $t8
 	sw $t0, -8($fp)
 #_burn_11
 	lw $a0, -8($fp)
-	lw $a1, -12($fp)
+	move $a1, $t9
 	jal _check_array_bounds
-	lw $a0, -12($fp)
+	move $a0, $t9
 	lw $a1, -8($fp)
 	jal _load_array_elt
 	sw $v0, -4($fp)
 #_burn_12
-	lw $a0, -28($fp)
+	move $a0, $t5
 	lw $a1, -4($fp)
 	jal _check_array_bounds
 	lw $a0, -4($fp)
-	lw $a1, -28($fp)
+	move $a1, $t5
 	li $a2, 1
 	jal _store_in_array
 #_burn_13
-	lw $t0, -16($fp)
 	li $t1, 1
-	add $t0, $t0, $t1
+	add $t0, $t8, $t1
 	sw $t0, -4($fp)
 #_burn_14
 	lw $t0, -4($fp)
-	sw $t0, -16($fp)
+	move $t8, $t0
 #_label_burn_3
 _label_burn_3:
 #_burn_16
-	lw $t0, -16($fp)
-	lw $t1, -36($fp)
-	slt $t0, $t0, $t1
+	slt $t0, $t8, $t3
 	sw $t0, -4($fp)
 #_burn_17
 	lw $t0, -4($fp)
 	bnez $t0, _label_burn_4
 #_burn_18
-	lw $t0, -32($fp)
 	li $t1, 1
-	add $t0, $t0, $t1
+	add $t0, $t4, $t1
 	sw $t0, -4($fp)
 #_burn_19
 	lw $t0, -4($fp)
-	sw $t0, -32($fp)
+	move $t4, $t0
 #_label_burn_1
 _label_burn_1:
 #_burn_21
-	lw $t0, -32($fp)
-	lw $t1, -20($fp)
-	slt $t0, $t0, $t1
+	slt $t0, $t4, $t7
 	sw $t0, -4($fp)
 #_burn_22
 	lw $t0, -4($fp)
 	bnez $t0, _label_burn_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 48
+	addi $sp, $sp, 16
 	jr $ra
 main:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -8
-	sw $a0, -8($fp)
-#_main_0
 	addi $sp, $sp, 0
+	move $t2, $a0
+#_main_0
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	addi $sp, $sp, -8
 	addi $sp, $sp, 0
 	jal westworld
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -4($fp)
+	addi $sp, $sp, 8
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	move $t2, $v0
 #_main_1
-	addi $sp, $sp, 0
-	lw $a0, -4($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	addi $sp, $sp, -8
+	move $a0, $t2
 	li $a1, 40
 	li $a2, 24
 	addi $sp, $sp, 0
 	jal play
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
+	addi $sp, $sp, 8
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 16
+	addi $sp, $sp, 8
 	jr $ra
 play:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -24
-	sw $a0, -8($fp)
-	sw $a1, -24($fp)
-	sw $a2, -16($fp)
+	addi $sp, $sp, 0
+	move $t5, $a0
+	move $t2, $a1
+	move $t3, $a2
 #_play_0
-	lw $t0, -16($fp)
 	li $t1, 1
-	sub $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sub $t6, $t3, $t1
 #_play_1
-	lw $t0, -4($fp)
-	sw $t0, -12($fp)
+	move $t4, $t6
 #_play_2
 	b _label_play_1
 #_label_play_2
 _label_play_2:
 #_play_4
-	lw $t0, -24($fp)
 	li $t1, 1
-	sub $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sub $t6, $t2, $t1
 #_play_5
-	lw $t0, -4($fp)
-	sw $t0, -20($fp)
+	move $t3, $t6
 #_play_6
 	b _label_play_3
 #_label_play_4
 _label_play_4:
 #_play_8
-	lw $a0, -12($fp)
-	lw $a1, -8($fp)
+	move $a0, $t4
+	move $a1, $t5
 	jal _check_array_bounds
-	lw $a0, -8($fp)
-	lw $a1, -12($fp)
+	move $a0, $t5
+	move $a1, $t4
 	jal _load_array_elt
-	sw $v0, -4($fp)
+	move $t6, $v0
 #_play_9
-	lw $a0, -20($fp)
-	lw $a1, -4($fp)
+	move $a0, $t3
+	move $a1, $t6
 	jal _check_array_bounds
-	lw $a0, -4($fp)
-	lw $a1, -20($fp)
+	move $a0, $t6
+	move $a1, $t3
 	jal _load_array_elt
-	sw $v0, -4($fp)
+	move $t6, $v0
 #_play_10
-	lw $t0, -4($fp)
-	bnez $t0, _label_play_5
+	bnez $t6, _label_play_5
 #_play_11
 	li $a0, 32
 	addi $sp, $sp, 0
@@ -385,286 +356,272 @@ _label_play_5:
 #_label_play_6
 _label_play_6:
 #_play_18
-	lw $t0, -20($fp)
 	li $t1, 1
-	sub $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sub $t6, $t3, $t1
 #_play_19
-	lw $t0, -4($fp)
-	sw $t0, -20($fp)
+	move $t3, $t6
 #_label_play_3
 _label_play_3:
 #_play_21
 	li $t0, 0
-	lw $t1, -20($fp)
-	sle $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sle $t6, $t0, $t3
 #_play_22
-	lw $t0, -4($fp)
-	bnez $t0, _label_play_4
+	bnez $t6, _label_play_4
 #_play_23
 	li $a0, 10
 	addi $sp, $sp, 0
 	jal print
 	addi $sp, $sp, 0
 #_play_24
-	lw $t0, -12($fp)
 	li $t1, 1
-	sub $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sub $t6, $t4, $t1
 #_play_25
-	lw $t0, -4($fp)
-	sw $t0, -12($fp)
+	move $t4, $t6
 #_label_play_1
 _label_play_1:
 #_play_27
 	li $t0, 0
-	lw $t1, -12($fp)
-	sle $t0, $t0, $t1
-	sw $t0, -4($fp)
+	sle $t6, $t0, $t4
 #_play_28
-	lw $t0, -4($fp)
-	bnez $t0, _label_play_2
+	bnez $t6, _label_play_2
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 32
+	addi $sp, $sp, 8
 	jr $ra
 repeat:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -32
-	sw $a0, -20($fp)
-	sw $a1, -16($fp)
+	addi $sp, $sp, -4
+	move $t4, $a0
+	move $t5, $a1
 #_repeat_0
 	li $t0, 2
-	lw $t1, -16($fp)
-	mul $t0, $t0, $t1
-	sw $t0, -4($fp)
+	mul $t6, $t0, $t5
 #_repeat_1
-	lw $a0, -4($fp)
+	move $a0, $t6
 	jal _new_array_
-	sw $v0, -4($fp)
+	move $t6, $v0
 #_repeat_2
-	lw $t0, -4($fp)
-	sw $t0, -24($fp)
+	move $t3, $t6
 #_repeat_3
 	li $t0, 0
-	sw $t0, -28($fp)
+	move $t2, $t0
 #_repeat_4
 	b _label_repeat_1
 #_label_repeat_2
 _label_repeat_2:
 #_repeat_6
-	lw $a0, -28($fp)
-	lw $a1, -20($fp)
+	move $a0, $t2
+	move $a1, $t4
 	jal _check_array_bounds
-	lw $a0, -20($fp)
-	lw $a1, -28($fp)
+	move $a0, $t4
+	move $a1, $t2
 	jal _load_array_elt
-	sw $v0, -12($fp)
+	move $t6, $v0
 #_repeat_7
-	lw $a0, -28($fp)
-	lw $a1, -24($fp)
+	move $a0, $t2
+	move $a1, $t3
 	jal _check_array_bounds
-	lw $a0, -24($fp)
-	lw $a1, -28($fp)
-	lw $a2, -12($fp)
+	move $a0, $t3
+	move $a1, $t2
+	move $a2, $t6
 	jal _store_in_array
 #_repeat_8
-	lw $t0, -28($fp)
-	lw $t1, -16($fp)
-	add $t0, $t0, $t1
-	sw $t0, -8($fp)
+	add $t7, $t2, $t5
 #_repeat_9
-	lw $a0, -28($fp)
-	lw $a1, -20($fp)
+	move $a0, $t2
+	move $a1, $t4
 	jal _check_array_bounds
-	lw $a0, -20($fp)
-	lw $a1, -28($fp)
+	move $a0, $t4
+	move $a1, $t2
 	jal _load_array_elt
-	sw $v0, -12($fp)
+	move $t6, $v0
 #_repeat_10
-	lw $a0, -8($fp)
-	lw $a1, -24($fp)
+	move $a0, $t7
+	move $a1, $t3
 	jal _check_array_bounds
-	lw $a0, -24($fp)
-	lw $a1, -8($fp)
-	lw $a2, -12($fp)
+	move $a0, $t3
+	move $a1, $t7
+	move $a2, $t6
 	jal _store_in_array
 #_repeat_11
-	lw $t0, -28($fp)
 	li $t1, 1
-	add $t0, $t0, $t1
-	sw $t0, -4($fp)
+	add $t6, $t2, $t1
 #_repeat_12
-	lw $t0, -4($fp)
-	sw $t0, -28($fp)
+	move $t2, $t6
 #_label_repeat_1
 _label_repeat_1:
 #_repeat_14
-	lw $t0, -28($fp)
-	lw $t1, -16($fp)
-	slt $t0, $t0, $t1
-	sw $t0, -4($fp)
+	slt $t6, $t2, $t5
 #_repeat_15
-	lw $t0, -4($fp)
-	bnez $t0, _label_repeat_2
+	bnez $t6, _label_repeat_2
 #_repeat_16
-	lw $t0, -24($fp)
-	sw $t0, -32($fp)
-	lw $v0, -32($fp)
+	sw $t3, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 40
+	addi $sp, $sp, 12
 	jr $ra
 theme:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -12
+	addi $sp, $sp, -4
 #_theme_0
 	li $a0, 12
 	jal _new_array_
-	sw $v0, -4($fp)
+	move $t2, $v0
 #_theme_1
-	lw $t0, -4($fp)
-	sw $t0, -8($fp)
+	move $t2, $t2
 #_theme_2
 	li $a0, 0
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 0
 	li $a2, 14
 	jal _store_in_array
 #_theme_3
 	li $a0, 1
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 1
 	li $a2, 14
 	jal _store_in_array
 #_theme_4
 	li $a0, 2
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 2
 	li $a2, 15
 	jal _store_in_array
 #_theme_5
 	li $a0, 3
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 3
 	li $a2, 14
 	jal _store_in_array
 #_theme_6
 	li $a0, 4
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 4
 	li $a2, 14
 	jal _store_in_array
 #_theme_7
 	li $a0, 5
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 5
 	li $a2, 15
 	jal _store_in_array
 #_theme_8
 	li $a0, 6
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 6
 	li $a2, 14
 	jal _store_in_array
 #_theme_9
 	li $a0, 7
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 7
 	li $a2, 12
 	jal _store_in_array
 #_theme_10
 	li $a0, 8
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 8
 	li $a2, 10
 	jal _store_in_array
 #_theme_11
 	li $a0, 9
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 9
 	li $a2, 10
 	jal _store_in_array
 #_theme_12
 	li $a0, 10
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 10
 	li $a2, 10
 	jal _store_in_array
 #_theme_13
 	li $a0, 11
-	lw $a1, -8($fp)
+	move $a1, $t2
 	jal _check_array_bounds
-	lw $a0, -8($fp)
+	move $a0, $t2
 	li $a1, 11
 	li $a2, 10
 	jal _store_in_array
 #_theme_14
-	lw $t0, -8($fp)
-	sw $t0, -12($fp)
-	lw $v0, -12($fp)
+	sw $t2, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 20
+	addi $sp, $sp, 12
 	jr $ra
 westworld:
 	sw $fp, -4($sp)
 	sw $ra, -8($sp)
 	addi $sp, $sp, -8
 	move $fp, $sp
-	addi $sp, $sp, -16
+	addi $sp, $sp, -4
 #_westworld_0
-	addi $sp, $sp, 0
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
 	li $a0, 40
 	li $a1, 24
 	addi $sp, $sp, 0
 	jal blank
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -4($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t2, $v0
 #_westworld_1
-	lw $t0, -4($fp)
-	sw $t0, -12($fp)
+	move $t2, $t2
 #_westworld_2
-	addi $sp, $sp, 0
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
 	addi $sp, $sp, 0
 	jal theme
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -8($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t3, $v0
 #_westworld_3
-	addi $sp, $sp, 0
-	lw $a0, -12($fp)
-	lw $a1, -8($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
+	move $a0, $t2
+	move $a1, $t3
 	li $a2, 12
 	li $a3, 2
 	li $t0, 12
@@ -672,18 +629,30 @@ westworld:
 	addi $sp, $sp, -4
 	jal burn
 	addi $sp, $sp, 4
-	addi $sp, $sp, 0
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
 #_westworld_4
-	addi $sp, $sp, 0
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
 	addi $sp, $sp, 0
 	jal theme
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -8($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t3, $v0
 #_westworld_5
-	addi $sp, $sp, 0
-	lw $a0, -12($fp)
-	lw $a1, -8($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
+	move $a0, $t2
+	move $a1, $t3
 	li $a2, 12
 	li $a3, 2
 	li $t0, 24
@@ -691,36 +660,60 @@ westworld:
 	addi $sp, $sp, -4
 	jal burn
 	addi $sp, $sp, 4
-	addi $sp, $sp, 0
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
 #_westworld_6
-	addi $sp, $sp, 0
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
 	addi $sp, $sp, 0
 	jal bass
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -8($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t3, $v0
 #_westworld_7
-	addi $sp, $sp, 0
-	lw $a0, -8($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
+	move $a0, $t3
 	li $a1, 6
 	addi $sp, $sp, 0
 	jal repeat
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -8($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t3, $v0
 #_westworld_8
-	addi $sp, $sp, 0
-	lw $a0, -8($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
+	move $a0, $t3
 	li $a1, 12
 	addi $sp, $sp, 0
 	jal repeat
 	addi $sp, $sp, 0
-	addi $sp, $sp, 0
-	sw $v0, -8($fp)
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
+	move $t3, $v0
 #_westworld_9
-	addi $sp, $sp, 0
-	lw $a0, -12($fp)
-	lw $a1, -8($fp)
+	sw $t2, -4($sp)
+	sw $t3, -8($sp)
+	sw $t4, -12($sp)
+	addi $sp, $sp, -12
+	move $a0, $t2
+	move $a1, $t3
 	li $a2, 24
 	li $a3, 1
 	li $t0, 0
@@ -728,14 +721,16 @@ westworld:
 	addi $sp, $sp, -4
 	jal burn
 	addi $sp, $sp, 4
-	addi $sp, $sp, 0
+	addi $sp, $sp, 12
+	lw $t2, -4($sp)
+	lw $t3, -8($sp)
+	lw $t4, -12($sp)
 #_westworld_10
-	lw $t0, -12($fp)
-	sw $t0, -16($fp)
-	lw $v0, -16($fp)
+	sw $t2, -4($fp)
+	lw $v0, -4($fp)
 	lw $ra, 0($fp)
 	lw $fp, 4($fp)
-	addi $sp, $sp, 24
+	addi $sp, $sp, 12
 	jr $ra
 _new_array_:
 	move $t0, $a0

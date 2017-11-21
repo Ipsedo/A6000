@@ -2,6 +2,7 @@ open SourceAst
 
 (* Rapports d'erreurs *)
 exception Type_error of string
+exception InvalidArray of string
 
 let current_pos = ref Lexing.dummy_pos
 
@@ -21,6 +22,9 @@ let raise_type_exception t1 t2 = let needed = string_of_typ t1 in
       (start_p.pos_cnum - start_p.pos_bol)
   in
   raise (Type_error msg)
+
+let raise_invalid_array_excepion msg =
+  raise (InvalidArray msg)
 
 (* comparetype: typ -> typ -> unit
    Lève une exception si les types diffèrent. *)
@@ -83,6 +87,8 @@ let typecheck_prog p =
           Some t -> t
         | None -> failwith "No return type for function"
       end
+      (*| Literal lit  -> type_literal lit
+        | Location loc -> type_location loc*)
 
   (* type_literal: literal -> typ *)
   and type_literal = function
@@ -95,13 +101,16 @@ let typecheck_prog p =
       (Symb_Tbl.find id !symb_tbl).typ
     | ArrayAccess(e1, e2, pos) -> current_pos := pos;
       comparetype TypInteger (type_expression e2);
-      (match e1 with
-       | Location i ->
-         (match type_location i with
-          | TypArray n -> n
-          | TypInteger -> TypArray TypInteger
-          | TypBoolean -> TypArray TypBoolean)
-       | _ -> failwith "loc[int] only (ArrayAccess)")
+      let loc =
+        match e1 with
+          Location i -> i
+        | _ -> raise_invalid_array_excepion
+                 "Array expression must be : location (of exression)+ !"
+      in
+      match type_location loc with
+        TypArray t -> t
+      | _ -> raise_invalid_array_excepion "Location is not an array !"
+
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)
   (* type_binop: binop -> typ * typ *)
