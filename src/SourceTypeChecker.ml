@@ -66,7 +66,9 @@ let typecheck_prog p =
      expressions et renvoient leur type. *)
   (* type_expression: expression -> typ *)
   and type_expression = function
-    | NewArray(e, t) -> TypArray t
+    | NewArray(e, t) ->
+      comparetype TypInteger (type_expression e);
+      TypArray t
     | Literal lit  -> type_literal lit
     | Location loc -> type_location loc
     | Binop(op, e1, e2) ->
@@ -82,13 +84,23 @@ let typecheck_prog p =
             List.iter2
               (fun (a, _) b -> comparetype a (type_expression b))
               infos.formals e
-          else () in
+          else
+            (* pseudo polymorphisme *)
+            match e with
+            | a::[] ->
+              begin
+                match type_expression a with
+                  TypArray _ -> ()
+                | _ ->
+                  let msg = "Location is not an array !" in
+                raise_invalid_array_excepion msg
+              end
+            | _ -> failwith "No / Too much argument(s) for arr_length !"
+        in
         match infos.return with
           Some t -> t
         | None -> failwith "No return type for function"
       end
-      (*| Literal lit  -> type_literal lit
-        | Location loc -> type_location loc*)
 
   (* type_literal: literal -> typ *)
   and type_literal = function
@@ -104,12 +116,16 @@ let typecheck_prog p =
       let loc =
         match e1 with
           Location i -> i
-        | _ -> raise_invalid_array_excepion
-                 "Array expression must be : location (of exression)+ !"
+        | _ ->
+          let msg = "Array expression must be : location (of exression)+ !" in
+          raise_invalid_array_excepion msg
+
       in
       match type_location loc with
         TypArray t -> t
-      | _ -> raise_invalid_array_excepion "Location is not an array !"
+      | _ ->
+        let msg = "Location is not an array !" in
+        raise_invalid_array_excepion msg
 
   (* [type_binop] renvoie le type des opérandes et le type du résultat
      d'un opérateur binaire. *)

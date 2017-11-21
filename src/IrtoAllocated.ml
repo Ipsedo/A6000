@@ -16,24 +16,8 @@ let allocate_prog reg_flag prog =
           (fun key elt -> Printf.printf "%s %d\n" key elt)
           coloring;
 
-        (*let nb_formals = S.Symb_Tbl.fold
-            (fun id (info : S.identifier_info) acc ->
-               match info with
-                 Formal _ -> acc + 1
-               | _ -> acc)
-            p.locals 0
-          in*)
         let res = S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
-            match info with (*
-              | Formal n -> if n < 5 then
-                T.Reg (Printf.sprintf "$a%d" (n - 1))
-              else begin
-                let index_stack = n - 5 in
-                let real_index = ((nb_formals - 4) - index_stack) * 4 + 8 in
-                T.Stack(real_index)
-              end
-            | Return -> current_offset := !current_offset - 4;
-              T.Stack (!current_offset)*)
+            match info with
               Return -> current_offset := !current_offset - 4;
               T.Stack (!current_offset)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in

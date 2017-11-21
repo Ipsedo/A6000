@@ -129,7 +129,7 @@ let generate_function fct =
         @@ load_value ~$a1 arr
         @@ jal "_check_array_bounds"
       end
-      | _ -> failwith "tab pointer can't be a Literal"
+    | _ -> failwith "tab pointer can't be a Literal"
 
   (* proc & fun call stuff *)
 

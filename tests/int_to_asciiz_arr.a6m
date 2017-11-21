@@ -16,29 +16,14 @@
 )
 
 integer log10(integer v) (
-  if v >= 1000000 then (
-    result := 6;
-  ) else (
-    if v >= 100000 then (
-      result := 5;
-    ) else (
-      if v >= 10000 then (
-        result := 4;
-      ) else (
-        if v >= 1000 then (
-          result := 3;
-        ) else (
-          if v >= 100 then (
-            result := 2;
-          ) else (
-            if v >= 10 then (
-              result := 1;
-            ) else (
-              result := 0;
-          );
-        );
-      );
-    );
+  var integer i;
+  var integer tmp;
+
+  i := 1;
+  v /= 10;
+  while (v > 0) (
+    i++;
+    v /= 10;
   );
-  );
+  result := i;
 )

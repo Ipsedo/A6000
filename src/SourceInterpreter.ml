@@ -16,6 +16,7 @@ and eval_block env = function
 (* [eval_instruction: state -> instruction -> state] *)
 and eval_instruction env = function
   | Set(Identifier(id, _), e) -> State.add id (eval_expression env e) env
+  | Set(ArrayAccess(e1, e2, _), e) -> failwith "unimplemented store in array interpreteur"
   | While(c, b) as iw ->
     if eval_expression env c <> 0
     then let env = eval_block env b in
@@ -25,14 +26,12 @@ and eval_instruction env = function
     if eval_expression env c <> 0
     then eval_block env b1
     else eval_block env b2
-  | ProcCall(c) -> failwith "unimplemented proc interpreteur"
-  | _ -> failwith "unimplemented source interpreteur 1"
+  | ProcCall(c) -> failwith "unimplemented procedure interpreteur"
 
 (* [eval_expression: state -> expression -> int] *)
 and eval_expression env = function
   | Literal lit  -> eval_literal env lit
   | Location loc -> eval_location env loc
-  | FunCall(c) -> failwith "unimplemented fun interpreteur"
   | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
     let v2 = eval_expression env e2 in
     let op = match op with
@@ -50,7 +49,8 @@ and eval_expression env = function
       | Or   -> max
     in
     op v1 v2
-  | NewArray(_) (* | NewDirectArray(_) *) -> failwith "unimplemented new array interpreteur"
+  | FunCall(c) -> failwith "unimplemented fun interpreteur"
+  | NewArray(e, _) -> failwith "unimplemented new array interpreteur"
 
 and eval_bool b = if b then 1 else 0
 and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
