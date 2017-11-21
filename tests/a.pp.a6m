@@ -1,6 +1,0 @@
-main(integer x) (
-  print(x);
-  x := x + 1;
-  print(x);
-)
-
