@@ -2,3 +2,4 @@ _build/
 Main.native
 Main.byte
 *.asm
+*.pp.a6m
