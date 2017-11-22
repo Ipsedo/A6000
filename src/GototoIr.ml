@@ -52,7 +52,7 @@ let flatten_prog p =
     | S.ProcCall(c) -> let (str, args) = c in
       let tmp_cpt = ref 0 in
       (* On crée la liste de instruction et leur valeur associé
-        (pour les arguments) *)
+         (pour les arguments) *)
       let (es, vs) = List.fold_left
           (fun (ce_acc, ve_acc) expr ->
              let (ce, ve) = flatten_expression !tmp_cpt expr in
@@ -101,6 +101,28 @@ let flatten_prog p =
           ([], []) args in
       let id_tmp = new_tmp nb in
       es @ [ T.FunCall(id_tmp, str, vs) ], T.Identifier(id_tmp)
+    | NewDirectArray(e) ->
+      let tmp_cpt = ref (nb + 1) in
+      (* On évalue les sous expressions et leur valeur *)
+      let ces, ves = List.fold_left
+          (fun (cacc, vacc) expr ->
+             let ctmp, vtmp = flatten_expression !tmp_cpt expr in
+             incr tmp_cpt;
+             (cacc @ ctmp, vacc @ [vtmp]))
+          ([], []) e
+      in
+      let id_tmp = new_tmp nb in
+      (* On affecte chaque valeur d'expression à sa place dans le tableau *)
+      let length, sets = List.fold_left
+          (fun (index, acc) v ->
+             let id = T.Identifier id_tmp in
+             let off = T.Literal(Int(index)) in
+             (index + 1, T.Store((id, off), v)::acc))
+          (0, []) ves
+      in
+      let offset = T.Literal(Int(List.length e)) in
+      [ T.New(id_tmp, offset) ] @ ces @ sets,
+      T.Identifier(id_tmp)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)

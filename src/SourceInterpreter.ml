@@ -41,7 +41,7 @@ let rec eval_main p x =
       else eval_block env h b2
     | ProcCall(c) -> let str, e = c in
       if str = "print" then
-      (* Cas spécial pour la fonction print -> faire log10, string_of_int et arr_length *)
+        (* Cas spécial pour la fonction print -> faire log10, string_of_int et arr_length *)
         begin
           match e with
             e1::[] -> let h, res = eval_expression env heap e1 in
@@ -91,7 +91,7 @@ let rec eval_main p x =
       in
       h, op v1 v2
     | FunCall(c) ->
-    (* Même chose que pour ProcCall *)
+      (* Même chose que pour ProcCall *)
       let str, e = c in
       let h1, l = List.fold_left
           (fun (h, acc) elt -> let hnew, res = eval_expression env h elt in
@@ -99,14 +99,27 @@ let rec eval_main p x =
           (heap, []) e
       in
       let proc = Symb_Tbl.find str p in
-      let fct_state = Symb_Tbl.fold
-          (fun k a acc ->
-             match a.kind with
-               Formal n -> State.add k (List.nth l (n - 1)) acc
-             | _ -> acc)
-          proc.locals State.empty
+      (* On doit evaluer arr_length separement -> voir MipsMisc.ml *)
+      let fct_state, hnew = if str = "arr_length" then
+          let length =
+            match l with
+              a::[] -> Array.length (Heap.find (Int32.of_int a) h1)
+            | _ -> failwith "No arg for arr_length interpreteur !"
+          in
+          State.singleton "result" length, h1
+        else
+          begin
+            let fct_state = Symb_Tbl.fold
+                (fun k a acc ->
+                   match a.kind with
+                     Formal n -> State.add k (List.nth l (n - 1)) acc
+                   | _ -> acc)
+                proc.locals State.empty
+            in
+            eval_block fct_state h1 proc.code
+          end
       in
-      let fct_state, hnew = eval_block fct_state h1 proc.code in
+
       (* On récupère le resultat dans l'environnement de la fonction *)
       hnew, State.find "result" fct_state
     | NewArray(e, _) ->
@@ -127,11 +140,10 @@ let rec eval_main p x =
       heap_offset := !heap_offset + length;
       (* On ajoute les sous-éléments*)
       let h,_ = List.fold_left
-        (fun (acc, index) elt -> let hnew, v = eval_expression env acc elt in
-        Array.set arr index v;
-        (hnew, index + 1)) (heap, 0) e
+          (fun (acc, index) elt -> let hnew, v = eval_expression env acc elt in
+            Array.set arr index v;
+            (hnew, index + 1)) (heap, 0) e
       in
-      (* On ajoute le tableau avec comme clef l'@ courrante *)
       Heap.add (Int32.of_int addr) arr h, addr
 
   and eval_bool b = if b then 1 else 0

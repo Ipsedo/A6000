@@ -57,6 +57,7 @@ Parties ayant été faites et fonctionnelles :
 + **TP 6 - Tableaux**
   - _extentions :_
     - Vérification des bornes des tableaux
+    - Tableaux initialisés
 
 + **TP 7 - Sémantique et interprétation**
 
