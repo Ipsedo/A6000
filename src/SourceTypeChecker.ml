@@ -69,6 +69,16 @@ let typecheck_prog p =
     | NewArray(e, t) ->
       comparetype TypInteger (type_expression e);
       TypArray t
+    | NewDirectArray(e) ->
+      let aux l acc =
+        match l with
+          [] -> acc
+        | elt::tl -> let typ = type_expression elt in
+          List.fold_left
+            (fun a ex -> comparetype (type_expression ex) typ; typ)
+            acc e
+      in
+      TypArray (aux e TypInteger) (* default value *)
     | Literal lit  -> type_literal lit
     | Location loc -> type_location loc
     | Binop(op, e1, e2) ->
