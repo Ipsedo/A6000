@@ -48,6 +48,10 @@ rule token = parse
     { O_BRACKETS }
   | "]"
     { C_BRACKETS }
+  | "{"
+    { O_BRACE }
+  | "}"
+    { C_BRACE }
   | ";"
     { SEMI }
   | ","

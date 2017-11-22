@@ -120,6 +120,19 @@ let rec eval_main p x =
       heap_offset := addr + nb_elt;
       (* On ajoute le tableau avec comme clef l'@ courrante *)
       Heap.add (Int32.of_int addr) arr h, addr
+    | NewDirectArray(e) ->
+      let length = List.length e in
+      let arr = Array.make length 0 in
+      let addr = !heap_offset in
+      heap_offset := !heap_offset + length;
+      (* On ajoute les sous-éléments*)
+      let h,_ = List.fold_left
+        (fun (acc, index) elt -> let hnew, v = eval_expression env acc elt in
+        Array.set arr index v;
+        (hnew, index + 1)) (heap, 0) e
+      in
+      (* On ajoute le tableau avec comme clef l'@ courrante *)
+      Heap.add (Int32.of_int addr) arr h, addr
 
   and eval_bool b = if b then 1 else 0
   and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)

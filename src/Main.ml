@@ -70,7 +70,7 @@ let () =
     end
   in
   close_in c;
-  SourceTypeChecker.typecheck_prog p;
+  (*SourceTypeChecker.typecheck_prog p;*)
   if !interpret
   then let _ = SourceInterpreter.eval_main p !input in ()
   else begin

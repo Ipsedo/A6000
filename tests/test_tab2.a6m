@@ -9,6 +9,16 @@ main(integer x) (
   tab2 := [1]integer;
   tab2[0] := 48;
   print(tab2[0]);
+
+  tab := {
+    {48, 49, 50, 51},
+    {50, 51, 52, 53},
+    {51, 52, 53, 54},
+    {52, 53, 54, 55},
+    {53, 54, 55, 56}
+  };
+
+  print_tab(tab);
 )
 
 [][]integer make_tab(integer x) (

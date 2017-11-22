@@ -42,6 +42,7 @@ and expression =
   | Binop     of binop * expression * expression (* Opération binaire  *)
   | FunCall of call
   | NewArray of expression * typ
+  | NewDirectArray of expression list
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -124,6 +125,10 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
+  | NewDirectArray(e) -> sprintf "{%s}"
+    (List.fold_left
+      (fun acc elt -> sprintf "%s, %s" acc (print_expression elt))
+      "" e)
 
 let offset o = String.make (2*o) ' '
 
