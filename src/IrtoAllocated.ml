@@ -10,14 +10,16 @@ let allocate_prog reg_flag prog =
     then
       begin
         let g = IrInterferenceGraph.interference_graph p in
-        Printf.printf "%s\n" (Graph.dump g);
+        (*Printf.printf "%s\n" (Graph.dump g);*)
         let coloring = GraphColoring.colorize g in
-        GraphColoring.NodeMap.iter
+        (*GraphColoring.NodeMap.iter
           (fun key elt -> Printf.printf "%s %d\n" key elt)
-          coloring;
+          coloring;*)
 
         let res = S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
+              (* On affecte une valeur dans le stack pour result ->
+              résout pas mal de pb pour la coloration de graphe *)
               Return -> current_offset := !current_offset - 4;
               T.Stack (!current_offset)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in
@@ -42,7 +44,7 @@ let allocate_prog reg_flag prog =
 
   S.Symb_Tbl.fold
     (fun id info acc ->
-       Printf.printf "%s\n" id;
+       (*Printf.printf "%s\n" id;*)
        let n_tbl, offset = tbl info in
        T.Symb_Tbl.add id
          { T.formals = info.S.formals;

@@ -8,14 +8,10 @@ module Symb_Tbl = Map.Make(String)
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
-(*type prog = {
-  global : string Symb_Tbl.t;
-  fcts : function_info Symb_Tbl.t
-  }*)
 type prog = function_info Symb_Tbl.t
 and function_info = {
   return:  typ option;
-  formals: (typ * string) list;
+  formals: (typ * string) list; (* On en aura besoin pour l'affectation des formels *)
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
@@ -61,6 +57,7 @@ and binop =
   | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
   | And (* && *) | Or   (* || *)
 
+(* Fonction pour le parser *)
 let generate_formals_symb_tbl f_list =
   let index = ref 0 in
   List.fold_left

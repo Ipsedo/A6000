@@ -7,6 +7,7 @@ module T = UntypedAst (* Cible de la transformation  *)
 (* erase_identifier_info: S.identifier_info -> T.identifier_info *)
 let rec erase_identifier_info i = i.S.kind
 
+(* On enlève la position des location et literal -> on a déjà check les types *)
 and erase_location l = match l with
     S.Identifier (str, _) -> T.Identifier str
   | S.ArrayAccess(e1, e2, _) -> T.ArrayAccess(erase_expression e1, erase_expression e2)
@@ -58,19 +59,3 @@ let erase_prog p =
           T.code = erase_code infos.S.code }
         acc)
     p T.Symb_Tbl.empty
-
-
-
-
-
-(*let rec aux p acc = match p with
-  | [] -> acc
-  | (n,fct)::tl -> let locals =
-                     S.Symb_Tbl.fold
-                       (fun id info tbl ->
-                          T.Symb_Tbl.add id (erase_identifier_info info) tbl)
-                       fct.S.locals
-                       T.Symb_Tbl.empty
-    in
-    aux tl ((n,{ T.locals = locals; T.code = erase_code fct.S.code })::acc)
-  in aux p []*)

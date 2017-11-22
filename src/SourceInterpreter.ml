@@ -41,6 +41,7 @@ let rec eval_main p x =
       else eval_block env h b2
     | ProcCall(c) -> let str, e = c in
       if str = "print" then
+      (* Cas spécial pour la fonction print -> faire log10, string_of_int et arr_length *)
         begin
           match e with
             e1::[] -> let h, res = eval_expression env heap e1 in
@@ -49,11 +50,14 @@ let rec eval_main p x =
           | _ -> failwith "invalid args for print interpreteur"
         end
       else
+        (* On évalue les paramètres *)
         let h1, l = List.fold_left
             (fun (h, acc) elt -> let hnew, res = eval_expression env h elt in
               (hnew, acc@[res]))
             (heap, []) e
         in
+        (* Puis on récupère la fonction et on crée un nouvel environnement avec
+            avec les résultats pour le passage des paramètres *)
         let proc = Symb_Tbl.find str p in
         let proc_state = Symb_Tbl.fold
             (fun k a acc ->
@@ -86,7 +90,9 @@ let rec eval_main p x =
         | Or   -> max
       in
       h, op v1 v2
-    | FunCall(c) -> let str, e = c in
+    | FunCall(c) ->
+    (* Même chose que pour ProcCall *)
+      let str, e = c in
       let h1, l = List.fold_left
           (fun (h, acc) elt -> let hnew, res = eval_expression env h elt in
             (hnew, acc@[res]))
@@ -101,12 +107,18 @@ let rec eval_main p x =
           proc.locals State.empty
       in
       let fct_state, hnew = eval_block fct_state h1 proc.code in
+      (* On récupère le resultat dans l'environnement de la fonction *)
       hnew, State.find "result" fct_state
     | NewArray(e, _) ->
+      (* On évalue l'expression donnant le nombre d'élément du tableau à créer *)
       let h, nb_elt = eval_expression env heap e in
+      (* On crée un nouveau tableau pour la représentation du tas *)
       let arr = Array.make nb_elt 0 in
+      (* On récupère l'@ courrante du début du tableau *)
       let addr = !heap_offset in
+      (* On incrémente pour le prochain tableau *)
       heap_offset := addr + nb_elt;
+      (* On ajoute le tableau avec comme clef l'@ courrante *)
       Heap.add (Int32.of_int addr) arr h, addr
 
   and eval_bool b = if b then 1 else 0
@@ -119,8 +131,11 @@ let rec eval_main p x =
   and eval_location env heap = function
     | Identifier(id, _) -> heap, State.find id env
     | ArrayAccess(e1, e2, _) ->
+      (* On récupère le sous tableau / tableau courrant  *)
       let h, res1 = eval_expression env heap e1 in
+      (* On récupère l'indice du tableau *)
       let h, res2 = eval_expression env h e2 in
+      (* On récupère le tableau dans la représentation du tas *)
       let arr = Heap.find (Int32.of_int res1) h in
       h, arr.(res2)
   in

@@ -8,10 +8,6 @@ let flatten_prog p =
 
   (* On extrait la table des symboles de notre programme, qui sera étendue
      avec les registres virtuels créés à la volée. *)
-  (*let rec aux p acc =
-    match p with
-    | [] -> acc
-    | (str, fct)::tl ->*)
   let symb_tbl = ref S.Symb_Tbl.empty in
 
   (* Ajout à la table des symboles d'un nouveau registre virtuel *)
@@ -45,13 +41,18 @@ let flatten_prog p =
       let ce, ve = flatten_expression 0 e in
       ce @ [ T.Value(id, ve) ]
     | S.Set(ArrayAccess(e1, e2), e3) ->
+      (* On récupère la location du tableau / sous tableau *)
       let ce1, ve1 = flatten_expression 0 e1 in
+      (* On calcule l'index *)
       let ce2, ve2 = flatten_expression 1 e2 in
+      (* On calcule la valeur à affecter *)
       let ce3, ve3 = flatten_expression 2 e3 in
       ce1 @ ce2 @ ce3 @ [ T.Store((ve1, ve2), ve3) ]
     | S.Comment(str) -> [ T.Comment(str) ]
     | S.ProcCall(c) -> let (str, args) = c in
       let tmp_cpt = ref 0 in
+      (* On crée la liste de instruction et leur valeur associé
+        (pour les arguments) *)
       let (es, vs) = List.fold_left
           (fun (ce_acc, ve_acc) expr ->
              let (ce, ve) = flatten_expression !tmp_cpt expr in
@@ -77,10 +78,9 @@ let flatten_prog p =
       let id_tmp = new_tmp nb in
       ce @ [ T.New(id_tmp, ve) ], T.Identifier(id_tmp)
     | Location(ArrayAccess(e1, e2)) ->
-      (*let ce, ve = flatten_expression nb e in
-        let id_tmp = new_tmp nb in
-        ce @ [ T.Load(id_tmp, (T.Identifier str, ve)) ], T.Identifier(id_tmp)*)
+      (* On recupère l'adresse du tableau / sous tableau *)
       let ce1, ve1 = flatten_expression nb e1 in
+      (* On calcule l'index *)
       let ce2, ve2 = flatten_expression (nb + 1) e2 in
       let id_tmp = new_tmp nb in
       ce1 @ ce2 @ [ T.Load(id_tmp, (ve1, ve2)) ], T.Identifier(id_tmp)
@@ -101,23 +101,6 @@ let flatten_prog p =
           ([], []) args in
       let id_tmp = new_tmp nb in
       es @ [ T.FunCall(id_tmp, str, vs) ], T.Identifier(id_tmp)
-      (*| NewDirectArray(e, es) ->
-        let ce, ve = flatten_expression nb e in
-        let id_tmp = new_tmp nb in
-        let tmp_nb = ref nb in
-        let es, vs = List.fold_left
-          (fun (es_acc, vs_acc) elt ->
-             incr tmp_nb;
-             let tmp_ce, tmp_ve = flatten_expression !tmp_nb elt in
-             (es_acc @ tmp_ce, vs_acc @ [tmp_ve]))
-          ([], []) es
-        in
-        let _, sets = List.fold_left
-          (fun (index, acc) v ->
-             (index + 1, T.Store((T.Identifier id_tmp, T.Literal(Int(index))), v)::acc))
-          (0, []) vs
-        in
-          ce @ [ T.New(id_tmp, ve) ] @ es @ sets, T.Identifier(id_tmp)*)
   in
 
   (* label_instruction: T.instruction -> T.label * T.instruction *)

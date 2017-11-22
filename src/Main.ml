@@ -83,7 +83,7 @@ let () =
       then IrDeadCodeElim.dce p
       else p
     in
-    Printf.printf "%s" (IrAst.print_prog p);
+    (*Printf.printf "%s" (IrAst.print_prog p);*)
     let p = IrtoAllocated.allocate_prog !reg_allocation p in
     let asm = AllocatedtoMips.generate_prog p in
     let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in

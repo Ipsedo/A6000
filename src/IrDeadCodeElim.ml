@@ -22,6 +22,7 @@ let dce_step p =
   *)
   let var_updated : IrAst.instruction -> VarSet.t = function
     | Binop(id, _, _, _) | Value(id, _) | FunCall(id, _, _) ->
+      (* On evite de supprimer les affectation du resultat *)
       if id <> "result" then VarSet.singleton id else VarSet.empty
     | _ -> VarSet.empty
   in

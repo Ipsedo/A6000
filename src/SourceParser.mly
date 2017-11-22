@@ -2,16 +2,6 @@
 
   open SourceAst
 
-  (*let generate_formals_symb_tbl f_list =
-    let index = ref 0 in
-    List.fold_left
-      (fun acc (t, ident) -> incr index;
-      Symb_Tbl.add
-        ident
-        {typ=t; kind=Formal(!index)}
-        acc)
-      Symb_Tbl.empty f_list*)
-
 %}
 
 %token <string> IDENT
@@ -60,7 +50,8 @@
 prog:
     EOF
     {
-  (* On ajoute des fausses fonctions -> besoin pour typechecker et Ir-stuff *)
+  (* On ajoute des fausses fonctions -> besoin pour typechecker et Ir-stuff,
+      on les remplacera dans AllocatedtoMips *)
       let print =
         {
           return = None;
@@ -103,24 +94,6 @@ prog:
       Symb_Tbl.add id infos m
     }
 ;
-
-(*fun_set:
-EOF
-{
-  Symb_Tbl.singleton "print"
-    {
-      return = None;
-      formals = (TypInteger, "x")::[];
-      locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
-      code = []
-    }
-}
-| fct=fun_delc; m=prog; EOF
-  {
-    let (id, infos) = fct in
-    Symb_Tbl.add id infos m
-  }
-;*)
 
 var_decls:
  (* empty *) { Symb_Tbl.empty }
@@ -209,58 +182,7 @@ expression:
   | lit=literal                                  { Literal(lit)     }
   | e1=expression; b=binop; e2=expression        { Binop(b, e1, e2) }
   | O_BRACKETS; e=expression; C_BRACKETS; t=typ  { NewArray(e, t)   }
-  (*| O_BRACE; es=separated_list(SEMI, expression); C_BRACE
-    { NewDirectArray(Literal(Int(List.length es, $startpos(es))), es)}*)
   ;
-
-(*expression:
-    e1=expression; PLUS; s1=sub { Binop(Add, e1, s1) }
-  | s=sub { s }
-  ;
-
-sub:
-    s1=sub; SUB; t1=terme { Binop(Sub, s1, t1) }
-  | t=terme { t }
-  ;
-
-terme:
-   t1=terme; MULT; d1=div { Binop(Mult, t1, d1) }
-  | d=div { d }
-  ;
-
-div:
-    d1=div; DIV; c1=compare { Binop(Div, d1, c1) }
-  | c=compare { c }
-  ;
-
-%inline compare_op:
- LT   { Lt   }
-| LE   { Le   }
-| MT   { Mt   }
-| ME   { Me   }
-| EQ   { Eq   }
-| NEQ  { Neq  }
-;
-
-compare:
-    c1=compare; b=compare_op; b1=bool_compare { Binop(b, c1, b1) }
-  | b=bool_compare { b }
-  ;
-
-%inline bool_op:
-  AND  { And  }
-| OR   { Or   }
-
-bool_compare:
-    b1=bool_compare; b=bool_op; d1=direct { Binop(b, b1, d1) }
-  | d=direct { d }
-
-direct:
-    loc=location { Location(loc) }
-  | lit=literal  { Literal(lit)  }
-  | c=call       { FunCall(c)    }
-  | BEGIN; e=expression; END { e }
-  ;*)
 
 %inline binop:
   MULT { Mult }
