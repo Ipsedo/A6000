@@ -71,7 +71,13 @@ formels n'a donc pas été traité dans IrtoAllocated mais dans AllocatedtoMips
 du travail de la coloration de graphe pour les formels.
 
 + Diverses fonction on été rajouté de manière statique pour chaque programmes
-généré _via_ ce compilateur telle que :
-  - Fonction pour les tableaux
-    'integer arr_length( []τ )' (visible pour l'utilisateur)
-    '_\_new\_array\__'
+généré _via_ ce compilateur telle que (voir MipsMisc.ml) :
+  - Fonction pour les tableaux :
+    - `integer arr_length( []τ )` (visible pour l'utilisateur)
+    - `\_new\_array\_`            (non visible pour l'utilisateur)
+    - `\_check\_array\_bounds`    (non visible pour l'utilisateur)
+    - `_load_array_elt`           (non visible pour l'utilisateur)
+    - `_store_in_array`           (non visible pour l'utilisateur)
+  - Fonctions conversion entier en asciiz (visibles pour l'utilisateur) :
+    - `integer log10( n )`          
+    - `[]integer string_of_int( n )`
