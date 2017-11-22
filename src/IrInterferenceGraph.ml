@@ -1,6 +1,7 @@
 open IrAst
 open IrLiveness
 
+(* Créer un graphe complet avec la liste d'arguments passée en argument *)
 let add_interference_args v_list g =
   let add_edge id1 id2 g =
     match id1, id2 with
@@ -14,6 +15,7 @@ let add_interference_args v_list g =
     | elt::tl -> aux tl (List.fold_left (fun a e -> add_edge elt e a) acc tl)
   in aux v_list g
 
+(* Créer un graphe complet avec la liste de formels passée en argument *)
 let add_interference_formals id_list g =
   let rec aux id_list acc =
     match id_list with
@@ -72,8 +74,7 @@ let interference_graph p : Graph.t =
   (* Enfin, itérer sur l'ensemble des points du programme. *)
   (* À compléter *)
 
-  (* add interference formals *)
-
+  (* add interference entre tout les formals *)
   let g = add_interference_formals p.formals g in
 
   List.fold_left

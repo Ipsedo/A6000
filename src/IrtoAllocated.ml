@@ -22,6 +22,8 @@ let allocate_prog reg_flag prog =
               résout pas mal de pb pour la coloration de graphe *)
               Return -> current_offset := !current_offset - 4;
               T.Stack (!current_offset)
+              (* On ne fait pas de différence entre formel et local vu qu'ils
+                  seront affectés dans AllocatedtoMips *)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in
               if elt <= 7 then
                 T.Reg (Printf.sprintf "$t%d" (elt + 2))
@@ -44,7 +46,6 @@ let allocate_prog reg_flag prog =
 
   S.Symb_Tbl.fold
     (fun id info acc ->
-       (*Printf.printf "%s\n" id;*)
        let n_tbl, offset = tbl info in
        T.Symb_Tbl.add id
          { T.formals = info.S.formals;

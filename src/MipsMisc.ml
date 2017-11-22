@@ -1,7 +1,6 @@
 open Mips
 
-(* log10 function integer -> integer *)
-
+(* log10 function a0 : integer -> v0 : integer *)
 let log10 : 'a Mips.asm =
   label "log10"
   @@	sw fp (-4) sp
@@ -34,8 +33,7 @@ let log10 : 'a Mips.asm =
   @@	addi sp sp 12
   @@	jr ra
 
-(* String (ascii int tab) of int *)
-
+(* a0 : int -> v0 : pointeur array ascii *)
 let string_of_int : 'a Mips.asm =
   label "string_of_int"
   @@	sw fp (-4) sp
@@ -107,7 +105,6 @@ let string_of_int : 'a Mips.asm =
   @@	jr ra
 
 (* Atoi function *)
-
 let built_ins =
   label "atoi"
   @@ move t0 a0
@@ -132,16 +129,14 @@ let built_ins =
   @@ move v0 t1
   @@ jr   ra
 
-(* Print procedure *)
-
+(* Print procedure (a0 contient l'entier à afficher) *)
 let print =
   label "print"
   @@ li v0 11
   @@ syscall
   @@ jr ra
 
-(* Array function & procedure *)
-
+(* Array function & procedure (a0 contient l'adresse dans le tas du tableau) *)
 let arr_length =
   label "arr_length"
   @@ lw v0 0 a0
@@ -163,6 +158,11 @@ let new_array =
   @@ sw t1 0 v0
   @@ jr ra
 
+(*
+a0 : pointeur array
+a1 : index
+a2 : valeur
+*)
 let store_in_array =
   label "_store_in_array"
   @@ move t0 a1
@@ -175,6 +175,11 @@ let store_in_array =
   @@ sw ~$t1 0 ~$t0
   @@ jr ra
 
+(*
+a0 : pointeur array
+a1 : index
+v0 : valeur a0[a1]
+*)
 let load_array_elt =
   label "_load_array_elt"
   @@ move t0 a1
@@ -189,8 +194,9 @@ let load_array_elt =
 let arr_bounds_error_asciiz =
   label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
 
-(* a0 : index, a1 : pointeur tab*)
-(* besoin de faire string of int pr index, galère faut save reg du caller... *)
+(* a0 : index, a1 : pointeur tab *)
+(* besoin de faire string of int pr print index,
+galère faut save reg du caller... *)
 let check_array_bounds : 'a Mips.asm =
   label "_check_array_bounds"
   (* test borne inferieure *)

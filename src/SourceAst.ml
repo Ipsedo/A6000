@@ -11,7 +11,9 @@ module Symb_Tbl = Map.Make(String)
 type prog = function_info Symb_Tbl.t
 and function_info = {
   return:  typ option;
-  formals: (typ * string) list; (* On en aura besoin pour l'affectation des formels *)
+(* On aura besoin de la liste des identifiants des formels
+    pour l'affectation des formels *)
+  formals: (typ * string) list;
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
@@ -122,13 +124,9 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
-(*| NewDirectArray(e, es) ->
-  sprintf "{%s}"
-  (List.fold_left
-  (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
-  "" es)*)
 
 let offset o = String.make (2*o) ' '
+
 let rec print_block o = function
   | [] -> ""
   | i::b -> (offset o) ^ (print_instruction o i) ^ ";\n" ^ (print_block o b)
@@ -145,6 +143,7 @@ and print_instruction o = function
       (print_block (o+1) b2) (offset o)
   | ProcCall(c) -> print_call c
 
+(* faire print fct / proc *)
 let print_main m =
   sprintf "main(int x) (\n%s%s)\n"
     (print_symb_tbl m.locals) (print_block 1 m.code)
