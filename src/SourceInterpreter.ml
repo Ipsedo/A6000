@@ -3,6 +3,11 @@ open SourceAst
 module State = Map.Make(String)
 type state = int State.t
 
+module Heap = Map.Make(Int32)
+type heap = int array Heap.t
+
+let heap_offset = ref 0 in
+
 let rec eval_main p x =
   let fct = Symb_Tbl.find "main" p in
   eval_block (State.singleton "x" x) fct.code
