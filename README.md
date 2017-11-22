@@ -7,7 +7,7 @@ Parties ayant été faites et fonctionnelles :
 1. **TP 1 - Représentations intermédiaires et génération de code assembleur MIPS**
 
 2. **TP 2 - Analyse lexicale, analyse syntaxique**
-  _extentions :_
+  + _extentions :_
     - Sucre syntaxique pour la boucle for.
       Ainsi que d'autres éléments tel l'in/decrémentation ++/--,
       la mise à jour d'une variable via l'affectation OP=
@@ -23,14 +23,14 @@ Parties ayant été faites et fonctionnelles :
       une seule ligne).
 
 3. **TP 3 - Analyse de flot de données et optimisations**
-  _extentions :_
+  + _extentions :_
     - Calcul de point fixe avec liste de tâches, on parcourt le
       code en "zig-zag" de bas en haut (comme vu en TD) ce qui
       permet d'économiser un grand nombre d'itérations.
 
 4. **TP 4 - Allocation de registres par coloration de graphe (Allocation de
   registres, pour de vrai)**
-  _extentions :_
+  + _extentions :_
     - Réutilisation d'identifiants inter-instructions.
     - Réutilisation d'identifiants intra-expressions.
     - Économiser les mouvements (ad hoc)
@@ -49,13 +49,13 @@ pas implémentée (IrAccessibility et IrConstantPropagation).
 
 Parties ayant été faites et fonctionnelles :
 1. **TP 5 - Fonctions et conventions d'appel**
-  _extentions :_
+  + _extentions :_
     - Uniformisation
     - Sauvegarder les registres
     - Paramètres et résultat (partiellement, voir autres informations)
 
 2. **TP 6 - Tableaux**
-  _extentions :_
+  + _extentions :_
     - Vérification des bornes des tableaux
 
 3. **TP 7 - Sémantique et interprétation**
@@ -73,5 +73,5 @@ du travail de la coloration de graphe pour les formels.
 + Diverses fonction on été rajouté de manière statique pour chaque programmes
 généré _via_ ce compilateur telle que :
   - Fonction pour les tableaux
-    1. integer arr_length( []τ ) (visible pour l'utilisateur)
-    2. _\_new\_array\__
+    'integer arr_length( []τ )' (visible pour l'utilisateur)
+    '_\_new\_array\__'
