@@ -102,8 +102,8 @@ let mk_lv p =
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Binop(_, _, v1, v2) | Load(_, (v1, v2)) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
-        (*| Value(id, v) when id = "result" ->
-          VarSet.union (value_to_var_set v) (VarSet.singleton id)*)
+    (*| Value(id, v) when id = "result" ->
+      VarSet.union (value_to_var_set v) (VarSet.singleton id)*)
     | Value(_, v) | CondGoto(v, _) | New(_, v) -> value_to_var_set v
     | Store((v1, v2), v3) ->
       let tmp = VarSet.union (value_to_var_set v1) (value_to_var_set v2) in

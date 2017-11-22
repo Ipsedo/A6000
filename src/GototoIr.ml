@@ -45,10 +45,10 @@ let flatten_prog p =
       let ce, ve = flatten_expression 0 e in
       ce @ [ T.Value(id, ve) ]
     | S.Set(ArrayAccess(e1, e2), e3) ->
-          let ce1, ve1 = flatten_expression 0 e1 in
-          let ce2, ve2 = flatten_expression 1 e2 in
-          let ce3, ve3 = flatten_expression 2 e3 in
-          ce1 @ ce2 @ ce3 @ [ T.Store((ve1, ve2), ve3) ]
+      let ce1, ve1 = flatten_expression 0 e1 in
+      let ce2, ve2 = flatten_expression 1 e2 in
+      let ce3, ve3 = flatten_expression 2 e3 in
+      ce1 @ ce2 @ ce3 @ [ T.Store((ve1, ve2), ve3) ]
     | S.Comment(str) -> [ T.Comment(str) ]
     | S.ProcCall(c) -> let (str, args) = c in
       let tmp_cpt = ref 0 in

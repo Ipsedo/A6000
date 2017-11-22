@@ -125,11 +125,11 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
-                        (*| NewDirectArray(e, es) ->
-    sprintf "{%s}"
-      (List.fold_left
-         (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
-                          "" es)*)
+(*| NewDirectArray(e, es) ->
+  sprintf "{%s}"
+  (List.fold_left
+  (fun acc elt -> sprintf "%s%s," acc (print_expression elt))
+  "" es)*)
 
 let offset o = String.make (2*o) ' '
 let rec print_block o = function

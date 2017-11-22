@@ -93,7 +93,7 @@ let typecheck_prog p =
                   TypArray _ -> ()
                 | _ ->
                   let msg = "Location is not an array !" in
-                raise_invalid_array_excepion msg
+                  raise_invalid_array_excepion msg
               end
             | _ -> failwith "No / Too much argument(s) for arr_length !"
         in
