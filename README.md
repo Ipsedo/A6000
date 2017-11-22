@@ -79,6 +79,7 @@ généré _via_ ce compilateur telles que (voir MipsMisc.ml) :
     - `_check_array_bounds`    (non visible pour l'utilisateur)
     - `_load_array_elt`           (non visible pour l'utilisateur)
     - `_store_in_array`           (non visible pour l'utilisateur)
-  - Fonctions conversion entier en asciiz (visibles pour l'utilisateur) :
+  - Fonctions conversion entier en asciiz
+  (visibles pour l'utilisateur et générées depuis a6000) :
     - `integer log10( n )`          
     - `[]integer string_of_int( n )`
