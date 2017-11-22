@@ -6,39 +6,141 @@ type state = int State.t
 module Heap = Map.Make(Int32)
 type heap = int array Heap.t
 
-let heap_offset = ref 0 in
+let heap_offset = ref 0
 
 let rec eval_main p x =
+
+  let rec eval_block env heap b =
+    match b with
+      [] -> env, heap
+    | i::b -> let env1, h = eval_instruction env heap i in
+      eval_block env1 h b
+
+  and eval_instruction env heap i =
+    match i with
+    | Set(Identifier(id, _), e) ->
+      let h, res = eval_expression env heap e in
+      State.add id res env, h
+    | Set(ArrayAccess(e1, e2, _), e) ->
+      let h, res1 = eval_expression env heap e1 in
+      let h, res2 = eval_expression env h e2 in
+      let h, res3 = eval_expression env h e in
+      let arr = Heap.find (Int32.of_int res1) h in
+      Array.set arr res2 res3;
+      env, Heap.add (Int32.of_int res1) arr h
+    | While(c, b) as iw ->
+      let h, res = eval_expression env heap c in
+      if res <> 0
+      then let env, h = eval_block env h b in
+        eval_instruction env h iw
+      else env, heap
+    | If(c, b1, b2) ->
+      let h, res = eval_expression env heap c in
+      if res <> 0
+      then eval_block env h b1
+      else eval_block env h b2
+    | ProcCall(c) -> let str, e = c in
+      if str = "print" then
+        begin
+          match e with
+            e1::[] -> let h, res = eval_expression env heap e1 in
+            Printf.printf "%d" res;
+            env, h
+          | _ -> failwith "invalid args for print interpreteur"
+        end
+      else
+        let h1, l = List.fold_left
+            (fun (h, acc) elt -> let hnew, res = eval_expression env h elt in
+              (hnew, acc@[res]))
+            (heap, []) e
+        in
+        let proc = Symb_Tbl.find str p in
+        env, h1
+
+        and eval_expression env heap e =
+          match e with
+            Literal lit  -> heap, eval_literal env lit
+          | Location loc -> eval_location env heap loc
+          | Binop(op, e1, e2) -> let h, v1 = eval_expression env heap e1 in
+            let h, v2 = eval_expression env h e2 in
+            let op = match op with
+              | Add  -> (+)
+              | Mult -> ( * )
+              | Sub  -> (-)
+              | Div  -> (/)
+              | Eq   -> eval_bool_op (=)
+              | Neq  -> eval_bool_op (<>)
+              | Lt   -> eval_bool_op (<)
+              | Le   -> eval_bool_op (<=)
+              | Me   -> eval_bool_op (>=)
+              | Mt   -> eval_bool_op (>)
+              | And  -> min
+              | Or   -> max
+            in
+            h, op v1 v2
+          | FunCall(c) -> failwith "unimplemented fun interpreteur"
+          | NewArray(e, _) ->
+            let h, nb_elt = eval_expression env heap e in
+            let arr = Array.make nb_elt 0 in
+            let addr = !heap_offset in
+            heap_offset := addr + nb_elt;
+            Heap.add (Int32.of_int addr) arr h, addr
+
+        and eval_bool b = if b then 1 else 0
+        and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
+
+        and eval_literal env = function
+          | Int(i, _)  -> i
+          | Bool(b, _) -> eval_bool b
+
+        and eval_location env heap = function
+          | Identifier(id, _) -> heap, State.find id env
+          | ArrayAccess(e1, e2, _) ->
+            let h, res1 = eval_expression env heap e1 in
+            let h, res2 = eval_expression env h e2 in
+            let arr = Heap.find (Int32.of_int res1) h in
+            h, arr.(res2)
+        in
+
+        let fct = Symb_Tbl.find "main" p in
+        eval_block (State.singleton "x" x) Heap.empty fct.code
+
+
+
+(*let rec eval_main p x =
   let fct = Symb_Tbl.find "main" p in
-  eval_block (State.singleton "x" x) fct.code
+  eval_block (State.singleton "x" x) Heap.empty fct.code
 
-(* [eval_block: state -> block -> state] *)
-and eval_block env = function
-  | []   -> env
-  | i::b -> let env1 = eval_instruction env i in
-    eval_block env1 b
+  (* [eval_block: state -> heap -> block -> state * heap] *)
+  and eval_block env heap = function
+  | []   -> env, heap
+  | i::b -> let env1, h = eval_instruction env heap i in
+    eval_block env1 h b
 
-(* [eval_instruction: state -> instruction -> state] *)
-and eval_instruction env = function
-  | Set(Identifier(id, _), e) -> State.add id (eval_expression env e) env
+
+  (* [eval_instruction: state -> instruction -> state * heap] *)
+  and eval_instruction env (heap : heap) = function
+  | Set(Identifier(id, _), e) -> State.add id (eval_expression env e) env, heap
   | Set(ArrayAccess(e1, e2, _), e) -> failwith "unimplemented store in array interpreteur"
   | While(c, b) as iw ->
-    if eval_expression env c <> 0
-    then let env = eval_block env b in
-      eval_instruction env iw
-    else env
+    let h, res = eval_expression env heap c in
+    if res <> 0
+    then let env, h = eval_block env h b in
+      eval_instruction env h iw
+    else env, h
   | If(c, b1, b2) ->
-    if eval_expression env c <> 0
-    then eval_block env b1
-    else eval_block env b2
+    let h, res = eval_expression env heap c in
+    if res <> 0
+    then eval_block env h b1
+    else eval_block env h b2
   | ProcCall(c) -> failwith "unimplemented procedure interpreteur"
 
-(* [eval_expression: state -> expression -> int] *)
-and eval_expression env = function
-  | Literal lit  -> eval_literal env lit
-  | Location loc -> eval_location env loc
-  | Binop(op, e1, e2) -> let v1 = eval_expression env e1 in
-    let v2 = eval_expression env e2 in
+  (* [eval_expression: state -> heap -> expression -> heap * int] *)
+  and eval_expression env (heap : heap) = function
+  | Literal lit  -> heap, eval_literal env lit
+  | Location loc -> heap, eval_location env loc
+  | Binop(op, e1, e2) -> let h, v1 = eval_expression env heap e1 in
+    let h, v2 = eval_expression env h e2 in
     let op = match op with
       | Add  -> (+)
       | Mult -> ( * )
@@ -53,17 +155,23 @@ and eval_expression env = function
       | And  -> min
       | Or   -> max
     in
-    op v1 v2
+    h, op v1 v2
   | FunCall(c) -> failwith "unimplemented fun interpreteur"
-  | NewArray(e, _) -> failwith "unimplemented new array interpreteur"
+  | NewArray(e, _) ->
+    let nb_elt = eval_expression e in
+    let arr = Array.make nb_elt 0 in
+    let addr = !heap_offset in
+    heap_offset := addr + nb_elt;
+    Heap.add addr arr heap, addr
 
-and eval_bool b = if b then 1 else 0
-and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
 
-and eval_literal env = function
+  and eval_bool b = if b then 1 else 0
+  and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
+
+  and eval_literal env = function
   | Int(i, _)  -> i
   | Bool(b, _) -> eval_bool b
 
-and eval_location env = function
+  and eval_location env = function
   | Identifier(id, _) -> State.find id env
-  | ArrayAccess(str, e, _) -> failwith "unimplemented array access interpreteur"
+  | ArrayAccess(str, e, _) -> failwith "unimplemented array access interpreteur"*)
