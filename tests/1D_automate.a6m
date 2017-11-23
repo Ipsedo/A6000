@@ -67,62 +67,15 @@ print_line([]integer line) (
 )
 
 integer update_state([]integer regle, []integer line, integer i) (
-  var integer l;
-  var integer c;
-  var integer r;
+  var integer tmp;
 
-  l := line[get_left(line, i)];
-  c := line[i];
-  r := line[get_right(line, i)];
+  tmp := line[get_right(line, i)]
+    + 2 * line[i]
+    + 2 * 2 * line[get_left(line, i)];
 
   result := 0;
-
-  if l == 0 && c == 0 && r == 0 then (
-    if regle[0] == 1 then (
-      result := 1;
-    );
-  ) else (
-    if l == 0 && c == 0 && r == 1 then (
-      if regle[1] == 1 then (
-        result := 1;
-      );
-    ) else (
-      if l == 0 && c == 1 && r == 0 then (
-        if regle[2] == 1 then (
-          result := 1;
-        );
-      ) else (
-        if l == 0 && c == 1 && r == 1 then (
-          if regle[3] == 1 then (
-            result := 1;
-          );
-        ) else (
-          if l == 1 && c == 0 && r == 0 then (
-            if regle[4] == 1 then (
-              result := 1;
-            );
-          ) else (
-            if l == 1 && c == 0 && r == 1 then (
-              if regle[5] == 1 then (
-                result := 1;
-              );
-            ) else (
-              if l == 1 && c == 1 && r == 0 then (
-                if regle[6] == 1 then (
-                  result := 1;
-                );
-              ) else (
-                if l == 1 && c == 1 && r == 1 then (
-                  if regle[7] == 1 then (
-                    result := 1;
-                  );
-                );
-              );
-            );
-          );
-        );
-      );
-    );
+  if regle[tmp] == 1 then (
+    result := 1;
   );
 )
 
