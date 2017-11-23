@@ -116,8 +116,6 @@ integer update_state([]integer regle, []integer line, integer i) (
                   if regle[7] == 1 then (
                     result := 1;
                   );
-                ) else (
-
                 );
               );
             );
