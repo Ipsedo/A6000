@@ -195,8 +195,6 @@ let arr_bounds_error_asciiz =
   label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
 
 (* a0 : index, a1 : pointeur tab *)
-(* besoin de faire string of int pr print index,
-galère faut save reg du caller... *)
 let check_array_bounds : 'a Mips.asm =
   label "_check_array_bounds"
   (* test borne inferieure *)
