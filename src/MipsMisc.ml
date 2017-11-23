@@ -195,8 +195,6 @@ let arr_bounds_error_asciiz =
   label "_array_out_of_bounds_string" @@ asciiz "Array out of Bounds : "
 
 (* a0 : index, a1 : pointeur tab *)
-(* besoin de faire string of int pr print index,
-galère faut save reg du caller... *)
 let check_array_bounds : 'a Mips.asm =
   label "_check_array_bounds"
   (* test borne inferieure *)
@@ -205,13 +203,9 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ li a0 45
-  @@ jal "print"
-  @@ neg t0 t0
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
+  @@ li v0 1
+  @@ move a0 t0
+  @@ syscall
   @@ li v0 10
   @@ syscall
   (* borne inf ok *)
@@ -223,10 +217,9 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
+  @@ li v0 1
+  @@ move a0 t0
+  @@ syscall
   @@ li v0 10
   @@ syscall
   (*borne sup ok *)
