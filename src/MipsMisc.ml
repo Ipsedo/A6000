@@ -205,13 +205,9 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ li a0 45
-  @@ jal "print"
-  @@ neg t0 t0
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
+  @@ li v0 1
+  @@ move a0 t0
+  @@ syscall
   @@ li v0 10
   @@ syscall
   (* borne inf ok *)
@@ -223,10 +219,9 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ addi a0 t0 48
-  @@ jal "print"
-  @@ li a0 10
-  @@ jal "print"
+  @@ li v0 1
+  @@ move a0 t0
+  @@ syscall
   @@ li v0 10
   @@ syscall
   (*borne sup ok *)
