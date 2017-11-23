@@ -37,7 +37,7 @@ Parties ayant été faites et fonctionnelles :
 
 **Autres informations :**
 + Du fait de l'ajout de nouveaux opérateurs, PrebuiltParser et PrebuiltLexer
-ont du être retiré de la fonction principale pour eviter les erreurs à
+ont du être retiré de la fonction principale pour éviter les erreurs à
 la compilation
 
 + La deuxième extension du 3e TP figure dans les fichiers sources mais n'est

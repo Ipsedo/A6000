@@ -98,27 +98,8 @@ let rec eval_main p x =
             (hnew, acc@[res]))
           (heap, []) e
       in
-      let proc = Symb_Tbl.find str p in
       (* On doit evaluer arr_length separement -> voir MipsMisc.ml *)
-      let fct_state, hnew = if str = "arr_length" then
-          let length =
-            match l with
-              a::[] -> Array.length (Heap.find (Int32.of_int a) h1)
-            | _ -> failwith "No arg for arr_length interpreteur !"
-          in
-          State.singleton "result" length, h1
-        else
-          begin
-            let fct_state = Symb_Tbl.fold
-                (fun k a acc ->
-                   match a.kind with
-                     Formal n -> State.add k (List.nth l (n - 1)) acc
-                   | _ -> acc)
-                proc.locals State.empty
-            in
-            eval_block fct_state h1 proc.code
-          end
-      in
+      let fct_state, hnew = eval_fct str h1 l in
 
       (* On récupère le resultat dans l'environnement de la fonction *)
       hnew, State.find "result" fct_state
@@ -145,6 +126,43 @@ let rec eval_main p x =
             (hnew, index + 1)) (heap, 0) e
       in
       Heap.add (Int32.of_int addr) arr h, addr
+
+  and eval_fct str h l =
+    let proc = Symb_Tbl.find str p in
+    if str = "arr_length" then
+      let length =
+        match l with
+          a::[] -> Array.length (Heap.find (Int32.of_int a) h)
+        | _ -> failwith "No arg for arr_length interpreteur !"
+      in
+      State.singleton "result" length, h
+    else if str = "log10" then
+      let res =
+        match l with
+          a::[] -> int_of_float (log10 (float_of_int a))
+        | _ -> failwith "No arg for arr_length interpreteur !"
+      in
+      State.singleton "result" res, h
+    else if str = "string_of_int" then
+      match l with
+        a::[] -> let str = string_of_int a in
+        let nb_elt = String.length str in
+        let arr = Array.make nb_elt 0 in
+        let addr = !heap_offset in
+        heap_offset := addr + nb_elt;
+        String.iteri (fun i c -> arr.(i) <- Char.code c) str;
+        let hnew = Heap.add (Int32.of_int addr) arr h in
+        State.singleton "result" addr, hnew
+      | _ -> failwith "No arg for arr_length interpreteur !"
+    else
+      let fct_state = Symb_Tbl.fold
+          (fun k a acc ->
+             match a.kind with
+               Formal n -> State.add k (List.nth l (n - 1)) acc
+             | _ -> acc)
+          proc.locals State.empty
+      in
+      eval_block fct_state h proc.code
 
   and eval_bool b = if b then 1 else 0
   and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)

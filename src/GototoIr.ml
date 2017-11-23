@@ -120,7 +120,7 @@ let flatten_prog p =
              (index + 1, T.Store((id, off), v)::acc))
           (0, []) ves
       in
-      let offset = T.Literal(Int(List.length e)) in
+      let offset = T.Literal(Int(length)) in
       [ T.New(id_tmp, offset) ] @ ces @ sets,
       T.Identifier(id_tmp)
   in

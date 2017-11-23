@@ -1,0 +1,145 @@
+main(integer x) (
+  var []integer regle;
+  var []integer curr_line;
+  var integer max_line;
+  var integer max_width;
+  var integer i;
+
+  regle := make_regle(x);
+
+  max_line := 50;
+  max_width := 70;
+
+  curr_line := [max_width]integer;
+
+  curr_line[arr_length(curr_line) / 2 - 1] := 1;
+  curr_line[arr_length(curr_line) / 2] := 1;
+  curr_line[arr_length(curr_line) / 2 + 1] := 1;
+
+  for(i := 0; i < max_line; i++) (
+    print_line(curr_line);
+    print(10);
+    curr_line := update(regle, curr_line);
+  );
+)
+
+print_line([]integer line) (
+  var integer i;
+
+  for(i := 0; i < arr_length(line); i++) (
+    if line[i] == 1 then (
+      print(35);
+      print(35);
+    ) else (
+      print(32);
+      print(32);
+    );
+  );
+)
+
+[]integer make_regle(integer i) (
+  var integer j;
+  var integer tmp;
+  var []integer tab;
+
+  tab := [8]integer;
+
+  for (j := 0; j < arr_length(tab); j++) (
+    tmp := i / 2;
+    tab[j] := i - tmp * 2;
+    i := tmp;
+  );
+
+  result := tab;
+)
+
+[]integer update([]integer regle, []integer line) (
+  var []integer tmp;
+  var integer i;
+
+  tmp := [arr_length(line)]integer;
+
+  for (i := 0; i < arr_length(line); i++) (
+    tmp[i] := update_state(regle, line, i);
+  );
+
+  result := tmp;
+)
+
+integer update_state([]integer regle, []integer line, integer i) (
+  var integer l;
+  var integer c;
+  var integer r;
+
+  l := line[get_left(line, i)];
+  c := line[i];
+  r := line[get_right(line, i)];
+
+  result := 0;
+
+  if l == 0 && c == 0 && r == 0 then (
+    if regle[0] == 1 then (
+      result := 1;
+    );
+  ) else (
+    if l == 0 && c == 0 && r == 1 then (
+      if regle[1] == 1 then (
+        result := 1;
+      );
+    ) else (
+      if l == 0 && c == 1 && r == 0 then (
+        if regle[2] == 1 then (
+          result := 1;
+        );
+      ) else (
+        if l == 0 && c == 1 && r == 1 then (
+          if regle[3] == 1 then (
+            result := 1;
+          );
+        ) else (
+          if l == 1 && c == 0 && r == 0 then (
+            if regle[4] == 1 then (
+              result := 1;
+            );
+          ) else (
+            if l == 1 && c == 0 && r == 1 then (
+              if regle[5] == 1 then (
+                result := 1;
+              );
+            ) else (
+              if l == 1 && c == 1 && r == 0 then (
+                if regle[6] == 1 then (
+                  result := 1;
+                );
+              ) else (
+                if l == 1 && c == 1 && r == 1 then (
+                  if regle[7] == 1 then (
+                    result := 1;
+                  );
+                ) else (
+
+                );
+              );
+            );
+          );
+        );
+      );
+    );
+  );
+)
+
+integer get_right([]integer line, integer i) (
+    if i == 0 then (
+			result := arr_length(line) - 1;
+		) else (
+			result := i - 1;
+		);
+)
+
+integer get_left([]integer line, integer i) (
+    if i == arr_length(line) - 1 then (
+			result := 0;
+		) else (
+			result := i + 1;
+		);
+)
