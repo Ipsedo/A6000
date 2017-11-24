@@ -1,5 +1,7 @@
 open Format
 
+open SourcetoTyped
+
 exception UnexpectedToken of string
 
 let usage = "usage: compilo [options] file.a6m"

@@ -18,12 +18,12 @@ let allocate_prog reg_flag prog =
 
         let res = S.Symb_Tbl.mapi (fun id (info: S.identifier_info) ->
             match info with
-              (* On affecte une valeur dans le stack pour result ->
-              résout pas mal de pb pour la coloration de graphe *)
+            (* On affecte une valeur dans le stack pour result ->
+               résout pas mal de pb pour la coloration de graphe *)
               Return -> current_offset := !current_offset - 4;
               T.Stack (!current_offset)
-              (* On ne fait pas de différence entre formel et local vu qu'ils
-                  seront affectés dans AllocatedtoMips *)
+            (* On ne fait pas de différence entre formel et local vu qu'ils
+                seront affectés dans AllocatedtoMips *)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in
               if elt <= 7 then
                 T.Reg (Printf.sprintf "$t%d" (elt + 2))

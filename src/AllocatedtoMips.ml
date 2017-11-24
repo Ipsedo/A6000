@@ -123,7 +123,7 @@ let generate_function fct =
   (* array stuff -> une partie dans AllocatedtoMips et une dans MipsMisc
       fonctions auxiliaires pour store in array, load in array, new array
       et check bornes accès array
-   *)
+  *)
 
   and check_array_bound arr index =
     match arr with
@@ -149,13 +149,13 @@ let generate_function fct =
     else
       allocate_stack_formal (index - 4) value
 
-(* renvoie le code mips pour affecter les arguments et le nombre d'arguments *)
+  (* renvoie le code mips pour affecter les arguments et le nombre d'arguments *)
   and gen_arg_and_nb v_list =
     List.fold_left
       (fun (acc, index) elt -> (acc @@ alloc_formal index elt, index + 1))
       (nop, 0) v_list
 
-(* On récupère l'index maximal des registre *)
+  (* On récupère l'index maximal des registre *)
   and nb_reg = Symb_Tbl.fold
       (fun id alloc_info acc ->
          match alloc_info with
@@ -187,7 +187,7 @@ let generate_function fct =
     @@ addi sp sp stack_args
     @@ if save_reg then load_t_reg nb_reg else nop
 
-(* sauvegarde / chargement des registre [t0 - t9] *)
+  (* sauvegarde / chargement des registre [t0 - t9] *)
   and save_t_reg nb =
     let acc = ref nop in
     for i=0 to (nb - 1) do
@@ -207,9 +207,9 @@ let generate_function fct =
     @@ !acc
   in
 
-(* Affectation des formels depuis les registres [a0 - a3] ou depuis le stack,
-    on les affecte grâce à la liste de formels qui est situé dans function_info
-*)
+  (* Affectation des formels depuis les registres [a0 - a3] ou depuis le stack,
+      on les affecte grâce à la liste de formels qui est situé dans function_info
+  *)
   let affect_formals = (* ok *)
     let nb = List.length fct.formals in
     let aux index str =

@@ -9,7 +9,7 @@ let destructure_prog p =
   (* Un appel [new_label()] crée une nouvelle étiquette qui peut être
      utilisée pour créer des sauts. *)
 
-     (* Besoin de ces deux ref pour la création de label *)
+  (* Besoin de ces deux ref pour la création de label *)
   let fct_name = ref "" in
 
   let cpt_label = ref 0 in
