@@ -1,7 +1,5 @@
 open Format
 
-open SourcetoTyped
-
 exception UnexpectedToken of string
 
 let usage = "usage: compilo [options] file.a6m"
@@ -72,11 +70,14 @@ let () =
     end
   in
   close_in c;
-  SourceTypeChecker.typecheck_prog p;
+  (*SourceTypeChecker.typecheck_prog p;*)
+
   if !interpret
   then let _ = SourceInterpreter.eval_main p !input in ()
   else begin
-    let p = SourcetoUntyped.erase_prog p in
+    (*let p = SourcetoUntyped.erase_prog p in*)
+    let p = SourcetoTyped.type_prog p in
+    let p = TypedtoUntyped.erase_prog p in
     let p = UntypedtoGoto.destructure_prog p in
     let p = GototoIr.flatten_prog p in
     (* Code à réintégrer à la séance 3 *)

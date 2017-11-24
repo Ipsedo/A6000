@@ -1,10 +1,8 @@
 module Symb_Tbl = SourceAst.Symb_Tbl
 
 type literal         = SourceAst.literal
-type location        = SourceAst.location
 type binop           = SourceAst.binop
 type typ             = SourceAst.typ
-type call            = SourceAst.call
 type identifier_info = SourceAst.identifier_info
 
 type ('a, 'e) annotated_element = { annot: 'a ; elt: 'e }
@@ -12,7 +10,7 @@ type ('a, 'e) annotated_element = { annot: 'a ; elt: 'e }
 type typed_expression = (typ, expression) annotated_element
 and typed_location    = (typ, location) annotated_element
 and typed_call        = ((typ option), call) annotated_element
-
+and call = string * typed_expression list
 and expression =
   | Literal   of literal      (* Valeur immédiate   *)
   | Location  of typed_location   (* Valeur en mémoire  *)
@@ -26,6 +24,11 @@ and instruction =
   | While of typed_expression * block         (* Boucle      *)
   | If    of typed_expression * block * block (* Branchement *)
   | ProcCall of typed_call
+
+and location =
+  | Identifier of string * Lexing.position (* Variable en mémoire *)
+  | ArrayAccess of typed_expression * typed_expression * Lexing.position
+
 
 and block = instruction list
 
