@@ -1,5 +1,9 @@
 # Devoir de compilation
-_Auteur : Samuel BERRIEN_
+_Samuel BERRIEN_
+_M1 Informatique 2017 / 2018, Université Paris-Saclay_
+
+_Auteur : Thibaut Balabonski_
+[TP  Compilation](https://www.lri.fr/~blsk/Compilation/ "TP Compilation")
 
 ## Acte I
 
