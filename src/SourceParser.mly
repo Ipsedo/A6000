@@ -48,7 +48,7 @@
 %%
 
 prog:
-    EOF
+    fcts=fun_delcs; EOF
     {
   (* On ajoute des fausses fonctions -> besoin pour typechecker et Ir-stuff,
       on les remplacera dans AllocatedtoMips *)
@@ -82,18 +82,30 @@ prog:
           code = []
         }
         in
-        let tbl = Symb_Tbl.singleton "print" print in
+        let tbl = Symb_Tbl.add "print" print fcts in
         let tbl = Symb_Tbl.add "log10" log10 tbl in
         let tbl = Symb_Tbl.add "string_of_int" string_of_int tbl in
         let tbl = Symb_Tbl.add "arr_length" arr_length tbl in
         tbl
+        (*("print", print)
+        ::("log10", log10)
+        ::("string_of_int", string_of_int)
+        ::("arr_length", arr_length)
+        ::fcts*)
+
     }
-  | fct=fun_delc; m=prog
+  (*| fct=fun_delc; m=prog
     {
       let (id, infos) = fct in
       Symb_Tbl.add id infos m
-    }
+    }*)
 ;
+
+fun_delcs:
+    { Symb_Tbl.empty        }
+  | fct=fun_delc; fcts=fun_delcs
+    { let id, infos = fct in
+    Symb_Tbl.add id infos fcts }
 
 var_decls:
  (* empty *) { Symb_Tbl.empty }
@@ -209,15 +221,15 @@ arguments:
 ;
 
 literal:
-  i=LITINT  { Int (i, $startpos(i))  }
-| b=LITBOOL { Bool (b, $startpos(b)) }
+  i=LITINT  { Int (i, $startpos)  }
+| b=LITBOOL { Bool (b, $startpos) }
 ;
 
 
 location:
-    id=IDENT  { Identifier (id, $startpos(id)) }
+    id=IDENT  { Identifier (id, $startpos) }
   | e1=expression; O_BRACKETS; e2=expression; C_BRACKETS
-    { ArrayAccess(e1, e2, $startpos(e1))  }
+    { ArrayAccess(e1, e2, $startpos)  }
 ;
 
 fun_delc:

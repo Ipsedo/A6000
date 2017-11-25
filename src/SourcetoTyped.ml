@@ -41,7 +41,7 @@ let type_prog p =
   let rec typecheck_block b symb_tbl =
     List.map (typecheck_instruction symb_tbl) b
 
-  (* typecheck_instruction: S.instruction -> T.instruction *)
+  (* typecheck_instruction: S.Symb_Tbl.t -> S.instruction -> T.instruction *)
   and typecheck_instruction symb_tbl i =
     match i with
     | S.Set(l, e) ->
@@ -65,13 +65,12 @@ let type_prog p =
   and mk_typed_call c symb_tbl =
     let str, es = c in
     let infos = S.Symb_Tbl.find str p in
-    let nes = List.fold_left2
-        (fun acc elt (a, _) ->
-           let ne, ty = type_expression elt symb_tbl in
-           comparetype a ty;
-           acc @ [ne])
-        [] es infos.S.formals
+    let mk_check_args acc elt (a, _) =
+      let ne, ty = type_expression elt symb_tbl in
+      comparetype a ty;
+      acc @ [ne]
     in
+    let nes = List.fold_left2 mk_check_args [] es infos.S.formals in
     { T.annot = infos.S.return; T.elt = (str, nes) }
 
   (* location -> S.Symb_tbl.t -> typed_location * S.typ *)
@@ -95,7 +94,8 @@ let type_prog p =
     in
     { T.annot = res_type; T.elt = T.ArrayAccess(ne1, ne2, pos) }, res_type
 
-  and type_literal = function
+  and type_literal i =
+    match i with
     | S.Int (i, pos)  -> current_pos := pos;
       SourceAst.Int(i, pos), SourceAst.TypInteger
     | S.Bool (b, pos) -> current_pos := pos;
@@ -105,9 +105,9 @@ let type_prog p =
     match expr with
     | S.NewArray(e, t) ->
       let ne, te = type_expression e symb_tbl in
-      comparetype SourceAst.TypInteger te;
-      { T.annot = SourceAst.TypArray t; T.elt = T.NewArray(ne, t) },
-      SourceAst.TypArray t
+      comparetype TypInteger te;
+      { T.annot = TypArray t; T.elt = T.NewArray(ne, t) },
+      TypArray t
     | S.NewDirectArray(e) ->
       let nes, tes = List.fold_left
           (fun (nacc, tacc) elt ->
@@ -147,18 +147,16 @@ let type_prog p =
     mk_typed_call c symb_tbl, res
 
   and type_binop = function
-    | Add | Sub | Mult | Div         -> TypInteger, TypInteger
-    | Eq  | Neq | Lt  | Le | Me | Mt -> TypInteger, TypBoolean
-    | And | Or                       -> TypBoolean, TypBoolean
-  in
+    | Add | Sub | Mult | Div          -> TypInteger, TypInteger
+    | Eq  | Neq | Lt   | Le | Me | Mt -> TypInteger, TypBoolean
+    | And | Or                        -> TypBoolean, TypBoolean
 
-  S.Symb_Tbl.fold
-    (fun key infos acc ->
-       let ninfos = { T.return = infos.S.return;
-                      T.formals = infos.S.formals;
-                      T.locals = infos.S.locals;
-                      T.code = typecheck_block infos.S.code infos.S.locals}
-       in
-       T.Symb_Tbl.add key ninfos acc
-    )
-    p T.Symb_Tbl.empty
+  and type_fun_decls id infos acc  =
+    T.Symb_Tbl.add id { T.return = infos.S.return;
+                        T.formals = infos.S.formals;
+                        T.locals = infos.S.locals;
+                        T.code = typecheck_block infos.S.code infos.S.locals}
+      acc
+
+  in
+  S.Symb_Tbl.fold type_fun_decls p T.Symb_Tbl.empty

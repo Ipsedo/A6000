@@ -43,15 +43,11 @@ let erase_prog p =
   and erase_block b =
     List.map erase_instruction b
 
-  in
+  and erase_formal f =
+    List.map (fun (_, str) -> str) f
 
-  let erase_formal f =
-    List.map
-      (fun (_, str) -> str)
-      f
+  and erase_identifier_info i = i.SourceAst.kind 
   in
-
-  let erase_identifier_info i = i.SourceAst.kind in
 
   S.Symb_Tbl.fold
     (fun key infos acc ->
