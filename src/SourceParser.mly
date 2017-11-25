@@ -87,18 +87,8 @@ prog:
         let tbl = Symb_Tbl.add "string_of_int" string_of_int tbl in
         let tbl = Symb_Tbl.add "arr_length" arr_length tbl in
         tbl
-        (*("print", print)
-        ::("log10", log10)
-        ::("string_of_int", string_of_int)
-        ::("arr_length", arr_length)
-        ::fcts*)
 
     }
-  (*| fct=fun_delc; m=prog
-    {
-      let (id, infos) = fct in
-      Symb_Tbl.add id infos m
-    }*)
 ;
 
 fun_delcs:
