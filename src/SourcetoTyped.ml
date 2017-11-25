@@ -67,7 +67,14 @@ let type_prog p =
     let infos = S.Symb_Tbl.find str p in
     let mk_check_args acc elt (a, _) =
       let ne, ty = type_expression elt symb_tbl in
-      comparetype a ty;
+      let _ = if str <> "arr_length" then
+          comparetype a ty
+        else
+          match ty with
+            TypArray _ -> ()
+          | _ -> let msg = "Not an array (function : integer arr_length) !" in
+            raise (raise_invalid_array_excepion msg)
+      in
       acc @ [ne]
     in
     let nes = List.fold_left2 mk_check_args [] es infos.S.formals in
