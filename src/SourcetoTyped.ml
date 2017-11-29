@@ -62,10 +62,35 @@ let type_prog p =
       T.If(ne, nb1, nb2)
     | S.ProcCall(c) -> T.ProcCall(mk_typed_call c symb_tbl)
 
+  and find_fct_with_call ty_expr info_l =
+    let check_types tys ty_exprs =
+      if (List.length tys) = (List.length ty_expr) then
+        List.iter2 (fun (ty,_) ty_e -> comparetype ty ty_e) tys ty_exprs
+      else ()
+    in
+    let rec aux l acc =
+      match l with
+        [] -> acc
+      | i::tl ->
+        try
+          check_types i.S.formals ty_expr;
+          aux tl (Some i)
+        with Type_error _ | InvalidArray _ -> aux tl acc
+    in
+    let info = aux info_l None in
+    match info with
+    | Some s -> s
+    | None -> failwith "No function / procedure founded !"
+
   and mk_typed_call c symb_tbl =
     let str, es = c in
-    let infos = S.Symb_Tbl.find str p in
-    let mk_check_args acc elt (a, _) =
+    let tmp = List.map (fun elt -> type_expression elt symb_tbl) es in
+    let (es, tys) = List.fold_left
+        (fun (e_acc, t_acc) (e, t) -> e_acc @ [e], t_acc @ [t])
+        ([], []) tmp
+    in
+    let infos_l = S.Symb_Tbl.find str p in
+    (*let mk_check_args acc elt (a, _) =
       let ne, ty = type_expression elt symb_tbl in
       let _ = if str <> "arr_length" then
           comparetype a ty
@@ -76,9 +101,10 @@ let type_prog p =
             raise (raise_invalid_array_excepion msg)
       in
       acc @ [ne]
-    in
-    let nes = List.fold_left2 mk_check_args [] es infos.S.formals in
-    { T.annot = infos.S.return; T.elt = (str, nes) }
+      in
+      let nes = List.fold_left2 mk_check_args [] es infos.S.formals in*)
+    let infos = find_fct_with_call tys infos_l in
+    { T.annot = infos.S.return; T.elt = (str, es) }
 
   (* location -> S.Symb_tbl.t -> typed_location * S.typ *)
   and type_location l symb_tbl =
@@ -146,24 +172,36 @@ let type_prog p =
       { T.annot = ty; T.elt = T.FunCall(fc) }, ty
 
   and type_fct c symb_tbl =
-    let str, _ = c in
-    let res = match (S.Symb_Tbl.find str p).return with
-        Some t -> t
-      | None -> failwith "No return type for focntion !"
-    in
-    mk_typed_call c symb_tbl, res
+    let typed_call = mk_typed_call c symb_tbl in
+    match typed_call.annot with
+    | Some t -> typed_call, t
+    | None -> failwith "No return type for focntion !"
+
 
   and type_binop = function
     | Add | Sub | Mult | Div          -> TypInteger, TypInteger
     | Eq  | Neq | Lt   | Le | Me | Mt -> TypInteger, TypBoolean
     | And | Or                        -> TypBoolean, TypBoolean
 
-  and type_fun_decls id infos acc  =
+  (*and type_fun_decls id infos acc  =
     T.Symb_Tbl.add id { T.return = infos.S.return;
                         T.formals = infos.S.formals;
                         T.locals = infos.S.locals;
                         T.code = typecheck_block infos.S.code infos.S.locals}
       acc
 
+    in
+    S.Symb_Tbl.fold type_fun_decls p T.Symb_Tbl.empty*)
+
+  and type_fun_decls id fct_list acc =
+    let aux acc infos =
+      { T.return = infos.S.return;
+        T.formals = infos.S.formals;
+        T.locals = infos.S.locals;
+        T.code = typecheck_block infos.S.code infos.S.locals } :: acc
+    in
+    let n_l = List.fold_left aux [] fct_list in
+    T.Symb_Tbl.add id n_l acc
   in
+
   S.Symb_Tbl.fold type_fun_decls p T.Symb_Tbl.empty

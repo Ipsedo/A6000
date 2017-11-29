@@ -1,0 +1,29 @@
+main(integer x) (
+
+  print_surch(x);
+  print(10);
+  print_surch(x, x + 1);
+  print(10);
+
+  print(dummy(x));
+  print(10);
+  print(dummy(x, 1));
+  print(10);
+)
+
+print_surch(integer x) (
+  print(x);
+)
+
+print_surch(integer x1, integer x2) (
+  print(x1);
+  print(x2);
+)
+
+integer dummy(integer x) (
+  result := x;
+)
+
+integer dummy(integer x1, integer x2) (
+  result := x1 + x2;
+)

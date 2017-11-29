@@ -2,7 +2,7 @@ open Mips
 
 (* log10 function a0 : integer -> v0 : integer *)
 let log10 : 'a Mips.asm =
-  label "log10"
+  label "log10_integer"
   @@	sw fp (-4) sp
   @@	sw ra (-8) sp
   @@	addi sp sp (-8)
@@ -34,7 +34,7 @@ let log10 : 'a Mips.asm =
   @@	jr ra
 
 (* a0 : int -> v0 : pointeur array ascii *)
-let string_of_int : 'a Mips.asm =
+(*let string_of_int : 'a Mips.asm =
   label "string_of_int"
   @@	sw fp (-4) sp
   @@  sw ra (-8) sp
@@ -102,7 +102,7 @@ let string_of_int : 'a Mips.asm =
   @@	lw ra 0 fp
   @@	lw fp 4 fp
   @@	addi sp sp 8
-  @@	jr ra
+  @@	jr ra*)
 
 (* Atoi function *)
 let built_ins =
@@ -131,7 +131,7 @@ let built_ins =
 
 (* Print procedure (a0 contient l'entier à afficher) *)
 let print =
-  label "print"
+  label "print_integer"
   @@ li v0 11
   @@ syscall
   @@ jr ra
@@ -233,6 +233,6 @@ let unused = { text = check_array_bounds
                  @@ arr_length
                  @@ print
                  @@ built_ins
-                 @@ string_of_int
+                 (*@@ string_of_int*)
                  @@ log10;
                data = arr_bounds_error_asciiz}

@@ -32,7 +32,7 @@ and location =
 
 and block = instruction list
 
-and prog = function_info Symb_Tbl.t
+and prog = function_info list Symb_Tbl.t
 
 and function_info = {
   return:  typ option;

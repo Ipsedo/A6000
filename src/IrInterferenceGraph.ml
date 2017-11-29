@@ -51,9 +51,10 @@ let add_interferences p g lv_out_at_node = function
     Graph.add_edge tmp c1 c2
   | Store((Identifier c1, Identifier c2), _) ->
     Graph.add_edge g c1 c2
-  | FunCall(a, _, v) -> let tmp = VarSet.fold
-                            (fun elt acc -> Graph.add_edge acc a elt)
-                            lv_out_at_node g
+  | FunCall(a, _, v) ->
+    let tmp = VarSet.fold
+        (fun elt acc -> Graph.add_edge acc a elt)
+        lv_out_at_node g
     in
     add_interference_args v tmp
   | ProcCall(_, v) -> add_interference_args v g

@@ -3,7 +3,6 @@ main(integer x) (
   var []integer curr_line;
   var integer max_line;
   var integer max_width;
-  var integer i;
 
   regle := make_regle(x);
 
@@ -12,21 +11,22 @@ main(integer x) (
 
   curr_line := [max_width]integer;
 
-  curr_line[arr_length(curr_line) / 2 - 1] := 1;
-  curr_line[arr_length(curr_line) / 2] := 1;
-  curr_line[arr_length(curr_line) / 2 + 1] := 1;
+  curr_line[max_width / 2 - 1] := 1;
+  curr_line[max_width / 2] := 1;
+  curr_line[max_width / 2 + 1] := 1;
 
-  for(i := 0; i < max_line; i++) (
-    print_line(curr_line);
+  while (max_line > 0) (
+    print_line(curr_line, max_width);
     print(10);
-    curr_line := update(regle, curr_line);
+    curr_line := update(regle, curr_line, max_width);
+    max_line--;
   );
 )
 
-print_line([]integer line) (
+print_line([]integer line, integer length) (
   var integer i;
 
-  for(i := 0; i < arr_length(line); i++) (
+  for(i := 0; i < length; i++) (
     if line[i] == 1 then (
       print(35);
       print(35);
@@ -44,7 +44,7 @@ print_line([]integer line) (
 
   tab := [8]integer;
 
-  for (j := 0; j < arr_length(tab); j++) (
+  for (j := 0; j < 8; j++) (
     tmp := i / 2;
     tab[j] := i - tmp * 2;
     i := tmp;
@@ -53,42 +53,39 @@ print_line([]integer line) (
   result := tab;
 )
 
-[]integer update([]integer regle, []integer line) (
+[]integer update([]integer regle, []integer line, integer length) (
   var []integer tmp;
   var integer i;
 
-  tmp := [arr_length(line)]integer;
+  tmp := [length]integer;
 
-  for (i := 0; i < arr_length(line); i++) (
-    tmp[i] := update_state(regle, line, i);
+  for (i := 0; i < length; i++) (
+    tmp[i] := update_state(regle, line, length, i);
   );
 
   result := tmp;
 )
 
-integer update_state([]integer regle, []integer line, integer i) (
+integer update_state([]integer regle, []integer line, integer length, integer i) (
   var integer tmp;
 
-  tmp := line[get_right(line, i)]
+  tmp := line[get_right(line, i, length)]
     + 2 * line[i]
-    + 2 * 2 * line[get_left(line, i)];
+    + 2 * 2 * line[get_left(line, i, length)];
 
-  result := 0;
-  if regle[tmp] == 1 then (
-    result := 1;
-  );
+  result := regle[tmp];
 )
 
-integer get_right([]integer line, integer i) (
+integer get_right([]integer line, integer i, integer length) (
   if i == 0 then (
-		result := arr_length(line) - 1;
+		result := length - 1;
 	) else (
 		result := i - 1;
 	);
 )
 
-integer get_left([]integer line, integer i) (
-  if i == arr_length(line) - 1 then (
+integer get_left([]integer line, integer i, integer length) (
+  if i == length - 1 then (
 		result := 0;
 	) else (
 		result := i + 1;

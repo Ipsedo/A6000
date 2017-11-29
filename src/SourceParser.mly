@@ -68,13 +68,13 @@ prog:
           code = []
         }
         in
-        let string_of_int = {
+        (*let string_of_int = {
           return = Some(TypArray(TypInteger));
           formals = (TypInteger, "x")::[];
           locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
           code = []
         }
-        in
+        in*)
         let arr_length = {
           return = Some TypInteger;
           formals = (TypArray(TypInteger), "x")::[];
@@ -82,20 +82,25 @@ prog:
           code = []
         }
         in
-        let tbl = Symb_Tbl.add "print" print fcts in
-        let tbl = Symb_Tbl.add "log10" log10 tbl in
-        let tbl = Symb_Tbl.add "string_of_int" string_of_int tbl in
-        let tbl = Symb_Tbl.add "arr_length" arr_length tbl in
+        let tbl = Symb_Tbl.add "print" [print] fcts in
+        let tbl = Symb_Tbl.add "log10" [log10] tbl in
+        (*let tbl = Symb_Tbl.add "string_of_int" [string_of_int] tbl in*)
+        let tbl = Symb_Tbl.add "arr_length" [arr_length] tbl in
         tbl
 
     }
 ;
 
 fun_delcs:
-    { Symb_Tbl.empty        }
+  (* empty *) { Symb_Tbl.empty }
   | fct=fun_delc; fcts=fun_delcs
     { let id, infos = fct in
-    Symb_Tbl.add id infos fcts }
+      let infos_l =
+        match Symb_Tbl.find_opt id fcts with
+          None -> []
+        | Some s -> s
+      in
+    Symb_Tbl.add id (infos::infos_l) fcts }
 
 var_decls:
  (* empty *) { Symb_Tbl.empty }

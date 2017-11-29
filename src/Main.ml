@@ -73,7 +73,7 @@ let () =
   (*SourceTypeChecker.typecheck_prog p;*)
 
   if !interpret
-  then let _ = SourceInterpreter.eval_main p !input in ()
+  then (*let _ = SourceInterpreter.eval_main p !input in*) ()
   else begin
     (*let p = SourcetoUntyped.erase_prog p in*)
     let p = SourcetoTyped.type_prog p in

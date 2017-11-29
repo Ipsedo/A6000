@@ -16,9 +16,19 @@ let erase_prog p =
       SourceAst.Int(i, _) -> T.Int(i)
     | SourceAst.Bool(b, _) -> T.Bool(b)
 
+  and string_of_typ t =
+    match t with
+    | SourceAst.TypInteger -> "integer"
+    | SourceAst.TypBoolean -> "boolean"
+    | SourceAst.TypArray(sub_t) -> "arrayof" ^ (string_of_typ sub_t)
+
+  and rename_fct_call expr str =
+    List.fold_left (fun acc elt -> acc ^ "_" ^ (string_of_typ elt.S.annot)) str expr
+
   and erase_call typed_call =
     let c = typed_call.S.elt in
     let str, e = c in
+    let str = rename_fct_call e str in
     let e = List.map erase_expression e in
     (str, e)
 
@@ -46,21 +56,46 @@ let erase_prog p =
   and erase_formal f =
     List.map (fun (_, str) -> str) f
 
-  and erase_identifier_info i = i.SourceAst.kind 
+  and erase_identifier_info i = i.SourceAst.kind
+  in
+  let rename_fct str formals =
+    List.fold_left (fun acc (t,_) -> acc ^ "_" ^ (string_of_typ t)) str formals
   in
 
+  let erase_fct_decl key infos acc =
+    let locals = S.Symb_Tbl.fold
+        (fun id info tbl -> T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+        infos.S.locals
+        T.Symb_Tbl.empty
+    in
+    let ninfos = {
+      T.formals = erase_formal infos.S.formals;
+      T.locals = locals;
+      T.code = erase_block infos.S.code
+    }
+    in
+    let str = rename_fct key infos.S.formals in
+    T.Symb_Tbl.add str ninfos acc
+  in
+
+  let erase_fct_decl_list key infos_l symb_tbl =
+    List.fold_left (fun acc infos -> erase_fct_decl key infos acc) symb_tbl infos_l
+  in
   S.Symb_Tbl.fold
-    (fun key infos acc ->
-       let locals = S.Symb_Tbl.fold
-           (fun id info tbl -> T.Symb_Tbl.add id (erase_identifier_info info) tbl)
-           infos.S.locals
-           T.Symb_Tbl.empty
-       in
-       let ninfos = {
-         T.formals = erase_formal infos.S.formals;
-         T.locals = locals;
-         T.code = erase_block infos.S.code
-       }
-       in
-       T.Symb_Tbl.add key ninfos acc)
+    (fun key infos_l acc -> erase_fct_decl_list key infos_l acc)
     p T.Symb_Tbl.empty
+(*S.Symb_Tbl.fold
+  (fun key infos acc ->
+     let locals = S.Symb_Tbl.fold
+         (fun id info tbl -> T.Symb_Tbl.add id (erase_identifier_info info) tbl)
+         infos.S.locals
+         T.Symb_Tbl.empty
+     in
+     let ninfos = {
+       T.formals = erase_formal infos.S.formals;
+       T.locals = locals;
+       T.code = erase_block infos.S.code
+     }
+     in
+     T.Symb_Tbl.add key ninfos acc)
+  p T.Symb_Tbl.empty*)

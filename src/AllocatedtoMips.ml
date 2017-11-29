@@ -269,7 +269,7 @@ let init_prog =
   @@ lw a0 0 a1
   @@ jal "atoi"
   @@ move a0 v0
-  @@ jal "main"
+  @@ jal "main_integer"
 
 let close_prog = li v0 10 @@ syscall
 
@@ -277,9 +277,9 @@ let generate_prog p =
   (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
   let p = Symb_Tbl.filter
       (fun k _ ->
-         k <> "print"
-         && k <> "log10"
-         && k <> "string_of_int"
+         k <> "print_integer"
+         && k <> "log10_integer"
+         (*&& k <> "string_of_int"*)
          && k <> "arr_length"
       ) p in
   let prog = Symb_Tbl.fold
@@ -296,6 +296,6 @@ let generate_prog p =
       @@ MipsMisc.check_array_bounds
       @@ MipsMisc.print
       @@ MipsMisc.log10
-      @@ MipsMisc.string_of_int
+      (*@@ MipsMisc.string_of_int*)
       @@ MipsMisc.arr_length;
     data = MipsMisc.arr_bounds_error_asciiz}
