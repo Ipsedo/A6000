@@ -72,30 +72,26 @@ let () =
   close_in c;
   (*SourceTypeChecker.typecheck_prog p;*)
 
-  if !interpret
-  then (*let _ = SourceInterpreter.eval_main p !input in*) ()
-  else begin
-    (*let p = SourcetoUntyped.erase_prog p in*)
-    let p = SourcetoTyped.type_prog p in
-    let p = TypedtoUntyped.erase_prog p in
-    let p = UntypedtoGoto.destructure_prog p in
-    let p = GototoIr.flatten_prog p in
-    (* Code à réintégrer à la séance 3 *)
-    let p =
-      if   !dead_code_elim
-      then IrDeadCodeElim.dce p
-      else p
-    in
-    (*Printf.printf "%s" (IrAst.print_prog p);*)
-    let p = IrtoAllocated.allocate_prog !reg_allocation p in
-    let asm = AllocatedtoMips.generate_prog p in
-    let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
-    let out = open_out output_file in
-    let outf = formatter_of_out_channel out in
-    Mips.print_program outf asm;
-    pp_print_flush outf ();
-    close_out out;
-    ()
-
-  end;
-  exit 0
+  (*if !interpret
+    then let _ = SourceInterpreter.eval_main p !input in ()
+    else begin*)
+  let p = SourcetoTyped.type_prog p in
+  let p = TypedtoUntyped.erase_prog p in
+  let p = UntypedtoGoto.destructure_prog p in
+  let p = GototoIr.flatten_prog p in
+  (* Code à réintégrer à la séance 3 *)
+  let p =
+    if   !dead_code_elim
+    then IrDeadCodeElim.dce p
+    else p
+  in
+  (*Printf.printf "%s" (IrAst.print_prog p);*)
+  let p = IrtoAllocated.allocate_prog !reg_allocation p in
+  let asm = AllocatedtoMips.generate_prog p in
+  let output_file = (Filename.chop_suffix file ".a6m") ^ ".asm" in
+  let out = open_out output_file in
+  let outf = formatter_of_out_channel out in
+  Mips.print_program outf asm;
+  pp_print_flush outf ();
+  close_out out;
+  ()

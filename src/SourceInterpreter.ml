@@ -1,4 +1,4 @@
-open SourceAst
+open UntypedAst
 
 module State = Map.Make(String)
 type state = int State.t
@@ -18,10 +18,10 @@ let eval_main p x =
 
   and eval_instruction env heap i =
     match i with
-    | Set(Identifier(id, _), e) ->
+    | Set(Identifier(id), e) ->
       let h, res = eval_expression env heap e in
       State.add id res env, h
-    | Set(ArrayAccess(e1, e2, _), e) ->
+    | Set(ArrayAccess(e1, e2), e) ->
       let h, res1 = eval_expression env heap e1 in
       let h, res2 = eval_expression env h e2 in
       let h, res3 = eval_expression env h e in
@@ -168,12 +168,12 @@ let eval_main p x =
   and eval_bool_op op = fun v1 v2 -> eval_bool (op v1 v2)
 
   and eval_literal env = function
-    | Int(i, _)  -> i
-    | Bool(b, _) -> eval_bool b
+    | Int(i)  -> i
+    | Bool(b) -> eval_bool b
 
   and eval_location env heap = function
-    | Identifier(id, _) -> heap, State.find id env
-    | ArrayAccess(e1, e2, _) ->
+    | Identifier(id) -> heap, State.find id env
+    | ArrayAccess(e1, e2) ->
       (* On récupère le sous tableau / tableau courrant  *)
       let h, res1 = eval_expression env heap e1 in
       (* On récupère l'indice du tableau *)
@@ -183,5 +183,5 @@ let eval_main p x =
       h, arr.(res2)
   in
 
-  let fct = Symb_Tbl.find "main" p in
+  let fct = Symb_Tbl.find "main_integer" p in
   eval_block (State.singleton "x" x) Heap.empty fct.code
