@@ -1,5 +1,13 @@
 open Mips
 
+(* a0 : seed, a1 : upper bound *)
+let random : 'a Mips.asm =
+  label "random_integer_integer"
+  @@ li v0 42
+  @@ syscall
+  @@ move v0 a0
+  @@ jr ra
+
 (* log10 function a0 : integer -> v0 : integer *)
 let log10 : 'a Mips.asm =
   label "log10_integer"
@@ -136,6 +144,12 @@ let print =
   @@ syscall
   @@ jr ra
 
+let print_int =
+  label "print_int_integer"
+  @@ li v0 1
+  @@ syscall
+  @@ jr ra
+
 (* Array function & procedure (a0 contient l'adresse dans le tas du tableau) *)
 let arr_length =
   label "arr_length"
@@ -203,9 +217,8 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ li v0 1
   @@ move a0 t0
-  @@ syscall
+  @@ jal "print_int_integer"
   @@ li v0 10
   @@ syscall
   (* borne inf ok *)
@@ -217,22 +230,24 @@ let check_array_bounds : 'a Mips.asm =
   @@ li v0 4
   @@ la a0 "_array_out_of_bounds_string"
   @@ syscall
-  @@ li v0 1
   @@ move a0 t0
-  @@ syscall
+  @@ jal "print_int_integer"
   @@ li v0 10
   @@ syscall
   (*borne sup ok *)
   @@ label "_ckeck_bound_2"
   @@ jr ra
 
-let unused = { text = check_array_bounds
-                 @@ load_array_elt
-                 @@ store_in_array
-                 @@ new_array
-                 @@ arr_length
-                 @@ print
-                 @@ built_ins
-                 (*@@ string_of_int*)
-                 @@ log10;
-               data = arr_bounds_error_asciiz}
+let unused =
+  { text = check_array_bounds
+      @@ load_array_elt
+      @@ store_in_array
+      @@ new_array
+      @@ arr_length
+      @@ print
+      @@ print_int
+      @@ built_ins
+      (*@@ string_of_int*)
+      @@ log10
+      @@ random;
+    data = arr_bounds_error_asciiz}

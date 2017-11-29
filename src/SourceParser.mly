@@ -60,6 +60,14 @@ prog:
           code = []
         }
         in
+        let print_int =
+          {
+            return = None;
+            formals = (TypInteger, "x")::[];
+            locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+            code = []
+          }
+          in
         let log10 =
         {
           return = Some TypInteger;
@@ -68,31 +76,27 @@ prog:
           code = []
         }
         in
-        (*let string_of_int = {
-          return = Some(TypArray(TypInteger));
-          formals = (TypInteger, "x")::[];
-          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
-          code = []
-        }
-        in*)
-        let arr_length = {
+        let random =
+          let locals = Symb_Tbl.singleton "seed" { typ=TypInteger; kind=Formal(1) } in
+          let locals = Symb_Tbl.add "range" { typ=TypInteger; kind=Formal(2) } locals in
+        {
           return = Some TypInteger;
-          formals = (TypArray(TypInteger), "x")::[];
-          locals = Symb_Tbl.singleton "x" { typ=TypArray(TypInteger); kind=Formal(1) };
+          formals = (TypInteger, "seed")::(TypInteger, "range")::[];
+          locals = locals;
           code = []
         }
         in
         let tbl = Symb_Tbl.add "print" [print] fcts in
+        let tbl = Symb_Tbl.add "print_int" [print_int] tbl in
         let tbl = Symb_Tbl.add "log10" [log10] tbl in
-        (*let tbl = Symb_Tbl.add "string_of_int" [string_of_int] tbl in*)
-        let tbl = Symb_Tbl.add "arr_length" [arr_length] tbl in
+        let tbl = Symb_Tbl.add "random" [random] tbl in
         tbl
 
     }
 ;
 
 fun_delcs:
-  (* empty *) { Symb_Tbl.empty }
+    (* empty *) { Symb_Tbl.empty }
   | fct=fun_delc; fcts=fun_delcs
     { let id, infos = fct in
       let infos_l =
@@ -103,7 +107,7 @@ fun_delcs:
     Symb_Tbl.add id (infos::infos_l) fcts }
 
 var_decls:
- (* empty *) { Symb_Tbl.empty }
+  (* empty *) { Symb_Tbl.empty }
 | VAR; t=typ; id=IDENT; SEMI; tbl=var_decls
   {
     let info = { typ=t; kind=Local } in

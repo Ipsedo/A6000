@@ -279,8 +279,8 @@ let generate_prog p =
       (fun k _ ->
          k <> "print_integer"
          && k <> "log10_integer"
-         (*&& k <> "string_of_int"*)
-         && k <> "arr_length"
+         && k <> "random_integer_integer"
+         && k <> "print_int_integer"
       ) p in
   let prog = Symb_Tbl.fold
       (fun id info acc -> acc @@ label id @@ generate_function info)
@@ -295,7 +295,7 @@ let generate_prog p =
       @@ MipsMisc.built_ins
       @@ MipsMisc.check_array_bounds
       @@ MipsMisc.print
+      @@ MipsMisc.print_int
       @@ MipsMisc.log10
-      (*@@ MipsMisc.string_of_int*)
-      @@ MipsMisc.arr_length;
+      @@ MipsMisc.random;
     data = MipsMisc.arr_bounds_error_asciiz}

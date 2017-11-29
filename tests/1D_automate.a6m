@@ -3,17 +3,26 @@ main(integer x) (
   var []integer curr_line;
   var integer max_line;
   var integer max_width;
+  var boolean random_init;
+  var integer i;
 
   regle := make_regle(x);
 
   max_line := 50;
-  max_width := 70;
+  max_width := 200;
+  random_init := true;
 
   curr_line := [max_width]integer;
 
-  curr_line[max_width / 2 - 1] := 1;
-  curr_line[max_width / 2] := 1;
-  curr_line[max_width / 2 + 1] := 1;
+  if random_init then (
+    for (i:=0; i<max_width; i++) (
+      curr_line[i] := random(1234, 2);
+    );
+  ) else (
+    curr_line[max_width / 2 - 1] := 1;
+    curr_line[max_width / 2] := 1;
+    curr_line[max_width / 2 + 1] := 1;
+  );
 
   while (max_line > 0) (
     print_line(curr_line, max_width);
@@ -29,9 +38,7 @@ print_line([]integer line, integer length) (
   for(i := 0; i < length; i++) (
     if line[i] == 1 then (
       print(35);
-      print(35);
     ) else (
-      print(32);
       print(32);
     );
   );
