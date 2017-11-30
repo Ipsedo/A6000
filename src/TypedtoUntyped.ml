@@ -85,7 +85,7 @@ let erase_prog p =
       str formals
   in
 
-  let erase_fct_decl key infos acc =
+  let erase_fct_decl key acc infos =
     let locals = S.Symb_Tbl.fold
         (fun id info tbl ->
            T.Symb_Tbl.add id (erase_identifier_info info) tbl)
@@ -103,11 +103,7 @@ let erase_prog p =
   in
 
   let erase_fct_decl_list key infos_l symb_tbl =
-    List.fold_left
-      (fun acc infos -> erase_fct_decl key infos acc)
-      symb_tbl infos_l
+    List.fold_left (erase_fct_decl key) symb_tbl infos_l
   in
 
-  S.Symb_Tbl.fold
-    (fun key infos_l acc -> erase_fct_decl_list key infos_l acc)
-    p.S.functions T.Symb_Tbl.empty
+  S.Symb_Tbl.fold erase_fct_decl_list p.S.functions T.Symb_Tbl.empty
