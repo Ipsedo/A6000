@@ -18,7 +18,9 @@ let id_or_keyword =
       "if",       IF;
       "then",     THEN;
       "else",     ELSE;
-      "for",      FOR
+      "for",      FOR;
+      "struct",   STRUCT;
+      "new",      NEW
     ] ;
   fun s ->
     try  Hashtbl.find h s
@@ -52,6 +54,8 @@ rule token = parse
     { O_BRACE }
   | "}"
     { C_BRACE }
+  | "."
+    { DOT }
   | ";"
     { SEMI }
   | ","

@@ -8,7 +8,10 @@ module Symb_Tbl = Map.Make(String)
    - sa nature  : variable locale ou paramètre formel
    - son type : entier ou booléen
 *)
-type prog = function_info list Symb_Tbl.t
+type prog = {
+  functions: function_info list Symb_Tbl.t;
+  structs:   struct_info Symb_Tbl.t
+}
 and function_info = {
   return:  typ option;
   (* On aura besoin de la liste des identifiants des formels
@@ -17,7 +20,9 @@ and function_info = {
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
+and struct_info = (string * typ) list
 and call = string * expression list
+and f_access = expression * string
 and identifier_kind =
   | Local   (* Variable locale    *)
   | Formal of int
@@ -27,6 +32,7 @@ and typ =
   | TypInteger
   | TypBoolean
   | TypArray of typ
+  | TypStruct of string
 
 (* Un bloc de code est une liste d'instructions *)
 and block = instruction list
@@ -43,6 +49,7 @@ and expression =
   | FunCall of call
   | NewArray of expression * typ
   | NewDirectArray of expression list
+  | NewRecord of string
 
 (* On ajoute une position de lexeme pour les erreurs de type,
    sera enlevé dans UntypedAst *)
@@ -53,6 +60,7 @@ and literal =
 and location =
   | Identifier of string * Lexing.position (* Variable en mémoire *)
   | ArrayAccess of expression * expression * Lexing.position
+  | FieldAccess of f_access * Lexing.position
 
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
@@ -71,12 +79,48 @@ let generate_formals_symb_tbl f_list =
         acc)
     Symb_Tbl.empty f_list
 
+(* pre_compiled_fct *)
+let print =
+  {
+    return = None;
+    formals = (TypInteger, "x")::[];
+    locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+    code = []
+  }
+
+let print_int =
+  {
+    return = None;
+    formals = (TypInteger, "x")::[];
+    locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+    code = []
+  }
+
+let log10 =
+  {
+    return = Some TypInteger;
+    formals = (TypInteger, "x")::[];
+    locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
+    code = []
+  }
+
+let random =
+  let locals = Symb_Tbl.singleton "seed" { typ=TypInteger; kind=Formal(1) } in
+  let locals = Symb_Tbl.add "range" { typ=TypInteger; kind=Formal(2) } locals in
+  {
+    return = Some TypInteger;
+    formals = (TypInteger, "seed")::(TypInteger, "range")::[];
+    locals = locals;
+    code = []
+  }
+
 (* Cadeau pour le débogage : un afficheur.
    [print_main m] produit une chaîne de caractère représentant le programme
 *)
 open Printf
 
 let rec print_typ = function
+  | TypStruct _ -> failwith "unimplemented print struct"
   | TypInteger -> "integer"
   | TypBoolean -> "boolean"
   | TypArray(t) -> sprintf "[]%s" (print_typ t)
@@ -91,6 +135,7 @@ and print_literal = function
   | Int (i,_) -> sprintf "%d" i
   | Bool (b,_) -> if b then "true" else "false"
 and print_location = function
+  | FieldAccess _ -> failwith "unimplemented print field access"
   | Identifier (x,_) -> x
   | ArrayAccess(e1, e2, _) -> sprintf "%s[%s]" (print_expression e1) (print_expression e2)
 and print_binop = function
@@ -125,10 +170,12 @@ and print_expression = function
       (print_expression e2)
   | FunCall(c) -> print_call c
   | NewArray(e, t) -> sprintf "[%s]%s" (print_expression e) (print_typ t)
-  | NewDirectArray(e) -> sprintf "{%s}"
-                           (List.fold_left
-                              (fun acc elt -> sprintf "%s, %s" acc (print_expression elt))
-                              "" e)
+  | NewDirectArray(e) ->
+    sprintf "{%s}"
+      (List.fold_left
+         (fun acc elt -> sprintf "%s, %s" acc (print_expression elt))
+         "" e)
+  | NewRecord _ -> failwith "unimplemented print new record"
 
 let offset o = String.make (2*o) ' '
 

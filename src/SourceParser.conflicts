@@ -1,384 +1,396 @@
 
-** Conflict (shift/reduce) in state 62.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 84.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression AND expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression AND expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 62, looking ahead at O_BRACKETS, reducing production
+** In state 84, looking ahead at DOT, reducing production
 ** expression -> expression AND expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression AND expression . 
 
-** In state 62, looking ahead at O_BRACKETS, shifting is permitted
+** In state 84, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression AND expression 
                location 
-               expression . O_BRACKETS expression C_BRACKETS 
+               expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 59.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 81.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression EQ expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression EQ expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 59, looking ahead at O_BRACKETS, reducing production
+** In state 81, looking ahead at DOT, reducing production
 ** expression -> expression EQ expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression EQ expression . 
 
-** In state 59, looking ahead at O_BRACKETS, shifting is permitted
+** In state 81, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression EQ expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 57.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 79.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression LE expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression LE expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 57, looking ahead at O_BRACKETS, reducing production
+** In state 79, looking ahead at DOT, reducing production
 ** expression -> expression LE expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression LE expression . 
 
-** In state 57, looking ahead at O_BRACKETS, shifting is permitted
+** In state 79, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression LE expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 55.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 77.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression LT expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression LT expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 55, looking ahead at O_BRACKETS, reducing production
+** In state 77, looking ahead at DOT, reducing production
 ** expression -> expression LT expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression LT expression . 
 
-** In state 55, looking ahead at O_BRACKETS, shifting is permitted
+** In state 77, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression LT expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 53.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 75.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression ME expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression ME expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 53, looking ahead at O_BRACKETS, reducing production
+** In state 75, looking ahead at DOT, reducing production
 ** expression -> expression ME expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression ME expression . 
 
-** In state 53, looking ahead at O_BRACKETS, shifting is permitted
+** In state 75, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression ME expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 51.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 73.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression MT expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression MT expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 51, looking ahead at O_BRACKETS, reducing production
+** In state 73, looking ahead at DOT, reducing production
 ** expression -> expression MT expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression MT expression . 
 
-** In state 51, looking ahead at O_BRACKETS, shifting is permitted
+** In state 73, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression MT expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 49.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 71.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression NEQ expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression NEQ expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 49, looking ahead at O_BRACKETS, reducing production
+** In state 71, looking ahead at DOT, reducing production
 ** expression -> expression NEQ expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression NEQ expression . 
 
-** In state 49, looking ahead at O_BRACKETS, shifting is permitted
+** In state 71, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression NEQ expression 
                location 
-               expression . O_BRACKETS expression C_BRACKETS 
+               expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 47.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 69.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression OR expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression OR expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 47, looking ahead at O_BRACKETS, reducing production
+** In state 69, looking ahead at DOT, reducing production
 ** expression -> expression OR expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression OR expression . 
 
-** In state 47, looking ahead at O_BRACKETS, shifting is permitted
+** In state 69, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression OR expression 
               location 
-              expression . O_BRACKETS expression C_BRACKETS 
+              expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 45.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 67.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression DIV expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression DIV expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 45, looking ahead at O_BRACKETS, reducing production
+** In state 67, looking ahead at DOT, reducing production
 ** expression -> expression DIV expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression DIV expression . 
 
-** In state 45, looking ahead at O_BRACKETS, shifting is permitted
+** In state 67, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression DIV expression 
                location 
-               expression . O_BRACKETS expression C_BRACKETS 
+               expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 42.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 62.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression MULT expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression MULT expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 42, looking ahead at O_BRACKETS, reducing production
+** In state 62, looking ahead at DOT, reducing production
 ** expression -> expression MULT expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression MULT expression . 
 
-** In state 42, looking ahead at O_BRACKETS, shifting is permitted
+** In state 62, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression MULT expression 
                 location 
-                expression . O_BRACKETS expression C_BRACKETS 
+                expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 40.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 60.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression PLUS expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression PLUS expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 40, looking ahead at O_BRACKETS, reducing production
+** In state 60, looking ahead at DOT, reducing production
 ** expression -> expression PLUS expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression PLUS expression . 
 
-** In state 40, looking ahead at O_BRACKETS, shifting is permitted
+** In state 60, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression PLUS expression 
                 location 
-                expression . O_BRACKETS expression C_BRACKETS 
+                expression . DOT IDENT 
 
-** Conflict (shift/reduce) in state 36.
-** Token involved: O_BRACKETS
+** Conflict (shift/reduce) in state 56.
+** Token involved: DOT
 ** This state is reached from prog after reading:
 
-IDENT BEGIN parameters END BEGIN var_decls expression SUB expression 
+list(struct_decl) IDENT BEGIN parameters END BEGIN var_decls expression SUB expression 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
 
 prog 
-fun_delc prog 
-IDENT BEGIN parameters END BEGIN var_decls instructions END 
-                                           instruction SEMI instructions 
-                                           set 
-                                           location SET expression 
-                                           (?)
+list(struct_decl) fun_delcs EOF 
+                  fun_delc fun_delcs 
+                  IDENT BEGIN parameters END BEGIN var_decls instructions END 
+                                                             instruction SEMI instructions 
+                                                             set 
+                                                             location SET expression 
+                                                             (?)
 
-** In state 36, looking ahead at O_BRACKETS, reducing production
+** In state 56, looking ahead at DOT, reducing production
 ** expression -> expression SUB expression 
 ** is permitted because of the following sub-derivation:
 
-expression O_BRACKETS expression C_BRACKETS // lookahead token appears
+expression DOT IDENT // lookahead token appears
 expression SUB expression . 
 
-** In state 36, looking ahead at O_BRACKETS, shifting is permitted
+** In state 56, looking ahead at DOT, shifting is permitted
 ** because of the following sub-derivation:
 
 expression O_BRACKETS expression C_BRACKETS 
 expression SUB expression 
                location 
-               expression . O_BRACKETS expression C_BRACKETS 
+               expression . DOT IDENT 

@@ -9,6 +9,7 @@
 %token O_BRACKETS C_BRACKETS O_BRACE C_BRACE
 %token SEMI
 %token COMMA
+%token NEW STRUCT DOT
 
 %token BOOL
 %token INT
@@ -41,6 +42,7 @@
 %left PLUS SUB
 %left MULT DIV
 %nonassoc O_BRACKETS
+%nonassoc DOT
 
 %start prog
 %type <SourceAst.prog> prog
@@ -48,63 +50,45 @@
 %%
 
 prog:
-    fcts=fun_delcs; EOF
+    structs=list(struct_decl); fcts=fun_delcs; EOF
     {
   (* On ajoute des fausses fonctions -> besoin pour typechecker et Ir-stuff,
       on les remplacera dans AllocatedtoMips *)
-      let print =
-        {
-          return = None;
-          formals = (TypInteger, "x")::[];
-          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
-          code = []
-        }
-        in
-        let print_int =
-          {
-            return = None;
-            formals = (TypInteger, "x")::[];
-            locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
-            code = []
-          }
-          in
-        let log10 =
-        {
-          return = Some TypInteger;
-          formals = (TypInteger, "x")::[];
-          locals = Symb_Tbl.singleton "x" { typ=TypInteger; kind=Formal(1) };
-          code = []
-        }
-        in
-        let random =
-          let locals = Symb_Tbl.singleton "seed" { typ=TypInteger; kind=Formal(1) } in
-          let locals = Symb_Tbl.add "range" { typ=TypInteger; kind=Formal(2) } locals in
-        {
-          return = Some TypInteger;
-          formals = (TypInteger, "seed")::(TypInteger, "range")::[];
-          locals = locals;
-          code = []
-        }
-        in
         let tbl = Symb_Tbl.add "print" [print] fcts in
         let tbl = Symb_Tbl.add "print_int" [print_int] tbl in
         let tbl = Symb_Tbl.add "log10" [log10] tbl in
         let tbl = Symb_Tbl.add "random" [random] tbl in
-        tbl
 
+        let struct_tbl = List.fold_left
+          (fun acc (id, field) -> Symb_Tbl.add id field acc)
+          Symb_Tbl.empty structs
+        in
+
+        { functions = tbl; structs = struct_tbl}
     }
 ;
 
 fun_delcs:
     (* empty *) { Symb_Tbl.empty }
   | fct=fun_delc; fcts=fun_delcs
-    { let id, infos = fct in
+    {
+      let id, infos = fct in
       let infos_l =
         match Symb_Tbl.find_opt id fcts with
           None -> []
         | Some s -> s
       in
-    Symb_Tbl.add id (infos::infos_l) fcts }
+    Symb_Tbl.add id (infos::infos_l) fcts
+  }
+
+struct_decl:
+  STRUCT; id=IDENT; BEGIN; f_d=separated_list(SEMI, field_decl); END
+  {
+    id, f_d
+  }
+
+field_decl:
+ t=typ; id=IDENT { id, t }
 
 var_decls:
   (* empty *) { Symb_Tbl.empty }
@@ -118,6 +102,7 @@ var_decls:
 typ:
   INT  { TypInteger }
 | BOOL { TypBoolean }
+| id=IDENT { TypStruct id }
 | O_BRACKETS; C_BRACKETS; t=typ { TypArray(t) }
 ;
 
@@ -193,7 +178,9 @@ expression:
   | lit=literal                                  { Literal(lit)     }
   | e1=expression; b=binop; e2=expression        { Binop(b, e1, e2) }
   | O_BRACKETS; e=expression; C_BRACKETS; t=typ  { NewArray(e, t)   }
-  | O_BRACE; es=separated_list(COMMA, expression); C_BRACE { NewDirectArray(es) }
+  | O_BRACE; es=separated_list(COMMA, expression); C_BRACE
+    { NewDirectArray(es) }
+  | NEW; id=IDENT; BEGIN; END                    { NewRecord(id) }
   ;
 
 %inline binop:
@@ -229,6 +216,8 @@ location:
     id=IDENT  { Identifier (id, $startpos) }
   | e1=expression; O_BRACKETS; e2=expression; C_BRACKETS
     { ArrayAccess(e1, e2, $startpos)  }
+  | e=expression; DOT; id=IDENT
+    { let access = (e, id) in FieldAccess(access, $startpos) }
 ;
 
 fun_delc:

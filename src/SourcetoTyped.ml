@@ -2,6 +2,7 @@ module S = SourceAst
 module T = TypedAst
 
 let rec string_of_typ t = match t with
+  | S.TypStruct s -> "struct " ^ s ^ " { ... }"
   | S.TypInteger -> "integer"
   | S.TypBoolean -> "boolean"
   | S.TypArray(t) -> Printf.sprintf "array of %s" (string_of_typ t)
@@ -89,7 +90,7 @@ let type_prog p =
         (fun (e_acc, t_acc) (e, t) -> e_acc @ [e], t_acc @ [t])
         ([], []) tmp
     in
-    let infos_l = S.Symb_Tbl.find str p in
+    let infos_l = S.Symb_Tbl.find str p.S.functions in
     (*let mk_check_args acc elt (a, _) =
       let ne, ty = type_expression elt symb_tbl in
       let _ = if str <> "arr_length" then
@@ -114,6 +115,20 @@ let type_prog p =
       let l_type = (S.Symb_Tbl.find str symb_tbl).S.typ in
       { T.annot = l_type; T.elt = T.Identifier(str, pos) }, l_type
     | S.ArrayAccess(e1, e2, pos) -> type_array e1 e2 pos symb_tbl
+    | S.FieldAccess(f_a, pos) -> type_field_access f_a pos symb_tbl
+
+  and type_field_access (e, str) pos symb_tbl =
+    current_pos := pos;
+    let e, t = type_expression e symb_tbl in
+    let struct_name =
+      match t with
+        TypStruct s -> s
+      | _ -> failwith "Must be a type struct !"
+    in
+    let struct_fields = S.Symb_Tbl.find struct_name p.S.structs in
+    let f_t = List.assoc str struct_fields in
+    { T.annot = f_t; T.elt = T.FieldAccess((e, str), pos) }, f_t
+
 
   and type_array e1 e2 pos symb_tbl =
     current_pos := pos;
@@ -157,6 +172,8 @@ let type_prog p =
         | a::_ -> a
       in
       { T.annot = TypArray t; T.elt = T.NewDirectArray(nes) }, TypArray t
+    | S.NewRecord(str) ->
+      { T.annot = TypStruct str; T.elt = T.NewRecord(str) }, TypStruct str
     | S.Literal lit  -> let nl, tl = type_literal lit in
       { T.annot = tl; T.elt = T.Literal(nl) }, tl
     | S.Location loc -> let nl, tl = type_location loc symb_tbl in
@@ -204,4 +221,7 @@ let type_prog p =
     T.Symb_Tbl.add id n_l acc
   in
 
-  S.Symb_Tbl.fold type_fun_decls p T.Symb_Tbl.empty
+  {
+    T.functions = S.Symb_Tbl.fold type_fun_decls p.S.functions T.Symb_Tbl.empty;
+    T.structs = p.S.structs
+  }

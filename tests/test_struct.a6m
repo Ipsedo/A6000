@@ -1,0 +1,42 @@
+struct complex (
+  integer i;
+  integer j
+)
+
+struct super_complex (
+  complex s_i;
+  complex s_j
+)
+
+main(integer x) (
+  var complex a;
+  var super_complex b;
+
+  a := new complex();
+  a.i := 51;
+  a.j := 52;
+
+  print(a.i);
+  print(a.j);
+
+  b := make_super_complex(a);
+
+  print(10);
+  print(b.s_i.i);
+  print(b.s_i.j);
+  print(b.s_j.i);
+  print(b.s_j.j);
+)
+
+super_complex make_super_complex(complex a) (
+  var super_complex b;
+
+  b := new super_complex();
+  b.s_i := a;
+
+  b.s_j := new complex();
+  b.s_j.i := 53;
+  b.s_j.j := 54;
+
+  result := b;
+)

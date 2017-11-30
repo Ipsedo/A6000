@@ -10,6 +10,19 @@ let erase_prog p =
     | S.ArrayAccess(e1, e2, _) -> let ne1 = erase_expression e1 in
       let ne2 = erase_expression e2 in
       T.ArrayAccess(ne1, ne2)
+    | S.FieldAccess((e, str), _) ->
+      let struct_name =
+        match e.S.annot with
+          TypStruct str -> str
+        | _ -> failwith "Field acces must be done on struct !"
+      in
+      let struct_fields = S.Symb_Tbl.find struct_name p.S.structs in
+      let index, _ = List.fold_left
+          (fun (acc, index) (field, _) ->
+             if str = field then (index, index + 1) else (acc, index + 1))
+          (-1, 0) struct_fields
+      in
+      T.ArrayAccess(erase_expression e, Literal(Int(index)))
 
   and erase_literal literal =
     match literal with
@@ -18,6 +31,7 @@ let erase_prog p =
 
   and string_of_typ t =
     match t with
+    | SourceAst.TypStruct s -> "structof" ^ s
     | SourceAst.TypInteger -> "integer"
     | SourceAst.TypBoolean -> "boolean"
     | SourceAst.TypArray(sub_t) -> "arrayof" ^ (string_of_typ sub_t)
@@ -42,6 +56,10 @@ let erase_prog p =
     | S.NewDirectArray(es) ->
       let es = List.map erase_expression es in
       T.NewDirectArray(es)
+    | S.NewRecord(str) ->
+      let struct_field = S.Symb_Tbl.find str p.S.structs in
+      let nb_field = List.length struct_field in
+      T.NewArray(Literal(Int(nb_field)))
 
   and erase_instruction i =
     match i with
@@ -83,7 +101,7 @@ let erase_prog p =
   in
   S.Symb_Tbl.fold
     (fun key infos_l acc -> erase_fct_decl_list key infos_l acc)
-    p T.Symb_Tbl.empty
+    p.S.functions T.Symb_Tbl.empty
 (*S.Symb_Tbl.fold
   (fun key infos acc ->
      let locals = S.Symb_Tbl.fold

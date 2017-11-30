@@ -102,8 +102,6 @@ let mk_lv p =
   let rec lv_gen : IrAst.instruction -> VarSet.t = function
     | Binop(_, _, v1, v2) | Load(_, (v1, v2)) ->
       VarSet.union (value_to_var_set v1) (value_to_var_set v2)
-    (*| Value(id, v) when id = "result" ->
-      VarSet.union (value_to_var_set v) (VarSet.singleton id)*)
     | Value(_, v) | CondGoto(v, _) | New(_, v) -> value_to_var_set v
     | Store((v1, v2), v3) ->
       let tmp = VarSet.union (value_to_var_set v1) (value_to_var_set v2) in
@@ -118,22 +116,6 @@ let mk_lv p =
       VarSet.singleton id
     | _ -> VarSet.empty
   in
-
-  (*let formal_set =
-    let tmp = List.fold_left
-        (fun acc elt -> VarSet.union acc (VarSet.singleton elt))
-        VarSet.empty p.formals
-    in
-    if Symb_Tbl.mem "result" p.locals then
-      VarSet.union tmp (VarSet.singleton "result")
-    else
-      tmp
-    in*)
-
-  (*let _ = match p.code with
-    | (lab,_)::_ -> Hashtbl.replace lv_in lab formal_set
-    | _ -> ()
-    in*)
 
   (* Booléen qu'on met à [true] lorsque les tables [lv_in] et [lv_out] sont
      encore en train de changer. Il est initialisé à [true] car à l'origine il
