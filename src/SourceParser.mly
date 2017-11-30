@@ -82,13 +82,13 @@ fun_delcs:
   }
 
 struct_decl:
-  STRUCT; id=IDENT; BEGIN; f_d=separated_list(SEMI, field_decl); END
+  STRUCT; id=IDENT; BEGIN; f_d=list(field_decl); END
   {
     id, f_d
   }
 
 field_decl:
- t=typ; id=IDENT { id, t }
+ t=typ; id=IDENT; SEMI { id, t }
 
 var_decls:
   (* empty *) { Symb_Tbl.empty }

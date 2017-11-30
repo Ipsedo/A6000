@@ -1,11 +1,11 @@
 struct complex (
   integer i;
-  integer j
+  integer j;
 )
 
 struct super_complex (
   complex s_i;
-  complex s_j
+  complex s_j;
 )
 
 main(integer x) (
