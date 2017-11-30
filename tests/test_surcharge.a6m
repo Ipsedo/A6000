@@ -1,4 +1,5 @@
 main(integer x) (
+  var []integer tab;
 
   print_surch(x);
   print(10);
@@ -9,6 +10,10 @@ main(integer x) (
   print(10);
   print(dummy(x, 1));
   print(10);
+
+  tab := {48, 49, 50, 51, 52, 53};
+
+  print(dummy(tab, 6));
 )
 
 print_surch(integer x) (
@@ -26,4 +31,13 @@ integer dummy(integer x) (
 
 integer dummy(integer x1, integer x2) (
   result := x1 + x2;
+)
+
+integer dummy([]integer tab, integer x) (
+  var integer i;
+
+  for (i := 0; i < x; i++) (
+    print(tab[i]);
+  );
+  result := tab[i - 1] + 1;
 )

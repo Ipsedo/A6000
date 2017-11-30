@@ -11,10 +11,11 @@ struct super_complex (
 main(integer x) (
   var complex a;
   var super_complex b;
+  var []integer i;
 
   a := new complex();
-  a.i := 51;
-  a.j := 52;
+  a.i := x;
+  a.j := x + 1;
 
   print(a.i);
   print(a.j);
@@ -35,8 +36,8 @@ super_complex make_super_complex(complex a) (
   b.s_i := a;
 
   b.s_j := new complex();
-  b.s_j.i := 53;
-  b.s_j.j := 54;
+  b.s_j.i := b.s_i.j + 1;
+  b.s_j.j := b.s_j.i + 1;
 
   result := b;
 )

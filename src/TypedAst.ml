@@ -11,6 +11,7 @@ type ('a, 'e) annotated_element = { annot: 'a ; elt: 'e }
 type typed_expression = (typ, expression) annotated_element
 and typed_location    = (typ, location) annotated_element
 and typed_call        = ((typ option), call) annotated_element
+and typed_f_access    = (typ, f_access) annotated_element
 and call = string * typed_expression list
 and f_access = typed_expression * string
 and expression =
@@ -31,7 +32,7 @@ and instruction =
 and location =
   | Identifier of string * Lexing.position (* Variable en mémoire *)
   | ArrayAccess of typed_expression * typed_expression * Lexing.position
-  | FieldAccess of f_access * Lexing.position
+  | FieldAccess of typed_f_access * Lexing.position
 
 
 and block = instruction list

@@ -275,13 +275,13 @@ let close_prog = li v0 10 @@ syscall
 
 let generate_prog p =
   (* on supprime la fake-fonction print pour ajouter les bon code MIPS *)
-  let p = Symb_Tbl.filter
-      (fun k _ ->
-         k <> "print_integer"
-         && k <> "log10_integer"
-         && k <> "random_integer_integer"
-         && k <> "print_int_integer"
-      ) p in
+  let fct_filter k _ =
+    k <> "print_integer"
+    && k <> "log10_integer"
+    && k <> "random_integer_integer"
+    && k <> "print_int_integer"
+  in
+  let p = Symb_Tbl.filter fct_filter p in
   let prog = Symb_Tbl.fold
       (fun id info acc -> acc @@ label id @@ generate_function info)
       p nop

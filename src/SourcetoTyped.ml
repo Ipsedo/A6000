@@ -10,6 +10,8 @@ let rec string_of_typ t = match t with
 (* Rapports d'erreurs *)
 exception Type_error of string
 exception InvalidArray of string
+exception FunctionError of string
+exception StructError of string
 
 let current_pos = ref Lexing.dummy_pos
 
@@ -18,16 +20,13 @@ let raise_type_exception t1 t2 =
   let needed = string_of_typ t1 in
   let actual = string_of_typ t2 in
   let msg = Printf.sprintf
-      "Wrong type, actual : %s, needed : %s at line %d, col %d"
+      "Wrong type, actual : %s, needed : %s at line %d, col %d !"
       actual
       needed
       pos.pos_lnum
       (pos.pos_cnum - pos.pos_bol)
   in
   raise (Type_error msg)
-
-let raise_invalid_array_excepion msg =
-  raise (InvalidArray msg)
 
 (* comparetype: typ -> typ -> unit
    Lève une exception si les types diffèrent. *)
@@ -65,23 +64,30 @@ let type_prog p =
 
   and find_fct_with_call ty_expr info_l =
     let check_types tys ty_exprs =
-      if (List.length tys) = (List.length ty_expr) then
-        List.iter2 (fun (ty,_) ty_e -> comparetype ty ty_e) tys ty_exprs
-      else ()
+      if (List.length tys) = (List.length ty_expr) then begin
+          List.iter2 (fun (ty,_) ty_e -> comparetype ty ty_e) tys ty_exprs;
+          true end
+      else false
     in
-    let rec aux l acc =
+    let rec finder l acc =
       match l with
         [] -> acc
       | i::tl ->
         try
-          check_types i.S.formals ty_expr;
-          aux tl (Some i)
-        with Type_error _ | InvalidArray _ -> aux tl acc
+          if check_types i.S.formals ty_expr then Some i
+          else finder tl acc
+        with Type_error _ -> finder tl acc
     in
-    let info = aux info_l None in
+    let info = finder info_l None in
     match info with
     | Some s -> s
-    | None -> failwith "No function / procedure founded !"
+    | None -> let pos = !current_pos in
+      let msg = Printf.sprintf
+          "No function / procedure founded at line %d, col %d !"
+          pos.pos_lnum
+          (pos.pos_cnum - pos.pos_bol)
+      in
+      raise (FunctionError msg)
 
   and mk_typed_call c symb_tbl =
     let str, es = c in
@@ -91,19 +97,6 @@ let type_prog p =
         ([], []) tmp
     in
     let infos_l = S.Symb_Tbl.find str p.S.functions in
-    (*let mk_check_args acc elt (a, _) =
-      let ne, ty = type_expression elt symb_tbl in
-      let _ = if str <> "arr_length" then
-          comparetype a ty
-        else
-          match ty with
-            TypArray _ -> ()
-          | _ -> let msg = "Not an array (function : integer arr_length) !" in
-            raise (raise_invalid_array_excepion msg)
-      in
-      acc @ [ne]
-      in
-      let nes = List.fold_left2 mk_check_args [] es infos.S.formals in*)
     let infos = find_fct_with_call tys infos_l in
     { T.annot = infos.S.return; T.elt = (str, es) }
 
@@ -115,19 +108,27 @@ let type_prog p =
       let l_type = (S.Symb_Tbl.find str symb_tbl).S.typ in
       { T.annot = l_type; T.elt = T.Identifier(str, pos) }, l_type
     | S.ArrayAccess(e1, e2, pos) -> type_array e1 e2 pos symb_tbl
-    | S.FieldAccess(f_a, pos) -> type_field_access f_a pos symb_tbl
+    | S.FieldAccess(f_a, pos) ->
+      let t_f_access, t = mk_field_access f_a pos symb_tbl in
+      { T.annot = t; T.elt = T.FieldAccess(t_f_access, pos) }, t
 
-  and type_field_access (e, str) pos symb_tbl =
+  and mk_field_access (e, str) pos symb_tbl =
     current_pos := pos;
     let e, t = type_expression e symb_tbl in
     let struct_name =
       match t with
         TypStruct s -> s
-      | _ -> failwith "Must be a type struct !"
+      | _ -> let pos = !current_pos in
+        let msg = Printf.sprintf
+            "Must be a type struct at line %d, col %d !"
+            pos.pos_lnum
+            (pos.pos_cnum - pos.pos_bol)
+        in
+        raise (StructError msg)
     in
     let struct_fields = S.Symb_Tbl.find struct_name p.S.structs in
     let f_t = List.assoc str struct_fields in
-    { T.annot = f_t; T.elt = T.FieldAccess((e, str), pos) }, f_t
+    { T.annot = f_t; T.elt = (e, str)}, f_t
 
 
   and type_array e1 e2 pos symb_tbl =
@@ -137,8 +138,14 @@ let type_prog p =
     let ne1, t1 = type_expression e1 symb_tbl in
     let res_type = match t1 with
         TypArray t -> t
-      | _ -> let msg = "Location is not an array !" in
-        raise_invalid_array_excepion msg
+      | _ ->
+        let pos = !current_pos in
+        let msg = Printf.sprintf
+            "Is not an array at line %d, col %d !"
+            pos.pos_lnum
+            (pos.pos_cnum - pos.pos_bol)
+        in
+        raise (InvalidArray msg)
     in
     { T.annot = res_type; T.elt = T.ArrayAccess(ne1, ne2, pos) }, res_type
 
@@ -160,7 +167,8 @@ let type_prog p =
       let nes, tes = List.fold_left
           (fun (nacc, tacc) elt ->
              let ne, te = type_expression elt symb_tbl in
-             nacc @ [ne], tacc @ [te]) ([], []) e in
+             nacc @ [ne], tacc @ [te]) ([], []) e
+      in
       let rec aux l =
         match l with
           [] -> ()
@@ -168,7 +176,13 @@ let type_prog p =
           aux tl
       in aux tes;
       let t = match tes with
-          [] -> failwith "empty direct tab can't be created"
+          [] -> let pos = !current_pos in
+          let msg = Printf.sprintf
+              "Empty direct tab can't be created at line %d, col %d"
+              pos.pos_lnum
+              (pos.pos_cnum - pos.pos_bol)
+          in
+          raise (InvalidArray msg)
         | a::_ -> a
       in
       { T.annot = TypArray t; T.elt = T.NewDirectArray(nes) }, TypArray t
@@ -192,23 +206,19 @@ let type_prog p =
     let typed_call = mk_typed_call c symb_tbl in
     match typed_call.annot with
     | Some t -> typed_call, t
-    | None -> failwith "No return type for focntion !"
+    | None -> let pos = !current_pos in
+      let msg = Printf.sprintf
+          "No return type for focntion at line %d, col %d"
+          pos.pos_lnum
+          (pos.pos_cnum - pos.pos_bol)
+      in
+      raise (FunctionError msg)
 
 
   and type_binop = function
     | Add | Sub | Mult | Div          -> TypInteger, TypInteger
     | Eq  | Neq | Lt   | Le | Me | Mt -> TypInteger, TypBoolean
     | And | Or                        -> TypBoolean, TypBoolean
-
-  (*and type_fun_decls id infos acc  =
-    T.Symb_Tbl.add id { T.return = infos.S.return;
-                        T.formals = infos.S.formals;
-                        T.locals = infos.S.locals;
-                        T.code = typecheck_block infos.S.code infos.S.locals}
-      acc
-
-    in
-    S.Symb_Tbl.fold type_fun_decls p T.Symb_Tbl.empty*)
 
   and type_fun_decls id fct_list acc =
     let aux acc infos =

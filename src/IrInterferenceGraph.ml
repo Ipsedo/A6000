@@ -20,9 +20,10 @@ let add_interference_formals id_list g =
   let rec aux id_list acc =
     match id_list with
       [] -> acc
-    | elt::tl -> let new_acc = List.fold_left
-                     (fun a e -> Graph.add_edge a elt e)
-                     acc tl
+    | elt::tl ->
+      let new_acc = List.fold_left
+          (fun a e -> Graph.add_edge a elt e)
+          acc tl
       in aux tl new_acc
   in aux id_list g
 

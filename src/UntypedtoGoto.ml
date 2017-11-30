@@ -15,7 +15,8 @@ let destructure_prog p =
   let cpt_label = ref 0 in
 
   let new_label =
-    fun () -> incr cpt_label; Printf.sprintf "_label_%s_%i" !fct_name !cpt_label
+    fun () -> incr cpt_label;
+      Printf.sprintf "_label_%s_%i" !fct_name !cpt_label
   in
 
   (* destructure_block: S.block -> T.block *)
@@ -54,8 +55,3 @@ let destructure_prog p =
            T.code = destructure_block infos.S.code }
          acc)
     p T.Symb_Tbl.empty
-
-
-
-(*aux tl ((str,{ T.locals = fct.S.locals; T.code = destructure_block fct.S.code })::acc))
-  in aux p []*)
