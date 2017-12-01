@@ -67,11 +67,11 @@ prog:
           in
           match parent_struct with
             None -> acc
-          | Some parent -> let (_, p, f) = find_parent parent in
+          | Some parent -> let (_, f, p) = find_parent parent in
             construct_field p (f @ acc)
         in
         let struct_tbl = List.fold_left
-          (fun acc (curr, parent, field) -> Symb_Tbl.add curr (construct_field parent field) acc)
+          (fun acc (curr, field, parent) -> Symb_Tbl.add curr ((construct_field parent field), parent) acc)
           Symb_Tbl.empty structs
         in
         { functions = tbl; structs = struct_tbl}
@@ -94,11 +94,11 @@ fun_delcs:
 struct_decl:
   STRUCT; id=IDENT; BEGIN; f_d=list(field_decl); END
     {
-      id, None, f_d
+      id, f_d, None
     }
   | STRUCT; id1=IDENT; EXTENDS; id2=IDENT; BEGIN; f_d=list(field_decl); END
     {
-      id1, Some id2, f_d
+      id1, f_d, Some id2
     }
 
 field_decl:

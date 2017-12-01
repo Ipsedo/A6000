@@ -24,7 +24,7 @@ main(integer x) (
 
   print(a.i);
   print(a.j);
-  
+
   b := make_super_complex(a);
 
   print(10);
@@ -32,15 +32,24 @@ main(integer x) (
   print(b.s_i.j);
   print(b.s_j.i);
   print(b.s_j.j);
+  print(10);
 
   c := new mega_complex();
-  c.i := x;
+  c.i := 48;
   c.j := c.i + 1;
   c.k := c.j + 1;
+
+  b := make_super_complex(c);
 
   print(c.i);
   print(c.j);
   print(c.k);
+  print(10);
+
+  print(b.s_i.i);
+  print(b.s_i.j);
+  print(b.s_j.i);
+  print(b.s_j.j);
 )
 
 super_complex make_super_complex(complex a) (

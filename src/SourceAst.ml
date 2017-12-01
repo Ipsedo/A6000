@@ -20,7 +20,7 @@ and function_info = {
   locals:  identifier_info Symb_Tbl.t;
   code:    block
 }
-and struct_info = (string * typ) list
+and struct_info = (string * typ) list * string option (* field list * optional parent *)
 and call = string * expression list
 and f_access = expression * string
 and identifier_kind =

@@ -7,6 +7,12 @@ let rec string_of_typ t = match t with
   | S.TypBoolean -> "boolean"
   | S.TypArray(t) -> Printf.sprintf "array of %s" (string_of_typ t)
 
+let rec string_of_typ2 t = match t with
+  | S.TypStruct s -> "struct_" ^ s
+  | S.TypInteger -> "integer"
+  | S.TypBoolean -> "boolean"
+  | S.TypArray(t) -> Printf.sprintf "array_of_%s" (string_of_typ2 t)
+
 (* Rapports d'erreurs *)
 exception Type_error of string
 exception InvalidArray of string
@@ -29,7 +35,7 @@ let raise_type_exception t1 t2 =
   in
   raise (Type_error msg)
 
-let raise_no_symbol_found_exception str =
+let raise_no_symbol_found str =
   let pos = !current_pos in
   let msg = Printf.sprintf
       "No symbol \"%s\" found at line %d, col %d !"
@@ -38,6 +44,44 @@ let raise_no_symbol_found_exception str =
       (pos.pos_cnum - pos.pos_bol)
   in
   raise (SymbolError msg)
+
+let raise_incorrect_struct t =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "%s is not type struct at line %d, col %d !"
+      (string_of_typ t)
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (StructError msg)
+
+let raise_incorrect_array t =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "%s is not an array at line %d, col %d !"
+      (string_of_typ t)
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (InvalidArray msg)
+
+let raise_empty_direct_tab () =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "Empty direct tab can't be created at line %d, col %d"
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (InvalidArray msg)
+
+let raise_no_function_return () =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "No return type for fonction at line %d, col %d"
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (FunctionError msg)
 
 let find_struct str symb_tbl =
   let struct_fields = S.Symb_Tbl.find_opt str symb_tbl in
@@ -60,15 +104,26 @@ let raise_no_function_found_exception () =
   in
   raise (FunctionError msg)
 
-(* comparetype: typ -> typ -> unit
-   Lève une exception si les types diffèrent. *)
-let comparetype t1 t2=
-  if t1 <> t2
-  then raise_type_exception t1 t2
-
 (* Vérification des types d'un programme *)
 
 let type_prog p =
+
+  (* comparetype: typ -> typ -> unit
+     Lève une exception si les types diffèrent. *)
+  let comparetype t1 t2 =
+    let rec find_compatibility needed curr =
+      let (_,found) = find_struct curr p.S.structs in
+      match found with
+      | None -> raise_type_exception t1 t2
+      | Some s -> if needed <> s then find_compatibility needed s
+    in
+    match t1, t2 with
+      S.TypStruct s1, S.TypStruct s2 ->
+      if s1 = s2 then () else find_compatibility s1 s2
+    | t1, t2 ->
+      if t1 <> t2
+      then raise_type_exception t1 t2
+  in
 
   let rec typecheck_block b symb_tbl =
     List.map (typecheck_instruction symb_tbl) b
@@ -115,6 +170,11 @@ let type_prog p =
     | Some s -> s
     | None -> raise_no_function_found_exception ()
 
+  and rename_fct str formals =
+    List.fold_left
+      (fun acc (t, _) -> acc ^ "_" ^ (string_of_typ2 t))
+      str formals
+
   and mk_typed_call c symb_tbl =
     let str, es = c in
     let tmp = List.map (fun elt -> type_expression elt symb_tbl) es in
@@ -128,6 +188,7 @@ let type_prog p =
       | None -> raise_no_function_found_exception ()
     in
     let infos = find_fct_with_call tys infos_l in
+    let str = rename_fct str infos.S.formals in
     { T.annot = infos.S.return; T.elt = (str, es) }
 
   (* location -> S.Symb_tbl.t -> typed_location * S.typ *)
@@ -138,57 +199,44 @@ let type_prog p =
       let l_type = S.Symb_Tbl.find_opt str symb_tbl in
       let l_type = match l_type with
         | Some s -> s
-        | None -> raise_no_symbol_found_exception str
+        | None -> raise_no_symbol_found str
       in
       let l_type = l_type.S.typ in
-      { T.annot = l_type; T.elt = T.Identifier(str, pos) }, l_type
-    | S.ArrayAccess(e1, e2, pos) -> type_array e1 e2 pos symb_tbl
-    | S.FieldAccess(f_a, pos) ->
-      let t_f_access, t = mk_field_access f_a pos symb_tbl in
-      { T.annot = t; T.elt = T.FieldAccess(t_f_access, pos) }, t
+      { T.annot = l_type; T.elt = T.Identifier(str) }, l_type
+    | S.ArrayAccess(e1, e2, pos) -> current_pos := pos;
+      type_array e1 e2 symb_tbl
+    | S.FieldAccess(f_a, pos) -> current_pos := pos;
+      let t_f_access, t = mk_field_access f_a symb_tbl in
+      { T.annot = t; T.elt = T.FieldAccess(t_f_access) }, t
 
-  and mk_field_access (e, str) pos symb_tbl =
-    current_pos := pos;
+  and mk_field_access (e, str) symb_tbl =
     let e, t = type_expression e symb_tbl in
     let struct_name =
       match t with
         TypStruct s -> s
-      | _ -> let pos = !current_pos in
-        let msg = Printf.sprintf
-            "Must be a type struct at line %d, col %d !"
-            pos.pos_lnum
-            (pos.pos_cnum - pos.pos_bol)
-        in
-        raise (StructError msg)
+      | t -> raise_incorrect_struct t
     in
-    let struct_fields = find_struct struct_name p.S.structs in
+    let struct_fields, _ = find_struct struct_name p.S.structs in
     let f_t = List.assoc str struct_fields in
     { T.annot = f_t; T.elt = (e, str)}, f_t
 
 
-  and type_array e1 e2 pos symb_tbl =
-    current_pos := pos;
+  and type_array e1 e2 symb_tbl =
     let ne2, t2 = type_expression e2 symb_tbl in
     comparetype TypInteger t2;
     let ne1, t1 = type_expression e1 symb_tbl in
     let res_type = match t1 with
         TypArray t -> t
-      | _ -> let pos = !current_pos in
-        let msg = Printf.sprintf
-            "Is not an array at line %d, col %d !"
-            pos.pos_lnum
-            (pos.pos_cnum - pos.pos_bol)
-        in
-        raise (InvalidArray msg)
+      | t -> raise_incorrect_array t
     in
-    { T.annot = res_type; T.elt = T.ArrayAccess(ne1, ne2, pos) }, res_type
+    { T.annot = res_type; T.elt = T.ArrayAccess(ne1, ne2) }, res_type
 
   and type_literal i =
     match i with
     | S.Int (i, pos)  -> current_pos := pos;
-      SourceAst.Int(i, pos), SourceAst.TypInteger
+      T.Int(i), SourceAst.TypInteger
     | S.Bool (b, pos) -> current_pos := pos;
-      SourceAst.Bool(b, pos), SourceAst.TypBoolean
+      T.Bool(b), SourceAst.TypBoolean
 
   and type_expression expr symb_tbl =
     match expr with
@@ -210,13 +258,7 @@ let type_prog p =
           aux tl
       in aux tes;
       let t = match tes with
-          [] -> let pos = !current_pos in
-          let msg = Printf.sprintf
-              "Empty direct tab can't be created at line %d, col %d"
-              pos.pos_lnum
-              (pos.pos_cnum - pos.pos_bol)
-          in
-          raise (InvalidArray msg)
+          [] -> raise_empty_direct_tab ()
         | a::_ -> a
       in
       { T.annot = TypArray t; T.elt = T.NewDirectArray(nes) }, TypArray t
@@ -241,13 +283,7 @@ let type_prog p =
     let typed_call = mk_typed_call c symb_tbl in
     match typed_call.annot with
     | Some t -> typed_call, t
-    | None -> let pos = !current_pos in
-      let msg = Printf.sprintf
-          "No return type for focntion at line %d, col %d"
-          pos.pos_lnum
-          (pos.pos_cnum - pos.pos_bol)
-      in
-      raise (FunctionError msg)
+    | None -> raise_no_function_return ()
 
   and type_binop = function
     | Add | Sub | Mult | Div          -> TypInteger, TypInteger
@@ -256,13 +292,16 @@ let type_prog p =
 
   and type_fun_decls id fct_list acc =
     let aux acc infos =
-      { T.return = infos.S.return;
-        T.formals = infos.S.formals;
-        T.locals = infos.S.locals;
-        T.code = typecheck_block infos.S.code infos.S.locals } :: acc
+      let ninfos =
+        { T.return = infos.S.return;
+          T.formals = infos.S.formals;
+          T.locals = infos.S.locals;
+          T.code = typecheck_block infos.S.code infos.S.locals }
+      in
+      let str = rename_fct id infos.S.formals in
+      T.Symb_Tbl.add str ninfos acc
     in
-    let n_l = List.fold_left aux [] fct_list in
-    T.Symb_Tbl.add id n_l acc
+    List.fold_left aux acc fct_list
   in
 
   {

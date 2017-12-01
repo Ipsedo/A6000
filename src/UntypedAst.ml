@@ -4,6 +4,7 @@ module Symb_Tbl = SourceAst.Symb_Tbl
 
 type identifier_info = SourceAst.identifier_kind
 type binop = SourceAst.binop
+type literal = TypedAst.literal
 type block = instruction list
 (* Il faut tout redéfinir car la position du lexème courant
    (pour erreur de type)
@@ -25,9 +26,6 @@ and expression =
 and location =
   | Identifier of string
   | ArrayAccess of expression * expression
-and literal =
-  | Int  of int  (* Constante entière   *)
-  | Bool of bool
 
 and call = string * expression list
 

@@ -1,6 +1,5 @@
 module Symb_Tbl = SourceAst.Symb_Tbl
 
-type literal         = SourceAst.literal
 type binop           = SourceAst.binop
 type typ             = SourceAst.typ
 type identifier_info = SourceAst.identifier_info
@@ -30,15 +29,17 @@ and instruction =
   | ProcCall of typed_call
 
 and location =
-  | Identifier of string * Lexing.position (* Variable en mémoire *)
-  | ArrayAccess of typed_expression * typed_expression * Lexing.position
-  | FieldAccess of typed_f_access * Lexing.position
-
+  | Identifier of string (* Variable en mémoire *)
+  | ArrayAccess of typed_expression * typed_expression
+  | FieldAccess of typed_f_access
+and literal =
+  | Int  of int  (* Constante entière   *)
+  | Bool of bool (* Constante booléenne *)
 
 and block = instruction list
 
 and prog = {
-  functions: function_info list Symb_Tbl.t;
+  functions: function_info Symb_Tbl.t;
   structs:   struct_info Symb_Tbl.t
 }
 
