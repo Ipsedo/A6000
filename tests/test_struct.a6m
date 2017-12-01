@@ -3,6 +3,10 @@ struct complex (
   integer j;
 )
 
+struct mega_complex extends complex (
+  integer k;
+)
+
 struct super_complex (
   complex s_i;
   complex s_j;
@@ -11,6 +15,7 @@ struct super_complex (
 main(integer x) (
   var complex a;
   var super_complex b;
+  var mega_complex c;
   var []integer i;
 
   a := new complex();
@@ -19,7 +24,7 @@ main(integer x) (
 
   print(a.i);
   print(a.j);
-
+  
   b := make_super_complex(a);
 
   print(10);
@@ -27,6 +32,15 @@ main(integer x) (
   print(b.s_i.j);
   print(b.s_j.i);
   print(b.s_j.j);
+
+  c := new mega_complex();
+  c.i := x;
+  c.j := c.i + 1;
+  c.k := c.j + 1;
+
+  print(c.i);
+  print(c.j);
+  print(c.k);
 )
 
 super_complex make_super_complex(complex a) (

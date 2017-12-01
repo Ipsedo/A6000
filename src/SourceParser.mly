@@ -10,6 +10,7 @@
 %token SEMI
 %token COMMA
 %token NEW STRUCT DOT
+%token EXTENDS
 
 %token BOOL
 %token INT
@@ -59,11 +60,20 @@ prog:
         let tbl = Symb_Tbl.add "log10" [log10] tbl in
         let tbl = Symb_Tbl.add "random" [random] tbl in
 
+        (* faire vrai extends pas dupliquer *)
+        let rec construct_field parent_struct acc =
+          let find_parent parent =
+            List.find (fun (str, _, _) -> str = parent) structs
+          in
+          match parent_struct with
+            None -> acc
+          | Some parent -> let (_, p, f) = find_parent parent in
+            construct_field p (f @ acc)
+        in
         let struct_tbl = List.fold_left
-          (fun acc (id, field) -> Symb_Tbl.add id field acc)
+          (fun acc (curr, parent, field) -> Symb_Tbl.add curr (construct_field parent field) acc)
           Symb_Tbl.empty structs
         in
-
         { functions = tbl; structs = struct_tbl}
     }
 ;
@@ -83,9 +93,13 @@ fun_delcs:
 
 struct_decl:
   STRUCT; id=IDENT; BEGIN; f_d=list(field_decl); END
-  {
-    id, f_d
-  }
+    {
+      id, None, f_d
+    }
+  | STRUCT; id1=IDENT; EXTENDS; id2=IDENT; BEGIN; f_d=list(field_decl); END
+    {
+      id1, Some id2, f_d
+    }
 
 field_decl:
  t=typ; id=IDENT; SEMI { id, t }
@@ -180,7 +194,7 @@ expression:
   | O_BRACKETS; e=expression; C_BRACKETS; t=typ  { NewArray(e, t)   }
   | O_BRACE; es=separated_list(COMMA, expression); C_BRACE
     { NewDirectArray(es) }
-  | NEW; id=IDENT; BEGIN; END                    { NewRecord(id) }
+  | NEW; id=IDENT; BEGIN; END                    { NewRecord(id)    }
   ;
 
 %inline binop:

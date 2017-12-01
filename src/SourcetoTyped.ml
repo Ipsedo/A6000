@@ -12,6 +12,7 @@ exception Type_error of string
 exception InvalidArray of string
 exception FunctionError of string
 exception StructError of string
+exception SymbolError of string
 
 let current_pos = ref Lexing.dummy_pos
 
@@ -27,6 +28,37 @@ let raise_type_exception t1 t2 =
       (pos.pos_cnum - pos.pos_bol)
   in
   raise (Type_error msg)
+
+let raise_no_symbol_found_exception str =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "No symbol \"%s\" found at line %d, col %d !"
+      str
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (SymbolError msg)
+
+let find_struct str symb_tbl =
+  let struct_fields = S.Symb_Tbl.find_opt str symb_tbl in
+  match struct_fields with
+  | Some s -> s
+  | None -> let pos = !current_pos in
+    let msg = Printf.sprintf
+        "No struct found at line %d, col %d !"
+        pos.pos_lnum
+        (pos.pos_cnum - pos.pos_bol)
+    in
+    raise (StructError msg)
+
+let raise_no_function_found_exception () =
+  let pos = !current_pos in
+  let msg = Printf.sprintf
+      "No function / procedure found at line %d, col %d !"
+      pos.pos_lnum
+      (pos.pos_cnum - pos.pos_bol)
+  in
+  raise (FunctionError msg)
 
 (* comparetype: typ -> typ -> unit
    Lève une exception si les types diffèrent. *)
@@ -65,8 +97,8 @@ let type_prog p =
   and find_fct_with_call ty_expr info_l =
     let check_types tys ty_exprs =
       if (List.length tys) = (List.length ty_expr) then begin
-          List.iter2 (fun (ty,_) ty_e -> comparetype ty ty_e) tys ty_exprs;
-          true end
+        List.iter2 (fun (ty,_) ty_e -> comparetype ty ty_e) tys ty_exprs;
+        true end
       else false
     in
     let rec finder l acc =
@@ -81,13 +113,7 @@ let type_prog p =
     let info = finder info_l None in
     match info with
     | Some s -> s
-    | None -> let pos = !current_pos in
-      let msg = Printf.sprintf
-          "No function / procedure founded at line %d, col %d !"
-          pos.pos_lnum
-          (pos.pos_cnum - pos.pos_bol)
-      in
-      raise (FunctionError msg)
+    | None -> raise_no_function_found_exception ()
 
   and mk_typed_call c symb_tbl =
     let str, es = c in
@@ -96,7 +122,11 @@ let type_prog p =
         (fun (e_acc, t_acc) (e, t) -> e_acc @ [e], t_acc @ [t])
         ([], []) tmp
     in
-    let infos_l = S.Symb_Tbl.find str p.S.functions in
+    let infos_l = S.Symb_Tbl.find_opt str p.S.functions in
+    let infos_l = match infos_l with
+      | Some s -> s
+      | None -> raise_no_function_found_exception ()
+    in
     let infos = find_fct_with_call tys infos_l in
     { T.annot = infos.S.return; T.elt = (str, es) }
 
@@ -105,7 +135,12 @@ let type_prog p =
     match l with
       S.Identifier(str, pos) ->
       current_pos := pos;
-      let l_type = (S.Symb_Tbl.find str symb_tbl).S.typ in
+      let l_type = S.Symb_Tbl.find_opt str symb_tbl in
+      let l_type = match l_type with
+        | Some s -> s
+        | None -> raise_no_symbol_found_exception str
+      in
+      let l_type = l_type.S.typ in
       { T.annot = l_type; T.elt = T.Identifier(str, pos) }, l_type
     | S.ArrayAccess(e1, e2, pos) -> type_array e1 e2 pos symb_tbl
     | S.FieldAccess(f_a, pos) ->
@@ -126,7 +161,7 @@ let type_prog p =
         in
         raise (StructError msg)
     in
-    let struct_fields = S.Symb_Tbl.find struct_name p.S.structs in
+    let struct_fields = find_struct struct_name p.S.structs in
     let f_t = List.assoc str struct_fields in
     { T.annot = f_t; T.elt = (e, str)}, f_t
 
@@ -138,8 +173,7 @@ let type_prog p =
     let ne1, t1 = type_expression e1 symb_tbl in
     let res_type = match t1 with
         TypArray t -> t
-      | _ ->
-        let pos = !current_pos in
+      | _ -> let pos = !current_pos in
         let msg = Printf.sprintf
             "Is not an array at line %d, col %d !"
             pos.pos_lnum
@@ -187,6 +221,7 @@ let type_prog p =
       in
       { T.annot = TypArray t; T.elt = T.NewDirectArray(nes) }, TypArray t
     | S.NewRecord(str) ->
+      let _ = find_struct str p.S.structs in
       { T.annot = TypStruct str; T.elt = T.NewRecord(str) }, TypStruct str
     | S.Literal lit  -> let nl, tl = type_literal lit in
       { T.annot = tl; T.elt = T.Literal(nl) }, tl
@@ -213,7 +248,6 @@ let type_prog p =
           (pos.pos_cnum - pos.pos_bol)
       in
       raise (FunctionError msg)
-
 
   and type_binop = function
     | Add | Sub | Mult | Div          -> TypInteger, TypInteger

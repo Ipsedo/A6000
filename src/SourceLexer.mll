@@ -20,7 +20,8 @@ let id_or_keyword =
       "else",     ELSE;
       "for",      FOR;
       "struct",   STRUCT;
-      "new",      NEW
+      "new",      NEW;
+      "extends",  EXTENDS
     ] ;
   fun s ->
     try  Hashtbl.find h s
