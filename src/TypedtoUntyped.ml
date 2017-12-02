@@ -63,9 +63,8 @@ let erase_prog p =
     | SourceAst.Or -> T.Or
 
   and erase_binop b e1 e2 =
-    match e1.S.annot, e2.S.annot with
-      TypStruct s1, TypStruct s2 when s1 = s2 && b = SourceAst.EqStruct ->
-      mk_struct_compare e1 e2
+    match b with
+      SourceAst.EqStruct -> mk_struct_compare e1 e2
     | _ -> T.Binop(erase_op b, erase_expression e1, erase_expression e2)
 
   and mk_struct_compare e1 e2 =
@@ -82,13 +81,9 @@ let erase_prog p =
            let ne2 = { S.annot = t; S.elt = S.Location(ne2) } in
            T.Binop(T.And, acc, mk_struct_compare ne1 ne2))
         (T.Literal(S.Bool true)) field
+    | TypArray t1, TypArray t2 -> failwith "pas encore fait"
     | t1, t2 when t1 <> t2 -> T.Literal(S.Bool false)
     | _ -> T.Binop(T.Eq, erase_expression e1, erase_expression e2)
-
-  (* faire egalité structurelle array *)
-  and mk_array_compare e1 e2 =
-    match e1.S.annot, e2.S.annot with
-      _ -> ()
 
   and erase_instruction i =
     match i with
