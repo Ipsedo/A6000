@@ -3,7 +3,11 @@
 module Symb_Tbl = SourceAst.Symb_Tbl
 
 type identifier_info = SourceAst.identifier_kind
-type binop = SourceAst.binop
+type binop =
+  | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
+  | Eq  (* == *) | Neq  (* != *)
+  | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
+  | And (* && *) | Or   (* || *)
 type literal = TypedAst.literal
 type block = instruction list
 (* Il faut tout redéfinir car la position du lexème courant

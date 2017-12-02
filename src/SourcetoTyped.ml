@@ -270,11 +270,11 @@ let type_prog p =
     | S.Location loc -> let nl, tl = type_location loc symb_tbl in
       { T.annot = tl; T.elt = T.Location(nl) }, tl
     | Binop(op, e1, e2) ->
-      let ty_op, ty_r = type_binop op in
       let ne1, ty1 = type_expression e1 symb_tbl in
       let ne2, ty2 = type_expression e2 symb_tbl in
-      comparetype ty_op ty1;
-      comparetype ty_op ty2;
+      let (ty_op1, ty_op2), ty_r = type_binop op ty1 ty2 in
+      comparetype ty_op1 ty1;
+      comparetype ty_op2 ty2;
       { T.annot = ty_r; T.elt = T.Binop(op, ne1, ne2) }, ty_r
     | FunCall(c) -> let fc, ty = type_fct c symb_tbl in
       { T.annot = ty; T.elt = T.FunCall(fc) }, ty
@@ -285,10 +285,26 @@ let type_prog p =
     | Some t -> typed_call, t
     | None -> raise_no_function_return ()
 
-  and type_binop = function
-    | Add | Sub | Mult | Div          -> TypInteger, TypInteger
-    | Eq  | Neq | Lt   | Le | Me | Mt -> TypInteger, TypBoolean
-    | And | Or                        -> TypBoolean, TypBoolean
+  (* faire autorisation eq structurelle array *)
+  and type_binop b t1 t2 =
+    match b with
+      EqStruct | Eq -> begin
+        match t1, t2 with
+          TypStruct s1, TypStruct s2 ->
+          (TypStruct s1, TypStruct s2), TypBoolean
+        | TypStruct s, t -> (TypStruct s, t), TypBoolean
+        | t, TypStruct s -> (t, TypStruct s), TypBoolean
+        | _ -> type_binop_simple b
+      end
+    | _ -> type_binop_simple b
+
+  and type_binop_simple = function
+    | Add | Sub | Mult | Div                   ->
+      (TypInteger, TypInteger), TypInteger
+    | Eq  | Neq | Lt | Le | Me | Mt | EqStruct ->
+      (TypInteger, TypInteger), TypBoolean
+    | And | Or                                 ->
+      (TypBoolean,TypBoolean), TypBoolean
 
   and type_fun_decls id fct_list acc =
     let aux acc infos =

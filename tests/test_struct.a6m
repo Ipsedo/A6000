@@ -12,15 +12,28 @@ struct super_complex (
   complex s_j;
 )
 
+main2(integer x) (
+  var []mega_complex m_a;
+
+  m_a := make_mega_complex_array(3);
+  print_mega_complex_array(m_a, 3);
+)
+
 main(integer x) (
   var complex a;
+  var complex a_prime;
   var super_complex b;
+  var super_complex b_prime;
   var mega_complex c;
   var []integer i;
 
   a := new complex();
   a.i := x;
   a.j := x + 1;
+
+  a_prime := new complex();
+  a_prime.i := x;
+  a_prime.j := 2;
 
   print(a.i);
   print(a.j);
@@ -50,6 +63,30 @@ main(integer x) (
   print(b.s_i.j);
   print(b.s_j.i);
   print(b.s_j.j);
+  print(10);
+
+  if c = c then (
+    print(65);
+    print(10);
+  );
+
+  b := make_super_complex(a);
+  b_prime := make_super_complex(a);
+
+  if b = b_prime then (
+    print(66);
+    print(10);
+  );
+
+  if a = b then (
+    print(67);
+    print(10);
+  );
+
+  if a == a_prime then (
+    print(68);
+    print(10);
+  );
 )
 
 super_complex make_super_complex(complex a) (
@@ -63,4 +100,35 @@ super_complex make_super_complex(complex a) (
   b.s_j.j := b.s_j.i + 1;
 
   result := b;
+)
+
+[]mega_complex make_mega_complex_array(integer length) (
+  var []mega_complex x;
+  var integer i;
+
+  x := [length]mega_complex;
+
+  for(i := 0; i < length; i++) (
+    x[i] := new mega_complex();
+    x[i].i := 48;
+    x[i].j := 49;
+    x[i].k := 50;
+  );
+
+  result := x;
+)
+
+print_mega_complex(mega_complex x) (
+  print(x.i);
+  print(x.j);
+  print(x.k);
+)
+
+print_mega_complex_array([]mega_complex x, integer length) (
+  var integer i;
+
+  for(i := 0; i < length; i++) (
+    print_mega_complex(x[i]);
+    print(10);
+  );
 )

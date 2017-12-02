@@ -64,7 +64,7 @@ and location =
 
 and binop =
   | Add (* +  *) | Mult (* *  *) | Sub (* - *) | Div (* / *)
-  | Eq  (* == *) | Neq  (* != *)
+  | Eq  (* == *) | Neq  (* != *) | EqStruct (* = *)
   | Lt  (* <  *) | Le   (* <= *) | Mt (* > *) | Me (* >= *)
   | And (* && *) | Or   (* || *)
 
@@ -151,6 +151,7 @@ and print_binop = function
   | Me   -> ">="
   | And  -> "&&"
   | Or   -> "||"
+  | EqStruct -> "="
 
 and print_call c =
   match c with

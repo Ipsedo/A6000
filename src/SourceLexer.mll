@@ -67,6 +67,8 @@ rule token = parse
     { MULT }
   | "-"
     { SUB }
+  | "="
+    { EQ_STR }
   | "=="
     { EQ }
   | "!="

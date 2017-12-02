@@ -32,14 +32,14 @@
 %token <int> LITINT
 %token <bool> LITBOOL
 
-%token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR
+%token PLUS MULT DIV SUB EQ NEQ LT LE MT ME AND OR EQ_STR
 
 %token INCR DECR
 %token ADDSET SUBSET
 %token MULTSET DIVSET
 
 %left AND OR
-%nonassoc EQ NEQ LT LE MT ME
+%nonassoc EQ NEQ LT LE MT ME EQ_STR
 %left PLUS SUB
 %left MULT DIV
 %nonassoc O_BRACKETS
@@ -198,18 +198,19 @@ expression:
   ;
 
 %inline binop:
-  MULT { Mult }
-| DIV  { Div  }
-| PLUS { Add  }
-| SUB  { Sub  }
-| LT   { Lt   }
-| LE   { Le   }
-| MT   { Mt   }
-| ME   { Me   }
-| EQ   { Eq   }
-| NEQ  { Neq  }
-| AND  { And  }
-| OR   { Or   }
+  MULT   { Mult     }
+| DIV    { Div      }
+| PLUS   { Add      }
+| SUB    { Sub      }
+| LT     { Lt       }
+| LE     { Le       }
+| MT     { Mt       }
+| ME     { Me       }
+| EQ     { Eq       }
+| NEQ    { Neq      }
+| AND    { And      }
+| OR     { Or       }
+| EQ_STR { EqStruct }
 ;
 
 call:
