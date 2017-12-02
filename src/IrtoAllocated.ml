@@ -25,7 +25,7 @@ let allocate_prog reg_flag prog =
             (* On ne fait pas de différence entre formel et local vu qu'ils
                 seront affectés dans AllocatedtoMips *)
             | _ -> let elt = GraphColoring.NodeMap.find id coloring in
-              if elt <= 7 then
+              if elt < 7 then
                 T.Reg (Printf.sprintf "$t%d" (elt + 2))
               else begin
                 current_offset := !current_offset - 4;
