@@ -288,7 +288,7 @@ let type_prog p =
   (* faire autorisation eq structurelle array *)
   and type_binop b t1 t2 =
     match b with
-      EqStruct | Eq -> begin
+      EqStruct | Eq | Neq -> begin
         match t1, t2 with
           TypStruct s1, TypStruct s2 ->
           (TypStruct s1, TypStruct s2), TypBoolean
