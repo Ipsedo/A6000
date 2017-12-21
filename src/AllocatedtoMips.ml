@@ -175,8 +175,8 @@ let generate_function fct =
   and generate_proccall str v_list = (* ok *)
     let arg, nb = gen_arg_and_nb v_list in
     let stack_args = if nb < 4 then 0 else (nb - 4) * 4 in (* -4 pour a0-a3 *)
-    (* pas besoin de sauver les registres pour print et arr_length*)
-    let save_reg = str <> "print" && str <> "arr_length" in
+    (* pas besoin de sauver les registres pour print *)
+    let save_reg = str <> "print" in
     begin
       if save_reg then
         save_t_reg nb_reg else nop
