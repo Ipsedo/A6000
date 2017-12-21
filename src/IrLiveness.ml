@@ -160,7 +160,6 @@ let mk_lv p =
     (* On modifie la valeur de change si il y a eu des changements depuis
        la dernière itéraion pour cette instruction *)
     if change_1 || change_2 then change := true;
-
     ()
   in
 
@@ -176,10 +175,6 @@ let mk_lv p =
       rev_code
   in
   let nb_it = ref 0 in
-  (*let _ = match p.code with
-    | (lab,_)::_ -> Hashtbl.replace lv_in lab formal_set
-    | _ -> ()
-    in*)
   (* Répéter tant qu'il reste des changements *)
   while !change do
     change := false;

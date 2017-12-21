@@ -220,7 +220,6 @@ let type_prog p =
     let f_t = List.assoc str struct_fields in
     { T.annot = f_t; T.elt = (e, str)}, f_t
 
-
   and type_array e1 e2 symb_tbl =
     let ne2, t2 = type_expression e2 symb_tbl in
     comparetype TypInteger t2;
@@ -263,6 +262,8 @@ let type_prog p =
       in
       { T.annot = TypArray t; T.elt = T.NewDirectArray(nes) }, TypArray t
     | S.NewRecord(str) ->
+      (* Levera une exception si la struct n'existe pas
+         -> pas besoin du resultat si elle existe bien *)
       let _ = find_struct str p.S.structs in
       { T.annot = TypStruct str; T.elt = T.NewRecord(str) }, TypStruct str
     | S.Literal lit  -> let nl, tl = type_literal lit in

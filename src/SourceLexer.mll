@@ -26,13 +26,11 @@ let id_or_keyword =
   fun s ->
     try  Hashtbl.find h s
     with Not_found -> IDENT(s)
-
-
 }
 
 let digit = ['0'-'9']
 let alpha = ['a'-'z' 'A'-'Z']
-let ident = (['a'-'z' '_'] (alpha | '_' | '\'' | digit)*)
+let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
 
 rule token = parse
   | [' ' '\t' '\r']+
