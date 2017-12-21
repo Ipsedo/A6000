@@ -159,8 +159,7 @@ let mk_lv p =
 
     (* On modifie la valeur de change si il y a eu des changements depuis
        la dernière itéraion pour cette instruction *)
-    if change_1 || change_2 then change := true;
-    ()
+    change := !change || change_1 || change_2
   in
 
   (* Une passe complète : met à jour une fois chaque instruction
