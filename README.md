@@ -85,3 +85,26 @@ généré _via_ ce compilateur telles que (voir MipsMisc.ml) :
   (visibles pour l'utilisateur et générées depuis a6000) :
     - `integer log10( n )`          
     - `[]integer string_of_int( n )`
+
+## Acte III
+
+Parties ayant été faites et fonctionnelles :
++ **TP 9 - Syntaxe abstraite annotée et surcharge statique**
+  - _extentions :_
+    - Améliorer les messages d'erreur
+
++ **TP 10 - Structures**
+  - _extentions :_
+    - Égalité structurelle guidée par les types
+    - Extensions de structures
+    - Transtypage
+
+**Autres informations**
++ La surcharge a été traité le plus tôt possible, c'est à dire dans SourcetoTyped.
++ Les fonctions `integer arr_length( []τ )` et `[]integer string_of_int( n )` ont été supprimé. Les fonctions `integer random(integer seed, integer upperBound)`
+et `print_int( n )` ont été ajouté.  
++ L'interpréteur n'est plus utilisable.
++ Le transtypage n'est effectif que lors du passage de paramètres formels
+pour une fonction, il n'est pas possible de "cast" _via_ `(NewType) myVar`
+comme dans la syntaxe de Java.
+De plus il ne marche que pour un type étendu vers un type plus général.
